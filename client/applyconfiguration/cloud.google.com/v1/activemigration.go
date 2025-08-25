@@ -21,7 +21,8 @@ package v1
 // ActiveMigrationApplyConfiguration represents an declarative configuration of the ActiveMigration type for use
 // with apply.
 type ActiveMigrationApplyConfiguration struct {
-	OptimizeRulePriority *bool `json:"optimizeRulePriority,omitempty"`
+	OptimizeRulePriority          *bool `json:"optimizeRulePriority,omitempty"`
+	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty"`
 }
 
 // ActiveMigrationApplyConfiguration constructs an declarative configuration of the ActiveMigration type for use with
@@ -35,5 +36,13 @@ func ActiveMigration() *ActiveMigrationApplyConfiguration {
 // If called multiple times, the OptimizeRulePriority field is set to the value of the last call.
 func (b *ActiveMigrationApplyConfiguration) WithOptimizeRulePriority(value bool) *ActiveMigrationApplyConfiguration {
 	b.OptimizeRulePriority = &value
+	return b
+}
+
+// WithEnsureAllDaemonSetPodsRunning sets the EnsureAllDaemonSetPodsRunning field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the EnsureAllDaemonSetPodsRunning field is set to the value of the last call.
+func (b *ActiveMigrationApplyConfiguration) WithEnsureAllDaemonSetPodsRunning(value bool) *ActiveMigrationApplyConfiguration {
+	b.EnsureAllDaemonSetPodsRunning = &value
 	return b
 }

@@ -21,11 +21,27 @@ package v1
 // PriorityApplyConfiguration represents an declarative configuration of the Priority type for use
 // with apply.
 type PriorityApplyConfiguration struct {
-	MachineFamily *string  `json:"machineFamily,omitempty"`
-	Spot          *bool    `json:"spot,omitempty"`
-	MinCores      *int     `json:"minCores,omitempty"`
-	MinMemoryGb   *int     `json:"minMemoryGb,omitempty"`
-	Nodepools     []string `json:"nodepools,omitempty"`
+	MachineFamily                *string                             `json:"machineFamily,omitempty"`
+	Spot                         *bool                               `json:"spot,omitempty"`
+	MinCores                     *int                                `json:"minCores,omitempty"`
+	MinMemoryGb                  *int                                `json:"minMemoryGb,omitempty"`
+	Nodepools                    []string                            `json:"nodepools,omitempty"`
+	Storage                      *StorageApplyConfiguration          `json:"storage,omitempty"`
+	MachineType                  *string                             `json:"machineType,omitempty"`
+	Gpu                          *GPUApplyConfiguration              `json:"gpu,omitempty"`
+	Tpu                          *TPUApplyConfiguration              `json:"tpu,omitempty"`
+	Reservations                 *ReservationsApplyConfiguration     `json:"reservations,omitempty"`
+	MaxRunDurationSeconds        *int                                `json:"maxRunDurationSeconds,omitempty"`
+	MaxPodsPerNode               *int                                `json:"maxPodsPerNode,omitempty"`
+	NodeSystemConfig             *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
+	FlexStart                    *FlexStartApplyConfiguration        `json:"flexStart,omitempty"`
+	PodFamily                    *string                             `json:"podFamily,omitempty"`
+	Location                     *LocationApplyConfiguration         `json:"location,omitempty"`
+	Placement                    *PlacementApplyConfiguration        `json:"placement,omitempty"`
+	CapacityCheckWaitTimeSeconds *int                                `json:"capacityCheckWaitTimeSeconds,omitempty"`
+	MinCpuPlatform               *string                             `json:"minCpuPlatform,omitempty"`
+	NodeLabels                   map[string]string                   `json:"nodeLabels,omitempty"`
+	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -72,6 +88,145 @@ func (b *PriorityApplyConfiguration) WithMinMemoryGb(value int) *PriorityApplyCo
 func (b *PriorityApplyConfiguration) WithNodepools(values ...string) *PriorityApplyConfiguration {
 	for i := range values {
 		b.Nodepools = append(b.Nodepools, values[i])
+	}
+	return b
+}
+
+// WithStorage sets the Storage field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Storage field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithStorage(value *StorageApplyConfiguration) *PriorityApplyConfiguration {
+	b.Storage = value
+	return b
+}
+
+// WithMachineType sets the MachineType field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MachineType field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMachineType(value string) *PriorityApplyConfiguration {
+	b.MachineType = &value
+	return b
+}
+
+// WithGpu sets the Gpu field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Gpu field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithGpu(value *GPUApplyConfiguration) *PriorityApplyConfiguration {
+	b.Gpu = value
+	return b
+}
+
+// WithTpu sets the Tpu field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Tpu field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithTpu(value *TPUApplyConfiguration) *PriorityApplyConfiguration {
+	b.Tpu = value
+	return b
+}
+
+// WithReservations sets the Reservations field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Reservations field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithReservations(value *ReservationsApplyConfiguration) *PriorityApplyConfiguration {
+	b.Reservations = value
+	return b
+}
+
+// WithMaxRunDurationSeconds sets the MaxRunDurationSeconds field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MaxRunDurationSeconds field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMaxRunDurationSeconds(value int) *PriorityApplyConfiguration {
+	b.MaxRunDurationSeconds = &value
+	return b
+}
+
+// WithMaxPodsPerNode sets the MaxPodsPerNode field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MaxPodsPerNode field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMaxPodsPerNode(value int) *PriorityApplyConfiguration {
+	b.MaxPodsPerNode = &value
+	return b
+}
+
+// WithNodeSystemConfig sets the NodeSystemConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodeSystemConfig field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithNodeSystemConfig(value *NodeSystemConfigApplyConfiguration) *PriorityApplyConfiguration {
+	b.NodeSystemConfig = value
+	return b
+}
+
+// WithFlexStart sets the FlexStart field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the FlexStart field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithFlexStart(value *FlexStartApplyConfiguration) *PriorityApplyConfiguration {
+	b.FlexStart = value
+	return b
+}
+
+// WithPodFamily sets the PodFamily field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PodFamily field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithPodFamily(value string) *PriorityApplyConfiguration {
+	b.PodFamily = &value
+	return b
+}
+
+// WithLocation sets the Location field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Location field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithLocation(value *LocationApplyConfiguration) *PriorityApplyConfiguration {
+	b.Location = value
+	return b
+}
+
+// WithPlacement sets the Placement field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Placement field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithPlacement(value *PlacementApplyConfiguration) *PriorityApplyConfiguration {
+	b.Placement = value
+	return b
+}
+
+// WithCapacityCheckWaitTimeSeconds sets the CapacityCheckWaitTimeSeconds field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CapacityCheckWaitTimeSeconds field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithCapacityCheckWaitTimeSeconds(value int) *PriorityApplyConfiguration {
+	b.CapacityCheckWaitTimeSeconds = &value
+	return b
+}
+
+// WithMinCpuPlatform sets the MinCpuPlatform field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MinCpuPlatform field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMinCpuPlatform(value string) *PriorityApplyConfiguration {
+	b.MinCpuPlatform = &value
+	return b
+}
+
+// WithNodeLabels puts the entries into the NodeLabels field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, the entries provided by each call will be put on the NodeLabels field,
+// overwriting an existing map entries in NodeLabels field with the same key.
+func (b *PriorityApplyConfiguration) WithNodeLabels(entries map[string]string) *PriorityApplyConfiguration {
+	if b.NodeLabels == nil && len(entries) > 0 {
+		b.NodeLabels = make(map[string]string, len(entries))
+	}
+	for k, v := range entries {
+		b.NodeLabels[k] = v
+	}
+	return b
+}
+
+// WithTaints adds the given value to the Taints field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Taints field.
+func (b *PriorityApplyConfiguration) WithTaints(values ...*TaintConfigApplyConfiguration) *PriorityApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithTaints")
+		}
+		b.Taints = append(b.Taints, *values[i])
 	}
 	return b
 }
