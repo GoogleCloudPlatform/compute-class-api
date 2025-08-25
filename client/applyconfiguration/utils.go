@@ -31,16 +31,66 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 	// Group=cloud.google.com, Version=v1
 	case v1.SchemeGroupVersion.WithKind("ActiveMigration"):
 		return &cloudgooglecomv1.ActiveMigrationApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Autopilot"):
+		return &cloudgooglecomv1.AutopilotApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("AutoscalingPolicy"):
+		return &cloudgooglecomv1.AutoscalingPolicyApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClass"):
 		return &cloudgooglecomv1.ComputeClassApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassSpec"):
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("FlexStart"):
+		return &cloudgooglecomv1.FlexStartApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("GPU"):
+		return &cloudgooglecomv1.GPUApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("HugepagesConfig"):
+		return &cloudgooglecomv1.HugepagesConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ImageStreaming"):
+		return &cloudgooglecomv1.ImageStreamingApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("KubeletConfig"):
+		return &cloudgooglecomv1.KubeletConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("LinuxNodeConfig"):
+		return &cloudgooglecomv1.LinuxNodeConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Location"):
+		return &cloudgooglecomv1.LocationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodePoolAutoCreation"):
 		return &cloudgooglecomv1.NodePoolAutoCreationApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodePoolConfig"):
+		return &cloudgooglecomv1.NodePoolConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodePoolGroup"):
+		return &cloudgooglecomv1.NodePoolGroupApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodeRecyclingConfig"):
+		return &cloudgooglecomv1.NodeRecyclingConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodeSystemConfig"):
+		return &cloudgooglecomv1.NodeSystemConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Placement"):
+		return &cloudgooglecomv1.PlacementApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Priority"):
 		return &cloudgooglecomv1.PriorityApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("PriorityDefaults"):
+		return &cloudgooglecomv1.PriorityDefaultsApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ReservationBlock"):
+		return &cloudgooglecomv1.ReservationBlockApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Reservations"):
+		return &cloudgooglecomv1.ReservationsApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ReservationSubBlock"):
+		return &cloudgooglecomv1.ReservationSubBlockApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SecondaryBootDisk"):
+		return &cloudgooglecomv1.SecondaryBootDiskApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SpecificReservation"):
+		return &cloudgooglecomv1.SpecificReservationApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Storage"):
+		return &cloudgooglecomv1.StorageApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SysctlsConfig"):
+		return &cloudgooglecomv1.SysctlsConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Tags"):
+		return &cloudgooglecomv1.TagsApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("TaintConfig"):
+		return &cloudgooglecomv1.TaintConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("TPU"):
+		return &cloudgooglecomv1.TPUApplyConfiguration{}
 
 	}
 	return nil

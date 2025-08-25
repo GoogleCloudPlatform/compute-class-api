@@ -25,6 +25,12 @@ type ComputeClassSpecApplyConfiguration struct {
 	NodePoolAutoCreation *NodePoolAutoCreationApplyConfiguration `json:"nodePoolAutoCreation,omitempty"`
 	ActiveMigration      *ActiveMigrationApplyConfiguration      `json:"activeMigration,omitempty"`
 	WhenUnsatisfiable    *string                                 `json:"whenUnsatisfiable,omitempty"`
+	AutoscalingPolicy    *AutoscalingPolicyApplyConfiguration    `json:"autoscalingPolicy,omitempty"`
+	Autopilot            *AutopilotApplyConfiguration            `json:"autopilot,omitempty"`
+	NodePoolConfig       *NodePoolConfigApplyConfiguration       `json:"nodePoolConfig,omitempty"`
+	NodePoolGroup        *NodePoolGroupApplyConfiguration        `json:"nodePoolGroup,omitempty"`
+	PriorityDefaults     *PriorityDefaultsApplyConfiguration     `json:"priorityDefaults,omitempty"`
+	Description          *string                                 `json:"description,omitempty"`
 }
 
 // ComputeClassSpecApplyConfiguration constructs an declarative configuration of the ComputeClassSpec type for use with
@@ -67,5 +73,53 @@ func (b *ComputeClassSpecApplyConfiguration) WithActiveMigration(value *ActiveMi
 // If called multiple times, the WhenUnsatisfiable field is set to the value of the last call.
 func (b *ComputeClassSpecApplyConfiguration) WithWhenUnsatisfiable(value string) *ComputeClassSpecApplyConfiguration {
 	b.WhenUnsatisfiable = &value
+	return b
+}
+
+// WithAutoscalingPolicy sets the AutoscalingPolicy field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the AutoscalingPolicy field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithAutoscalingPolicy(value *AutoscalingPolicyApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.AutoscalingPolicy = value
+	return b
+}
+
+// WithAutopilot sets the Autopilot field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Autopilot field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithAutopilot(value *AutopilotApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.Autopilot = value
+	return b
+}
+
+// WithNodePoolConfig sets the NodePoolConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodePoolConfig field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithNodePoolConfig(value *NodePoolConfigApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.NodePoolConfig = value
+	return b
+}
+
+// WithNodePoolGroup sets the NodePoolGroup field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodePoolGroup field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithNodePoolGroup(value *NodePoolGroupApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.NodePoolGroup = value
+	return b
+}
+
+// WithPriorityDefaults sets the PriorityDefaults field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PriorityDefaults field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithPriorityDefaults(value *PriorityDefaultsApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.PriorityDefaults = value
+	return b
+}
+
+// WithDescription sets the Description field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Description field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithDescription(value string) *ComputeClassSpecApplyConfiguration {
+	b.Description = &value
 	return b
 }
