@@ -55,7 +55,7 @@ type ComputeClassList struct {
 // +kubebuilder:validation:XValidation:rule="!has(oldSelf.autopilot) || has(self.autopilot)", message="Autopilot is required once set"
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? !self.priorities.exists(priority, has(priority.nodepools)) : true", message="Nodepools priority cannot be used when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? !(has(self.nodePoolAutoCreation) && !self.nodePoolAutoCreation.enabled) : true", message="NodePoolAutoCreation cannot be disabled when Autopilot is enabled"
-// +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? !(has(self.nodePoolConfig) && self.nodePoolConfig.imageType != \"cos_containerd\") : true", message="Only cos_containerd image type can be used when Autopilot is enabled"
+// +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig) || !has(self.nodePoolConfig.imageType) || self.nodePoolConfig.imageType == \"cos_containerd\") : true", message="Only cos_containerd image type can be used when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.workloadType) && !has(self.nodePoolGroup)) ? self.nodePoolConfig.workloadType == \"HIGH_AVAILABILITY\" : true", message="If NodePoolGroup is not specified NodePoolConfig.WorkloadType can only be HIGH_AVAILABILITY if set"
 // +kubebuilder:validation:XValidation:rule="self.priorities.exists(priority, has(priority.podFamily)) ? (has(self.autopilot) && self.autopilot.enabled) : true", message="In GKE Standard, pod family can be used only if Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="self.priorities.exists(priority, has(priority.podFamily)) ? !(has(self.nodePoolConfig)) : true", message="Pod family cannot be used with nodePoolConfig"
@@ -671,6 +671,134 @@ type LinuxNodeConfig struct {
 	TransparentHugepageDefrag *string `json:"transparentHugepageDefrag,omitempty" protobuf:"bytes,4,opt,name=transparentHugepageDefrag"`
 }
 
+// EvictionSoft is a map of signal names to quantities that defines soft eviction thresholds.
+// A soft eviction threshold pairs with a grace period. The kubelet does not evict pods until the grace period is exceeded.
+// +kubebuilder:validation:Optional
+type EvictionSoft struct {
+	// MemoryAvailable is the soft eviction threshold for memory.available.
+	// The value must be a quantity, e.g., "100Mi".
+	// The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$`
+	// +optional
+	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
+
+	// NodefsAvailable is the soft eviction threshold for nodefs.available.
+	// The value must be a percentage, e.g., "20%".
+	// The value must be between 10% and 50% inclusive.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
+	// ImagefsAvailable is the soft eviction threshold for imagefs.available.
+	// The value must be a percentage. Eg. "10%".
+	// The value must be between 15% and 50% inclusive.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
+	// ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
+	// The value must be a percentage. Eg. "5%".
+	// The value must be between 5% and 50% inclusive.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
+	// NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
+	// The value must be a percentage. Eg. "5%".
+	// The value must be between 5% and 50% inclusive.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
+	// PidAvailable is the soft eviction threshold for pid.available.
+	// The value must be a percentage. Eg. "10%".
+	// The value must be between 10% and 50% inclusive.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
+}
+
+// EvictionSoftGracePeriod is a map of signal names to durations that defines grace periods for soft eviction thresholds.
+// Each soft eviction threshold must have a corresponding grace period.
+// +kubebuilder:validation:Optional
+type EvictionSoftGracePeriod struct {
+	// MemoryAvailable is the grace period for the memory.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
+	// NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
+	// ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
+	// ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
+	// NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
+	// PidAvailable is the grace period for the pid.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
+}
+
+// EvictionMinimumReclaim is a map of signal names to quantities that defines minimum reclaims.
+// It describes the minimum amount of a given resource the kubelet will reclaim when performing a pod eviction.
+// By default, all values are 0 if unspecified.
+// +kubebuilder:validation:Optional
+type EvictionMinimumReclaim struct {
+	// MemoryAvailable is the minimum reclaim for memory.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
+	// NodefsAvailable is the minimum reclaim for nodefs.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
+	// ImagefsAvailable is the minimum reclaim for imagefs.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
+	// ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
+	// NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
+	// PidAvailable is the minimum reclaim for pid.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
+	// +optional
+	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
+}
+
 // KubeletConfig defines kubelet config for a node.
 //
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>self.imageGcLowThresholdPercent : true", message="ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent"
@@ -766,6 +894,31 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:Maximum=5
 	// +kubebuilder:validation:Optional
 	MaxParallelImagePulls *int64 `json:"maxParallelImagePulls,omitempty" protobuf:"bytes,12,opt,name=maxParallelImagePulls"`
+	// This setting sets whether to enable single process OOM killer.
+	// If set to true, the processes in a container will be OOM killed individually instead of as a group.
+	//
+	// +kubebuilder:validation:Optional
+	SingleProcessOOMKill *bool `json:"singleProcessOOMKill,omitempty" protobuf:"bytes,13,opt,name=singleProcessOOMKill"`
+	// EvictionSoft defines soft eviction thresholds.
+	//
+	// +kubebuilder:validation:Optional
+	EvictionSoft *EvictionSoft `json:"evictionSoft,omitempty" protobuf:"bytes,13,opt,name=evictionSoft"`
+	// EvictionSoftGracePeriod defines grace periods for soft eviction thresholds.
+	//
+	// +kubebuilder:validation:Optional
+	EvictionSoftGracePeriod *EvictionSoftGracePeriod `json:"evictionSoftGracePeriod,omitempty" protobuf:"bytes,14,opt,name=evictionSoftGracePeriod"`
+	// EvictionMinimumReclaim defines minimum reclaims.
+	//
+	// +kubebuilder:validation:Optional
+	EvictionMinimumReclaim *EvictionMinimumReclaim `json:"evictionMinimumReclaim,omitempty" protobuf:"bytes,15,opt,name=evictionMinimumReclaim"`
+	// EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
+	// (in seconds) to use when terminating pods in response to a soft eviction
+	// threshold being met.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=300
+	// +kubebuilder:validation:Optional
+	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty" protobuf:"int,16,opt,name=evictionMaxPodGracePeriodSeconds"`
 }
 
 // SysctlsConfig defines sysctls config for a node.

@@ -41,6 +41,12 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
+		return &cloudgooglecomv1.EvictionMinimumReclaimApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("EvictionSoft"):
+		return &cloudgooglecomv1.EvictionSoftApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("EvictionSoftGracePeriod"):
+		return &cloudgooglecomv1.EvictionSoftGracePeriodApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("FlexStart"):
 		return &cloudgooglecomv1.FlexStartApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GPU"):
