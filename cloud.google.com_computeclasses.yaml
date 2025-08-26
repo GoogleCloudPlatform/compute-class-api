@@ -534,6 +534,155 @@ spec:
                               - none
                               - static
                               type: string
+                            evictionMaxPodGracePeriodSeconds:
+                              description: |-
+                                EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
+                                (in seconds) to use when terminating pods in response to a soft eviction
+                                threshold being met.
+                              format: int64
+                              maximum: 300
+                              minimum: 0
+                              type: integer
+                            evictionMinimumReclaim:
+                              description: EvictionMinimumReclaim defines minimum
+                                reclaims.
+                              properties:
+                                imagefsAvailable:
+                                  description: |-
+                                    ImagefsAvailable is the minimum reclaim for imagefs.available.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                imagefsInodesFree:
+                                  description: |-
+                                    ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                memoryAvailable:
+                                  description: |-
+                                    MemoryAvailable is the minimum reclaim for memory.available.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                nodefsAvailable:
+                                  description: |-
+                                    NodefsAvailable is the minimum reclaim for nodefs.available.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                nodefsInodesFree:
+                                  description: |-
+                                    NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                pidAvailable:
+                                  description: |-
+                                    PidAvailable is the minimum reclaim for pid.available.
+                                    The value must be a percentage, e.g., "5%".
+                                    The value must be positive and less than 10%.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                              type: object
+                            evictionSoft:
+                              description: EvictionSoft defines soft eviction thresholds.
+                              properties:
+                                imagefsAvailable:
+                                  description: |-
+                                    ImagefsAvailable is the soft eviction threshold for imagefs.available.
+                                    The value must be a percentage. Eg. "10%".
+                                    The value must be between 15% and 50% inclusive.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                imagefsInodesFree:
+                                  description: |-
+                                    ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
+                                    The value must be a percentage. Eg. "5%".
+                                    The value must be between 5% and 50% inclusive.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                memoryAvailable:
+                                  description: |-
+                                    MemoryAvailable is the soft eviction threshold for memory.available.
+                                    The value must be a quantity, e.g., "100Mi".
+                                    The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
+                                  pattern: ^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$
+                                  type: string
+                                nodefsAvailable:
+                                  description: |-
+                                    NodefsAvailable is the soft eviction threshold for nodefs.available.
+                                    The value must be a percentage, e.g., "20%".
+                                    The value must be between 10% and 50% inclusive.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                nodefsInodesFree:
+                                  description: |-
+                                    NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
+                                    The value must be a percentage. Eg. "5%".
+                                    The value must be between 5% and 50% inclusive.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                                pidAvailable:
+                                  description: |-
+                                    PidAvailable is the soft eviction threshold for pid.available.
+                                    The value must be a percentage. Eg. "10%".
+                                    The value must be between 10% and 50% inclusive.
+                                  pattern: ^[0-9]+(\.[0-9]+)?%$
+                                  type: string
+                              type: object
+                            evictionSoftGracePeriod:
+                              description: EvictionSoftGracePeriod defines grace periods
+                                for soft eviction thresholds.
+                              properties:
+                                imagefsAvailable:
+                                  description: |-
+                                    ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                                imagefsInodesFree:
+                                  description: |-
+                                    ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                                memoryAvailable:
+                                  description: |-
+                                    MemoryAvailable is the grace period for the memory.available soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                                nodefsAvailable:
+                                  description: |-
+                                    NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                                nodefsInodesFree:
+                                  description: |-
+                                    NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                                pidAvailable:
+                                  description: |-
+                                    PidAvailable is the grace period for the pid.available soft eviction threshold.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                              type: object
                             imageGcHighThresholdPercent:
                               description: |-
                                 This setting sets the percent of disk usage after which image garbage collection is always
@@ -584,6 +733,11 @@ spec:
                               maximum: 4194304
                               minimum: 1024
                               type: integer
+                            singleProcessOOMKill:
+                              description: |-
+                                This setting sets whether to enable single process OOM killer.
+                                If set to true, the processes in a container will be OOM killed individually instead of as a group.
+                              type: boolean
                           type: object
                           x-kubernetes-validations:
                           - message: ImageGcLowThresholdPercent must be lower than
@@ -1264,6 +1418,154 @@ spec:
                             - none
                             - static
                             type: string
+                          evictionMaxPodGracePeriodSeconds:
+                            description: |-
+                              EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
+                              (in seconds) to use when terminating pods in response to a soft eviction
+                              threshold being met.
+                            format: int64
+                            maximum: 300
+                            minimum: 0
+                            type: integer
+                          evictionMinimumReclaim:
+                            description: EvictionMinimumReclaim defines minimum reclaims.
+                            properties:
+                              imagefsAvailable:
+                                description: |-
+                                  ImagefsAvailable is the minimum reclaim for imagefs.available.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              imagefsInodesFree:
+                                description: |-
+                                  ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              memoryAvailable:
+                                description: |-
+                                  MemoryAvailable is the minimum reclaim for memory.available.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              nodefsAvailable:
+                                description: |-
+                                  NodefsAvailable is the minimum reclaim for nodefs.available.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              nodefsInodesFree:
+                                description: |-
+                                  NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              pidAvailable:
+                                description: |-
+                                  PidAvailable is the minimum reclaim for pid.available.
+                                  The value must be a percentage, e.g., "5%".
+                                  The value must be positive and less than 10%.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                            type: object
+                          evictionSoft:
+                            description: EvictionSoft defines soft eviction thresholds.
+                            properties:
+                              imagefsAvailable:
+                                description: |-
+                                  ImagefsAvailable is the soft eviction threshold for imagefs.available.
+                                  The value must be a percentage. Eg. "10%".
+                                  The value must be between 15% and 50% inclusive.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              imagefsInodesFree:
+                                description: |-
+                                  ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
+                                  The value must be a percentage. Eg. "5%".
+                                  The value must be between 5% and 50% inclusive.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              memoryAvailable:
+                                description: |-
+                                  MemoryAvailable is the soft eviction threshold for memory.available.
+                                  The value must be a quantity, e.g., "100Mi".
+                                  The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
+                                pattern: ^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$
+                                type: string
+                              nodefsAvailable:
+                                description: |-
+                                  NodefsAvailable is the soft eviction threshold for nodefs.available.
+                                  The value must be a percentage, e.g., "20%".
+                                  The value must be between 10% and 50% inclusive.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              nodefsInodesFree:
+                                description: |-
+                                  NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
+                                  The value must be a percentage. Eg. "5%".
+                                  The value must be between 5% and 50% inclusive.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                              pidAvailable:
+                                description: |-
+                                  PidAvailable is the soft eviction threshold for pid.available.
+                                  The value must be a percentage. Eg. "10%".
+                                  The value must be between 10% and 50% inclusive.
+                                pattern: ^[0-9]+(\.[0-9]+)?%$
+                                type: string
+                            type: object
+                          evictionSoftGracePeriod:
+                            description: EvictionSoftGracePeriod defines grace periods
+                              for soft eviction thresholds.
+                            properties:
+                              imagefsAvailable:
+                                description: |-
+                                  ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                              imagefsInodesFree:
+                                description: |-
+                                  ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                              memoryAvailable:
+                                description: |-
+                                  MemoryAvailable is the grace period for the memory.available soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                              nodefsAvailable:
+                                description: |-
+                                  NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                              nodefsInodesFree:
+                                description: |-
+                                  NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                              pidAvailable:
+                                description: |-
+                                  PidAvailable is the grace period for the pid.available soft eviction threshold.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                            type: object
                           imageGcHighThresholdPercent:
                             description: |-
                               This setting sets the percent of disk usage after which image garbage collection is always
@@ -1314,6 +1616,11 @@ spec:
                             maximum: 4194304
                             minimum: 1024
                             type: integer
+                          singleProcessOOMKill:
+                            description: |-
+                              This setting sets whether to enable single process OOM killer.
+                              If set to true, the processes in a container will be OOM killed individually instead of as a group.
+                            type: boolean
                         type: object
                         x-kubernetes-validations:
                         - message: ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent
@@ -1697,8 +2004,9 @@ spec:
                 && !self.nodePoolAutoCreation.enabled) : true'
             - message: Only cos_containerd image type can be used when Autopilot is
                 enabled
-              rule: '(has(self.autopilot) && self.autopilot.enabled) ? !(has(self.nodePoolConfig)
-                && self.nodePoolConfig.imageType != "cos_containerd") : true'
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
+                || !has(self.nodePoolConfig.imageType) || self.nodePoolConfig.imageType
+                == "cos_containerd") : true'
             - message: If NodePoolGroup is not specified NodePoolConfig.WorkloadType
                 can only be HIGH_AVAILABILITY if set
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.workloadType)
