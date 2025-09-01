@@ -2054,6 +2054,12 @@ spec:
                 || priority.machineType == ''a3-highgpu-1g'')) || (has(priority.gpu)
                 && has(priority.gpu.type) && priority.gpu.type == ''nvidia-h100-80gb'')))
                 : true'
+            - message: When using confidential GPUs you must specify location.zones
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.priorities.exists(priority, has(priority.gpu))) ? (has(self.priorityDefaults)
+                && has(self.priorityDefaults.location) && has(self.priorityDefaults.location.zones))
+                || self.priorities.all(priority, has(priority.location) && has(priority.location.zones))
+                : true'
           status:
             description: Status of the ComputeClass.
             properties:
