@@ -1201,6 +1201,15 @@ type Location struct {
 	// +kubebuilder:validation:MinItems=1
 	// +optional
 	Zones []string `json:"zones,omitempty" protobuf:"bytes,1,opt,name=zones"`
+
+	// LocationPolicy specifies the strategy for selecting zones when scaling up a node
+	// pool managed by this Compute Class. This setting controls the distribution of new
+	// nodes across zones in the node pool's region and corresponds to the node pool
+	// setting of the same name.
+	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
+	// +optional
+	// +kubebuilder:validation:Enum=ANY;BALANCED
+	LocationPolicy *string `json:"locationPolicy,omitempty" protobuf:"bytes,2,opt,name=locationPolicy"`
 }
 
 // PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
