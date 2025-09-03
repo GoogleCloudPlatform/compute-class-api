@@ -297,6 +297,19 @@ type NodePoolConfig struct {
 	// +kubebuilder:validation:MaxItems=5
 	// +optional
 	ResourceManagerTags []Tags `json:"resourceManagerTags,omitempty" protobuf:"bytes,10,opt,name=resourceManagerTags"`
+
+	// Gvnic contains Google Virtual NIC settings.
+	// +optional
+	Gvnic *Gvnic `json:"gvnic,omitempty" protobuf:"bytes,11,opt,name=gvnic"`
+}
+
+// Gvnic stores Google Virtual NIC settings.
+type Gvnic struct {
+	// Enabled indicates whether gVNIC is enabled on the node pool.
+	//
+	// +kubebuilder:validation:Required
+	// +kubebuilder:default=false
+	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
 }
 
 // ImageStreaming stores container image streaming settings. It is equivalent to `GcfsConfig` in GKE.
