@@ -614,6 +614,11 @@ func (in *Location) DeepCopyInto(out *Location) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.LocationPolicy != nil {
+		in, out := &in.LocationPolicy, &out.LocationPolicy
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
