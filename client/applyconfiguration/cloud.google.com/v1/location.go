@@ -21,7 +21,8 @@ package v1
 // LocationApplyConfiguration represents an declarative configuration of the Location type for use
 // with apply.
 type LocationApplyConfiguration struct {
-	Zones []string `json:"zones,omitempty"`
+	Zones          []string `json:"zones,omitempty"`
+	LocationPolicy *string  `json:"locationPolicy,omitempty"`
 }
 
 // LocationApplyConfiguration constructs an declarative configuration of the Location type for use with
@@ -37,5 +38,13 @@ func (b *LocationApplyConfiguration) WithZones(values ...string) *LocationApplyC
 	for i := range values {
 		b.Zones = append(b.Zones, values[i])
 	}
+	return b
+}
+
+// WithLocationPolicy sets the LocationPolicy field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the LocationPolicy field is set to the value of the last call.
+func (b *LocationApplyConfiguration) WithLocationPolicy(value string) *LocationApplyConfiguration {
+	b.LocationPolicy = &value
 	return b
 }

@@ -393,6 +393,17 @@ spec:
                     location:
                       description: Location describes CCC zonal preferences config.
                       properties:
+                        locationPolicy:
+                          description: |-
+                            LocationPolicy specifies the strategy for selecting zones when scaling up a node
+                            pool managed by this Compute Class. This setting controls the distribution of new
+                            nodes across zones in the node pool's region and corresponds to the node pool
+                            setting of the same name.
+                            More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
+                          enum:
+                          - ANY
+                          - BALANCED
+                          type: string
                         zones:
                           description: Zones lists zones considered for node autoprovisioning.
                           items:
@@ -1357,6 +1368,17 @@ spec:
                   location:
                     description: Location describes CCC zonal preferences config.
                     properties:
+                      locationPolicy:
+                        description: |-
+                          LocationPolicy specifies the strategy for selecting zones when scaling up a node
+                          pool managed by this Compute Class. This setting controls the distribution of new
+                          nodes across zones in the node pool's region and corresponds to the node pool
+                          setting of the same name.
+                          More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
+                        enum:
+                        - ANY
+                        - BALANCED
+                        type: string
                       zones:
                         description: Zones lists zones considered for node autoprovisioning.
                         items:
