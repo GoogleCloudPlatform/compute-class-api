@@ -183,6 +183,17 @@ spec:
                     - SEV_SNP
                     - TDX
                     type: string
+                  gvnic:
+                    description: Gvnic contains Google Virtual NIC settings.
+                    properties:
+                      enabled:
+                        default: false
+                        description: Enabled indicates whether gVNIC is enabled on
+                          the node pool.
+                        type: boolean
+                    required:
+                    - enabled
+                    type: object
                   imageStreaming:
                     description: ImageStreaming contains image streaming settings.
                     properties:

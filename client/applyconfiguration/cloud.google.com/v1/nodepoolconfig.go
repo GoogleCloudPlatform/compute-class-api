@@ -31,6 +31,7 @@ type NodePoolConfigApplyConfiguration struct {
 	AutoUpgrade          *bool                             `json:"autoUpgrade,omitempty"`
 	ImageStreaming       *ImageStreamingApplyConfiguration `json:"imageStreaming,omitempty"`
 	ResourceManagerTags  []TagsApplyConfiguration          `json:"resourceManagerTags,omitempty"`
+	Gvnic                *GvnicApplyConfiguration          `json:"gvnic,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -132,5 +133,13 @@ func (b *NodePoolConfigApplyConfiguration) WithResourceManagerTags(values ...*Ta
 		}
 		b.ResourceManagerTags = append(b.ResourceManagerTags, *values[i])
 	}
+	return b
+}
+
+// WithGvnic sets the Gvnic field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Gvnic field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithGvnic(value *GvnicApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.Gvnic = value
 	return b
 }
