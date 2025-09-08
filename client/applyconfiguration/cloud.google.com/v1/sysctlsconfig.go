@@ -57,10 +57,6 @@ type SysctlsConfigApplyConfiguration struct {
 	Vm_dirty_writeback_centisecs                       *int64  `json:"vm.dirty_writeback_centisecs,omitempty"`
 	Fs_file_max                                        *int64  `json:"fs.file-max,omitempty"`
 	Fs_aio_max_nr                                      *int64  `json:"fs.aio-max-nr,omitempty"`
-	Net_ipv4_tcp_max_orphans                           *int64  `json:"net.ipv4.tcp_max_orphans,omitempty"`
-	Vm_swappiness                                      *int64  `json:"vm.swappiness,omitempty"`
-	Vm_watermark_scale_factor                          *int64  `json:"vm.watermark_scale_factor,omitempty"`
-	Vm_min_free_kbytes                                 *int64  `json:"vm.min_free_kbytes,omitempty"`
 }
 
 // SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
@@ -354,37 +350,5 @@ func (b *SysctlsConfigApplyConfiguration) WithFs_file_max(value int64) *SysctlsC
 // If called multiple times, the Fs_aio_max_nr field is set to the value of the last call.
 func (b *SysctlsConfigApplyConfiguration) WithFs_aio_max_nr(value int64) *SysctlsConfigApplyConfiguration {
 	b.Fs_aio_max_nr = &value
-	return b
-}
-
-// WithNet_ipv4_tcp_max_orphans sets the Net_ipv4_tcp_max_orphans field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Net_ipv4_tcp_max_orphans field is set to the value of the last call.
-func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_max_orphans(value int64) *SysctlsConfigApplyConfiguration {
-	b.Net_ipv4_tcp_max_orphans = &value
-	return b
-}
-
-// WithVm_swappiness sets the Vm_swappiness field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Vm_swappiness field is set to the value of the last call.
-func (b *SysctlsConfigApplyConfiguration) WithVm_swappiness(value int64) *SysctlsConfigApplyConfiguration {
-	b.Vm_swappiness = &value
-	return b
-}
-
-// WithVm_watermark_scale_factor sets the Vm_watermark_scale_factor field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Vm_watermark_scale_factor field is set to the value of the last call.
-func (b *SysctlsConfigApplyConfiguration) WithVm_watermark_scale_factor(value int64) *SysctlsConfigApplyConfiguration {
-	b.Vm_watermark_scale_factor = &value
-	return b
-}
-
-// WithVm_min_free_kbytes sets the Vm_min_free_kbytes field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Vm_min_free_kbytes field is set to the value of the last call.
-func (b *SysctlsConfigApplyConfiguration) WithVm_min_free_kbytes(value int64) *SysctlsConfigApplyConfiguration {
-	b.Vm_min_free_kbytes = &value
 	return b
 }

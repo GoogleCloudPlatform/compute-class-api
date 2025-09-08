@@ -128,20 +128,6 @@ spec:
                   NodePoolAutoCreation describes the auto provisioning settings for a given
                   ComputeClass.
                 properties:
-                  dynamicBootDiskSize:
-                    description: |-
-                      DynamicBootDiskSize if set to true specifies that boot disk size value for managed node pools will be selected
-                      by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.Storage.BootDiskSize value specified.
-                      If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
-                      If set to false cluster wide static value from AutoprovisioningNodePoolDefaults is used.
-                    type: boolean
-                  dynamicMaxPodsPerNode:
-                    description: |-
-                      DynamicMaxPodsPerNode if set to true specifies that max pods per node value for managed node pools will be selected
-                      by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.MaxPodsPerNode value specified.
-                      If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
-                      If set to false cluster wide static value for max pods per node is used.
-                    type: boolean
                   enabled:
                     default: false
                     description: Enabled indicates whether NodePoolAutoCreation is
@@ -183,27 +169,6 @@ spec:
                     - SEV_SNP
                     - TDX
                     type: string
-                  gvnic:
-                    description: Gvnic contains Google Virtual NIC settings.
-                    properties:
-                      enabled:
-                        default: false
-                        description: Enabled indicates whether gVNIC is enabled on
-                          the node pool.
-                        type: boolean
-                    required:
-                    - enabled
-                    type: object
-                  imageStreaming:
-                    description: ImageStreaming contains image streaming settings.
-                    properties:
-                      enabled:
-                        default: false
-                        description: Enabled enables container image` streaming.
-                        type: boolean
-                    required:
-                    - enabled
-                    type: object
                   imageType:
                     description: Image type used by nodes in the node pool.
                     enum:
@@ -235,26 +200,6 @@ spec:
                       rule: self.all(key, !key.contains('gke.io'))
                     - message: Node labels cannot contain reserved `k8s.io` substring.
                       rule: self.all(key, !key.contains('k8s.io'))
-                  resourceManagerTags:
-                    description: |-
-                      ResourceManagerTags defines what existing GCE resource manager tag key/value pairs
-                      with purpose GCE_FIREWALL to attach to all node pools.
-                      Referenced Tags must be created beforehand via Resource Manager API.
-                    items:
-                      description: |-
-                        Tags define the key/value of resource manager tags.
-                        Tags must be in one of the following formats ([KEY]=[VALUE])
-                        1. tagKeys/{tag_key_id}=tagValues/{tag_value_id}
-                        2. {org_id}/{tag_key_name}={tag_value_name}
-                        3. {project_id}/{tag_key_name}={tag_value_name}
-                      properties:
-                        key:
-                          type: string
-                        value:
-                          type: string
-                      type: object
-                    maxItems: 5
-                    type: array
                   serviceAccount:
                     description: ServiceAccount used by the node pool.
                     type: string
@@ -392,10 +337,6 @@ spec:
                           - default
                           - latest
                           type: string
-                        topology:
-                          description: The topology defines the physical arrangement
-                            of GPUs chips within a slice.
-                          type: string
                         type:
                           description: Type describes preferred GPU accelerator type
                             for a node.
@@ -404,17 +345,6 @@ spec:
                     location:
                       description: Location describes CCC zonal preferences config.
                       properties:
-                        locationPolicy:
-                          description: |-
-                            LocationPolicy specifies the strategy for selecting zones when scaling up a node
-                            pool managed by this Compute Class. This setting controls the distribution of new
-                            nodes across zones in the node pool's region and corresponds to the node pool
-                            setting of the same name.
-                            More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
-                          enum:
-                          - ANY
-                          - BALANCED
-                          type: string
                         zones:
                           description: Zones lists zones considered for node autoprovisioning.
                           items:
@@ -449,58 +379,11 @@ spec:
                         of a node.
                       minimum: 0
                       type: integer
-                    minCpuPlatform:
-                      description: MinCpuPlatform defines the minimum CPU platform
-                        for a node.
-                      enum:
-                      - Intel Sandy Bridge
-                      - Intel Ivy Bridge
-                      - Intel Haswell
-                      - Intel Broadwell
-                      - Intel Skylake
-                      - Intel Cascade Lake
-                      - Intel Ice Lake
-                      - Intel Sapphire Rapids
-                      - Intel Emerald Rapids
-                      - Intel Granite Rapids
-                      - AMD Rome
-                      - AMD Milan
-                      - AMD Genoa
-                      - AMD Turin
-                      - Ampere Altra
-                      - Google Axion
-                      - Nvidia Grace
-                      type: string
                     minMemoryGb:
                       description: MinMemoryGb describes a minimum GBs of memory of
                         a node.
                       minimum: 0
                       type: integer
-                    nodeLabels:
-                      additionalProperties:
-                        type: string
-                      description: |-
-                        NodeLabels is used to add user defined Kubernetes labels to all nodes in the new node pool.
-                        These labels are applied to the Kubernetes API node object and can be used in nodeSelectors for pod scheduling.
-                        Note: Node labels are distinct from GKE labels.
-                        More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
-                      maxProperties: 20
-                      type: object
-                      x-kubernetes-validations:
-                      - message: Node labels must begin with a letter or number, and
-                          may contain letters, numbers, hyphens, dots, and underscores,
-                          up to 63 characters each.
-                        rule: self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))
-                      - message: Node labels cannot contain reserved `cloud.google.com`
-                          substring.
-                        rule: self.all(key, !key.contains('cloud.google.com'))
-                      - message: Node labels cannot contain reserved `kubernetes.io`
-                          substring.
-                        rule: self.all(key, !key.contains('kubernetes.io'))
-                      - message: Node labels cannot contain reserved `gke.io` substring.
-                        rule: self.all(key, !key.contains('gke.io'))
-                      - message: Node labels cannot contain reserved `k8s.io` substring.
-                        rule: self.all(key, !key.contains('k8s.io'))
                     nodeSystemConfig:
                       description: NodeSystemConfig defines node system config for
                         a node.
@@ -556,155 +439,6 @@ spec:
                               - none
                               - static
                               type: string
-                            evictionMaxPodGracePeriodSeconds:
-                              description: |-
-                                EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
-                                (in seconds) to use when terminating pods in response to a soft eviction
-                                threshold being met.
-                              format: int64
-                              maximum: 300
-                              minimum: 0
-                              type: integer
-                            evictionMinimumReclaim:
-                              description: EvictionMinimumReclaim defines minimum
-                                reclaims.
-                              properties:
-                                imagefsAvailable:
-                                  description: |-
-                                    ImagefsAvailable is the minimum reclaim for imagefs.available.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                imagefsInodesFree:
-                                  description: |-
-                                    ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                memoryAvailable:
-                                  description: |-
-                                    MemoryAvailable is the minimum reclaim for memory.available.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                nodefsAvailable:
-                                  description: |-
-                                    NodefsAvailable is the minimum reclaim for nodefs.available.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                nodefsInodesFree:
-                                  description: |-
-                                    NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                pidAvailable:
-                                  description: |-
-                                    PidAvailable is the minimum reclaim for pid.available.
-                                    The value must be a percentage, e.g., "5%".
-                                    The value must be positive and less than 10%.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                              type: object
-                            evictionSoft:
-                              description: EvictionSoft defines soft eviction thresholds.
-                              properties:
-                                imagefsAvailable:
-                                  description: |-
-                                    ImagefsAvailable is the soft eviction threshold for imagefs.available.
-                                    The value must be a percentage. Eg. "10%".
-                                    The value must be between 15% and 50% inclusive.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                imagefsInodesFree:
-                                  description: |-
-                                    ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
-                                    The value must be a percentage. Eg. "5%".
-                                    The value must be between 5% and 50% inclusive.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                memoryAvailable:
-                                  description: |-
-                                    MemoryAvailable is the soft eviction threshold for memory.available.
-                                    The value must be a quantity, e.g., "100Mi".
-                                    The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
-                                  pattern: ^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$
-                                  type: string
-                                nodefsAvailable:
-                                  description: |-
-                                    NodefsAvailable is the soft eviction threshold for nodefs.available.
-                                    The value must be a percentage, e.g., "20%".
-                                    The value must be between 10% and 50% inclusive.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                nodefsInodesFree:
-                                  description: |-
-                                    NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
-                                    The value must be a percentage. Eg. "5%".
-                                    The value must be between 5% and 50% inclusive.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                                pidAvailable:
-                                  description: |-
-                                    PidAvailable is the soft eviction threshold for pid.available.
-                                    The value must be a percentage. Eg. "10%".
-                                    The value must be between 10% and 50% inclusive.
-                                  pattern: ^[0-9]+(\.[0-9]+)?%$
-                                  type: string
-                              type: object
-                            evictionSoftGracePeriod:
-                              description: EvictionSoftGracePeriod defines grace periods
-                                for soft eviction thresholds.
-                              properties:
-                                imagefsAvailable:
-                                  description: |-
-                                    ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                                imagefsInodesFree:
-                                  description: |-
-                                    ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                                memoryAvailable:
-                                  description: |-
-                                    MemoryAvailable is the grace period for the memory.available soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                                nodefsAvailable:
-                                  description: |-
-                                    NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                                nodefsInodesFree:
-                                  description: |-
-                                    NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                                pidAvailable:
-                                  description: |-
-                                    PidAvailable is the grace period for the pid.available soft eviction threshold.
-                                    The value must be a duration string. Eg. "30s", "1m30s".
-                                    The value must be positive and less than '5m'.
-                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                  type: string
-                              type: object
                             imageGcHighThresholdPercent:
                               description: |-
                                 This setting sets the percent of disk usage after which image garbage collection is always
@@ -740,14 +474,6 @@ spec:
                                 Default is "2m" if unspecified.
                               pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
                               type: string
-                            maxParallelImagePulls:
-                              description: This setting sets the maximum number of
-                                image pulls in parallel. Default is 2 or 3 depending
-                                on boot disk type.
-                              format: int64
-                              maximum: 5
-                              minimum: 2
-                              type: integer
                             podPidsLimit:
                               description: This setting sets the maximum number of
                                 process IDs (PIDs) that each Pod can use.
@@ -755,11 +481,6 @@ spec:
                               maximum: 4194304
                               minimum: 1024
                               type: integer
-                            singleProcessOOMKill:
-                              description: |-
-                                This setting sets whether to enable single process OOM killer.
-                                If set to true, the processes in a container will be OOM killed individually instead of as a group.
-                              type: boolean
                           type: object
                           x-kubernetes-validations:
                           - message: ImageGcLowThresholdPercent must be lower than
@@ -924,11 +645,6 @@ spec:
                                   maximum: 2147483647
                                   minimum: 4608
                                   type: integer
-                                net.ipv4.tcp_max_orphans:
-                                  format: int64
-                                  maximum: 262144
-                                  minimum: 16384
-                                  type: integer
                                 net.ipv4.tcp_rmem:
                                   description: 'Minimal size of receive buffer used
                                     by UDP sockets in moderation. Each UDP socket
@@ -1043,11 +759,6 @@ spec:
                                   maximum: 2147483647
                                   minimum: 65536
                                   type: integer
-                                vm.min_free_kbytes:
-                                  format: int64
-                                  maximum: 1048576
-                                  minimum: 67584
-                                  type: integer
                                 vm.overcommit_memory:
                                   description: |-
                                     Determines the kernel's memory overcommit handling strategy.
@@ -1069,11 +780,6 @@ spec:
                                   maximum: 100
                                   minimum: 0
                                   type: integer
-                                vm.swappiness:
-                                  format: int64
-                                  maximum: 200
-                                  minimum: 0
-                                  type: integer
                                 vm.vfs_cache_pressure:
                                   description: Adjusts the kernel's preference for
                                     reclaiming memory used for dentry (directory)
@@ -1082,42 +788,7 @@ spec:
                                   maximum: 100
                                   minimum: 0
                                   type: integer
-                                vm.watermark_scale_factor:
-                                  format: int64
-                                  maximum: 3000
-                                  minimum: 10
-                                  type: integer
                               type: object
-                            transparentHugepageDefrag:
-                              description: |-
-                                Defines the transparent hugepage defrag configuration on the node. Currently supported values:
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: An application requesting THP will stall on allocation failure and directly reclaim pages and compact memory in an effort to allocate a THP immediately.
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER: An application will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future. It is the responsibility of khugepaged to then install the THP pages later.
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: An application will never enter direct reclaim or compaction.
-                                * TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-                              enum:
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_DEFER
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_NEVER
-                              - TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED
-                              type: string
-                            transparentHugepageEnabled:
-                              description: |-
-                                Controls transparent hugepage support for anonymous memory. Currently supported values:
-                                * TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent hugepage is enabled system wide.
-                                * TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent hugepage is enabled inside MADV_HUGEPAGE regions. This is the default kernel configuration.
-                                * TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent hugepage is disabled.
-                                * TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-                              enum:
-                              - TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS
-                              - TRANSPARENT_HUGEPAGE_ENABLED_MADVISE
-                              - TRANSPARENT_HUGEPAGE_ENABLED_NEVER
-                              - TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED
-                              type: string
                           type: object
                       type: object
                     nodepools:
@@ -1278,53 +949,6 @@ spec:
                             type: object
                           type: array
                       type: object
-                    taints:
-                      description: |-
-                        Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
-                        These taints are applied to the Kubernetes API node object and can be used in tolerations for pod scheduling.
-                      items:
-                        description: |-
-                          TaintConfig applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling.
-                          Any workload that does not tolerate the taints specified in this object will not be scheduled to the node pool.
-                          More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-taints
-                        properties:
-                          effect:
-                            description: |-
-                              It defines the taint's effect on pods that does not have the necessary toleration.
-                              The following values are supported: NoSchedule, PreferNoSchedule, and NoExecute.
-                            enum:
-                            - NoSchedule
-                            - PreferNoSchedule
-                            - NoExecute
-                            type: string
-                          key:
-                            description: Node taint key. The key must begin with a
-                              letter or number, and may contain letters, numbers,
-                              hyphens, dots, and underscores up to 253 characters.
-                            maxLength: 253
-                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
-                            type: string
-                            x-kubernetes-validations:
-                            - message: Taint keys cannot contain reserved `cloud.google.com`
-                                substring.
-                              rule: '!self.contains(''cloud.google.com'')'
-                            - message: Taint keys cannot contain reserved `kubernetes.io`
-                                substring.
-                              rule: '!self.contains(''kubernetes.io'')'
-                            - message: Taint keys cannot contain reserved `gke.io`
-                                substring.
-                              rule: '!self.contains(''gke.io'')'
-                            - message: Taint keys cannot contain reserved `k8s.io`
-                                substring.
-                              rule: '!self.contains(''k8s.io'')'
-                          value:
-                            description: The value that matches the specified taint
-                              key.
-                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
-                            type: string
-                        type: object
-                      maxItems: 20
-                      type: array
                     tpu:
                       description: Tpu defines preferred TPU config for a node.
                       properties:
@@ -1379,17 +1003,6 @@ spec:
                   location:
                     description: Location describes CCC zonal preferences config.
                     properties:
-                      locationPolicy:
-                        description: |-
-                          LocationPolicy specifies the strategy for selecting zones when scaling up a node
-                          pool managed by this Compute Class. This setting controls the distribution of new
-                          nodes across zones in the node pool's region and corresponds to the node pool
-                          setting of the same name.
-                          More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
-                        enum:
-                        - ANY
-                        - BALANCED
-                        type: string
                       zones:
                         description: Zones lists zones considered for node autoprovisioning.
                         items:
@@ -1451,154 +1064,6 @@ spec:
                             - none
                             - static
                             type: string
-                          evictionMaxPodGracePeriodSeconds:
-                            description: |-
-                              EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
-                              (in seconds) to use when terminating pods in response to a soft eviction
-                              threshold being met.
-                            format: int64
-                            maximum: 300
-                            minimum: 0
-                            type: integer
-                          evictionMinimumReclaim:
-                            description: EvictionMinimumReclaim defines minimum reclaims.
-                            properties:
-                              imagefsAvailable:
-                                description: |-
-                                  ImagefsAvailable is the minimum reclaim for imagefs.available.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              imagefsInodesFree:
-                                description: |-
-                                  ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              memoryAvailable:
-                                description: |-
-                                  MemoryAvailable is the minimum reclaim for memory.available.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              nodefsAvailable:
-                                description: |-
-                                  NodefsAvailable is the minimum reclaim for nodefs.available.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              nodefsInodesFree:
-                                description: |-
-                                  NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              pidAvailable:
-                                description: |-
-                                  PidAvailable is the minimum reclaim for pid.available.
-                                  The value must be a percentage, e.g., "5%".
-                                  The value must be positive and less than 10%.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                            type: object
-                          evictionSoft:
-                            description: EvictionSoft defines soft eviction thresholds.
-                            properties:
-                              imagefsAvailable:
-                                description: |-
-                                  ImagefsAvailable is the soft eviction threshold for imagefs.available.
-                                  The value must be a percentage. Eg. "10%".
-                                  The value must be between 15% and 50% inclusive.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              imagefsInodesFree:
-                                description: |-
-                                  ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
-                                  The value must be a percentage. Eg. "5%".
-                                  The value must be between 5% and 50% inclusive.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              memoryAvailable:
-                                description: |-
-                                  MemoryAvailable is the soft eviction threshold for memory.available.
-                                  The value must be a quantity, e.g., "100Mi".
-                                  The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
-                                pattern: ^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$
-                                type: string
-                              nodefsAvailable:
-                                description: |-
-                                  NodefsAvailable is the soft eviction threshold for nodefs.available.
-                                  The value must be a percentage, e.g., "20%".
-                                  The value must be between 10% and 50% inclusive.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              nodefsInodesFree:
-                                description: |-
-                                  NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
-                                  The value must be a percentage. Eg. "5%".
-                                  The value must be between 5% and 50% inclusive.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                              pidAvailable:
-                                description: |-
-                                  PidAvailable is the soft eviction threshold for pid.available.
-                                  The value must be a percentage. Eg. "10%".
-                                  The value must be between 10% and 50% inclusive.
-                                pattern: ^[0-9]+(\.[0-9]+)?%$
-                                type: string
-                            type: object
-                          evictionSoftGracePeriod:
-                            description: EvictionSoftGracePeriod defines grace periods
-                              for soft eviction thresholds.
-                            properties:
-                              imagefsAvailable:
-                                description: |-
-                                  ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                              imagefsInodesFree:
-                                description: |-
-                                  ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                              memoryAvailable:
-                                description: |-
-                                  MemoryAvailable is the grace period for the memory.available soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                              nodefsAvailable:
-                                description: |-
-                                  NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                              nodefsInodesFree:
-                                description: |-
-                                  NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                              pidAvailable:
-                                description: |-
-                                  PidAvailable is the grace period for the pid.available soft eviction threshold.
-                                  The value must be a duration string. Eg. "30s", "1m30s".
-                                  The value must be positive and less than '5m'.
-                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
-                                type: string
-                            type: object
                           imageGcHighThresholdPercent:
                             description: |-
                               This setting sets the percent of disk usage after which image garbage collection is always
@@ -1634,14 +1099,6 @@ spec:
                               Default is "2m" if unspecified.
                             pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
                             type: string
-                          maxParallelImagePulls:
-                            description: This setting sets the maximum number of image
-                              pulls in parallel. Default is 2 or 3 depending on boot
-                              disk type.
-                            format: int64
-                            maximum: 5
-                            minimum: 2
-                            type: integer
                           podPidsLimit:
                             description: This setting sets the maximum number of process
                               IDs (PIDs) that each Pod can use.
@@ -1649,11 +1106,6 @@ spec:
                             maximum: 4194304
                             minimum: 1024
                             type: integer
-                          singleProcessOOMKill:
-                            description: |-
-                              This setting sets whether to enable single process OOM killer.
-                              If set to true, the processes in a container will be OOM killed individually instead of as a group.
-                            type: boolean
                         type: object
                         x-kubernetes-validations:
                         - message: ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent
@@ -1817,11 +1269,6 @@ spec:
                                 maximum: 2147483647
                                 minimum: 4608
                                 type: integer
-                              net.ipv4.tcp_max_orphans:
-                                format: int64
-                                maximum: 262144
-                                minimum: 16384
-                                type: integer
                               net.ipv4.tcp_rmem:
                                 description: 'Minimal size of receive buffer used
                                   by UDP sockets in moderation. Each UDP socket is
@@ -1934,11 +1381,6 @@ spec:
                                 maximum: 2147483647
                                 minimum: 65536
                                 type: integer
-                              vm.min_free_kbytes:
-                                format: int64
-                                maximum: 1048576
-                                minimum: 67584
-                                type: integer
                               vm.overcommit_memory:
                                 description: |-
                                   Determines the kernel's memory overcommit handling strategy.
@@ -1960,11 +1402,6 @@ spec:
                                 maximum: 100
                                 minimum: 0
                                 type: integer
-                              vm.swappiness:
-                                format: int64
-                                maximum: 200
-                                minimum: 0
-                                type: integer
                               vm.vfs_cache_pressure:
                                 description: Adjusts the kernel's preference for reclaiming
                                   memory used for dentry (directory) and inode caches.
@@ -1972,42 +1409,7 @@ spec:
                                 maximum: 100
                                 minimum: 0
                                 type: integer
-                              vm.watermark_scale_factor:
-                                format: int64
-                                maximum: 3000
-                                minimum: 10
-                                type: integer
                             type: object
-                          transparentHugepageDefrag:
-                            description: |-
-                              Defines the transparent hugepage defrag configuration on the node. Currently supported values:
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: An application requesting THP will stall on allocation failure and directly reclaim pages and compact memory in an effort to allocate a THP immediately.
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER: An application will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future. It is the responsibility of khugepaged to then install the THP pages later.
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: An application will never enter direct reclaim or compaction.
-                              * TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-                            enum:
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_DEFER
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_NEVER
-                            - TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED
-                            type: string
-                          transparentHugepageEnabled:
-                            description: |-
-                              Controls transparent hugepage support for anonymous memory. Currently supported values:
-                              * TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent hugepage is enabled system wide.
-                              * TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent hugepage is enabled inside MADV_HUGEPAGE regions. This is the default kernel configuration.
-                              * TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent hugepage is disabled.
-                              * TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-                            enum:
-                            - TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS
-                            - TRANSPARENT_HUGEPAGE_ENABLED_MADVISE
-                            - TRANSPARENT_HUGEPAGE_ENABLED_NEVER
-                            - TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED
-                            type: string
                         type: object
                     type: object
                 type: object

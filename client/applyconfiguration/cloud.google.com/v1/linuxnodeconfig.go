@@ -21,10 +21,8 @@ package v1
 // LinuxNodeConfigApplyConfiguration represents an declarative configuration of the LinuxNodeConfig type for use
 // with apply.
 type LinuxNodeConfigApplyConfiguration struct {
-	Sysctls                    *SysctlsConfigApplyConfiguration   `json:"sysctls,omitempty"`
-	Hugepages                  *HugepagesConfigApplyConfiguration `json:"hugepageConfig,omitempty"`
-	TransparentHugepageEnabled *string                            `json:"transparentHugepageEnabled,omitempty"`
-	TransparentHugepageDefrag  *string                            `json:"transparentHugepageDefrag,omitempty"`
+	Sysctls   *SysctlsConfigApplyConfiguration   `json:"sysctls,omitempty"`
+	Hugepages *HugepagesConfigApplyConfiguration `json:"hugepageConfig,omitempty"`
 }
 
 // LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
@@ -46,21 +44,5 @@ func (b *LinuxNodeConfigApplyConfiguration) WithSysctls(value *SysctlsConfigAppl
 // If called multiple times, the Hugepages field is set to the value of the last call.
 func (b *LinuxNodeConfigApplyConfiguration) WithHugepages(value *HugepagesConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
 	b.Hugepages = value
-	return b
-}
-
-// WithTransparentHugepageEnabled sets the TransparentHugepageEnabled field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the TransparentHugepageEnabled field is set to the value of the last call.
-func (b *LinuxNodeConfigApplyConfiguration) WithTransparentHugepageEnabled(value string) *LinuxNodeConfigApplyConfiguration {
-	b.TransparentHugepageEnabled = &value
-	return b
-}
-
-// WithTransparentHugepageDefrag sets the TransparentHugepageDefrag field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the TransparentHugepageDefrag field is set to the value of the last call.
-func (b *LinuxNodeConfigApplyConfiguration) WithTransparentHugepageDefrag(value string) *LinuxNodeConfigApplyConfiguration {
-	b.TransparentHugepageDefrag = &value
 	return b
 }

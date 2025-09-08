@@ -41,22 +41,12 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
-		return &cloudgooglecomv1.EvictionMinimumReclaimApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("EvictionSoft"):
-		return &cloudgooglecomv1.EvictionSoftApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("EvictionSoftGracePeriod"):
-		return &cloudgooglecomv1.EvictionSoftGracePeriodApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("FlexStart"):
 		return &cloudgooglecomv1.FlexStartApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GPU"):
 		return &cloudgooglecomv1.GPUApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("Gvnic"):
-		return &cloudgooglecomv1.GvnicApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("HugepagesConfig"):
 		return &cloudgooglecomv1.HugepagesConfigApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("ImageStreaming"):
-		return &cloudgooglecomv1.ImageStreamingApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("KubeletConfig"):
 		return &cloudgooglecomv1.KubeletConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("LinuxNodeConfig"):
@@ -93,8 +83,6 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.StorageApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SysctlsConfig"):
 		return &cloudgooglecomv1.SysctlsConfigApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("Tags"):
-		return &cloudgooglecomv1.TagsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("TaintConfig"):
 		return &cloudgooglecomv1.TaintConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("TPU"):

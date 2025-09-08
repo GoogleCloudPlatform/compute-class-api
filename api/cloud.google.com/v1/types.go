@@ -184,22 +184,6 @@ type NodePoolAutoCreation struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:default=false
 	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
-
-	// DynamicMaxPodsPerNode if set to true specifies that max pods per node value for managed node pools will be selected
-	// by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.MaxPodsPerNode value specified.
-	// If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
-	// If set to false cluster wide static value for max pods per node is used.
-	//
-	// +optional
-	DynamicMaxPodsPerNode *bool `json:"dynamicMaxPodsPerNode,omitempty" protobuf:"bytes,2,opt,name=dynamicMaxPodsPerNode"`
-
-	// DynamicBootDiskSize if set to true specifies that boot disk size value for managed node pools will be selected
-	// by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.Storage.BootDiskSize value specified.
-	// If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
-	// If set to false cluster wide static value from AutoprovisioningNodePoolDefaults is used.
-	//
-	// +optional
-	DynamicBootDiskSize *bool `json:"dynamicBootDiskSize,omitempty" protobuf:"bytes,3,opt,name=dynamicBootDiskSize"`
 }
 
 // Autopilot defines describes the autopilot settings for a given ComputeClass.
@@ -285,41 +269,6 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	AutoUpgrade *bool `json:"autoUpgrade,omitempty" protobuf:"bytes,8,opt,name=autoUpgrade"`
-
-	// ImageStreaming contains image streaming settings.
-	//
-	// +optional
-	ImageStreaming *ImageStreaming `json:"imageStreaming,omitempty" protobuf:"bytes,9,opt,name=imageStreaming"`
-
-	// ResourceManagerTags defines what existing GCE resource manager tag key/value pairs
-	// with purpose GCE_FIREWALL to attach to all node pools.
-	// Referenced Tags must be created beforehand via Resource Manager API.
-	// +kubebuilder:validation:MaxItems=5
-	// +optional
-	ResourceManagerTags []Tags `json:"resourceManagerTags,omitempty" protobuf:"bytes,10,opt,name=resourceManagerTags"`
-
-	// Gvnic contains Google Virtual NIC settings.
-	// +optional
-	Gvnic *Gvnic `json:"gvnic,omitempty" protobuf:"bytes,11,opt,name=gvnic"`
-}
-
-// Gvnic stores Google Virtual NIC settings.
-type Gvnic struct {
-	// Enabled indicates whether gVNIC is enabled on the node pool.
-	//
-	// +kubebuilder:validation:Required
-	// +kubebuilder:default=false
-	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
-}
-
-// ImageStreaming stores container image streaming settings. It is equivalent to `GcfsConfig` in GKE.
-// https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/GcfsConfig
-type ImageStreaming struct {
-	// Enabled enables container image` streaming.
-	//
-	// +kubebuilder:validation:Required
-	// +kubebuilder:default=false
-	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
 }
 
 // NodePoolGroup defines required node pool configurations that are shared between a group of node pools. It is
@@ -564,33 +513,6 @@ type Priority struct {
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=86400
 	CapacityCheckWaitTimeSeconds *int `json:"capacityCheckWaitTimeSeconds,omitempty" protobuf:"bytes,18,opt,name=capacityCheckWaitTimeSeconds"`
-
-	// MinCpuPlatform defines the minimum CPU platform for a node.
-	//
-	// +optional
-	// +kubebuilder:validation:Enum={Intel Sandy Bridge,Intel Ivy Bridge,Intel Haswell,Intel Broadwell,Intel Skylake,Intel Cascade Lake,Intel Ice Lake,Intel Sapphire Rapids,Intel Emerald Rapids,Intel Granite Rapids,AMD Rome,AMD Milan,AMD Genoa,AMD Turin,Ampere Altra,Google Axion,Nvidia Grace}
-	MinCpuPlatform *string `json:"minCpuPlatform,omitempty" protobuf:"bytes,19,opt,name=minCpuPlatform"`
-
-	// NodeLabels is used to add user defined Kubernetes labels to all nodes in the new node pool.
-	// These labels are applied to the Kubernetes API node object and can be used in nodeSelectors for pod scheduling.
-	// Note: Node labels are distinct from GKE labels.
-	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
-	//
-	// +optional
-	// +kubebuilder:validation:MaxProperties=20
-	// +kubebuilder:validation:XValidation:rule="self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))",message="Node labels must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters each."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('cloud.google.com'))",message="Node labels cannot contain reserved `cloud.google.com` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('kubernetes.io'))",message="Node labels cannot contain reserved `kubernetes.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('gke.io'))",message="Node labels cannot contain reserved `gke.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('k8s.io'))",message="Node labels cannot contain reserved `k8s.io` substring."
-	NodeLabels map[string]string `json:"nodeLabels,omitempty" protobuf:"bytes,20,opt,name=nodeLabels"`
-
-	// Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
-	// These taints are applied to the Kubernetes API node object and can be used in tolerations for pod scheduling.
-	//
-	// +optional
-	// +kubebuilder:validation:MaxItems=20
-	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
@@ -614,9 +536,6 @@ type GPU struct {
 	// +kubebuilder:default=default
 	// +optional
 	DriverVersion string `json:"driverVersion,omitempty" protobuf:"bytes,3,name=driverVersion"`
-	// The topology defines the physical arrangement of GPUs chips within a slice.
-	// +optional
-	Topology string `json:"topology,omitempty" protobuf:"bytes,4,name=topology"`
 }
 
 // TPU describes preference on given TPU config.
@@ -663,154 +582,6 @@ type NodeSystemConfig struct {
 type LinuxNodeConfig struct {
 	Sysctls   *SysctlsConfig   `json:"sysctls,omitempty" protobuf:"bytes,1,opt,name=sysctls"`
 	Hugepages *HugepagesConfig `json:"hugepageConfig,omitempty" protobuf:"bytes,2,opt,name=hugepageConfig"`
-	// Controls transparent hugepage support for anonymous memory. Currently supported values:
-	// * TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent hugepage is enabled system wide.
-	// * TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent hugepage is enabled inside MADV_HUGEPAGE regions. This is the default kernel configuration.
-	// * TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent hugepage is disabled.
-	// * TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-	//
-	// +optional
-	// +kubebuilder:validation:Enum=TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS;TRANSPARENT_HUGEPAGE_ENABLED_MADVISE;TRANSPARENT_HUGEPAGE_ENABLED_NEVER;TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED
-	TransparentHugepageEnabled *string `json:"transparentHugepageEnabled,omitempty" protobuf:"bytes,3,opt,name=transparentHugepageEnabled"`
-	// Defines the transparent hugepage defrag configuration on the node. Currently supported values:
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: An application requesting THP will stall on allocation failure and directly reclaim pages and compact memory in an effort to allocate a THP immediately.
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER: An application will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future. It is the responsibility of khugepaged to then install the THP pages later.
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: An application will never enter direct reclaim or compaction.
-	// * TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
-	//
-	// +optional
-	// +kubebuilder:validation:Enum=TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS;TRANSPARENT_HUGEPAGE_DEFRAG_DEFER;TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE;TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE;TRANSPARENT_HUGEPAGE_DEFRAG_NEVER;TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED
-	TransparentHugepageDefrag *string `json:"transparentHugepageDefrag,omitempty" protobuf:"bytes,4,opt,name=transparentHugepageDefrag"`
-}
-
-// EvictionSoft is a map of signal names to quantities that defines soft eviction thresholds.
-// A soft eviction threshold pairs with a grace period. The kubelet does not evict pods until the grace period is exceeded.
-// +kubebuilder:validation:Optional
-type EvictionSoft struct {
-	// MemoryAvailable is the soft eviction threshold for memory.available.
-	// The value must be a quantity, e.g., "100Mi".
-	// The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?(Ki|Mi|Gi)$`
-	// +optional
-	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
-
-	// NodefsAvailable is the soft eviction threshold for nodefs.available.
-	// The value must be a percentage, e.g., "20%".
-	// The value must be between 10% and 50% inclusive.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
-	// ImagefsAvailable is the soft eviction threshold for imagefs.available.
-	// The value must be a percentage. Eg. "10%".
-	// The value must be between 15% and 50% inclusive.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
-	// ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
-	// The value must be a percentage. Eg. "5%".
-	// The value must be between 5% and 50% inclusive.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
-	// NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
-	// The value must be a percentage. Eg. "5%".
-	// The value must be between 5% and 50% inclusive.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
-	// PidAvailable is the soft eviction threshold for pid.available.
-	// The value must be a percentage. Eg. "10%".
-	// The value must be between 10% and 50% inclusive.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
-}
-
-// EvictionSoftGracePeriod is a map of signal names to durations that defines grace periods for soft eviction thresholds.
-// Each soft eviction threshold must have a corresponding grace period.
-// +kubebuilder:validation:Optional
-type EvictionSoftGracePeriod struct {
-	// MemoryAvailable is the grace period for the memory.available soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
-	// NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
-	// ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
-	// ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
-	// NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
-	// PidAvailable is the grace period for the pid.available soft eviction threshold.
-	// The value must be a duration string. Eg. "30s", "1m30s".
-	// The value must be positive and less than '5m'.
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
-	// +optional
-	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
-}
-
-// EvictionMinimumReclaim is a map of signal names to quantities that defines minimum reclaims.
-// It describes the minimum amount of a given resource the kubelet will reclaim when performing a pod eviction.
-// By default, all values are 0 if unspecified.
-// +kubebuilder:validation:Optional
-type EvictionMinimumReclaim struct {
-	// MemoryAvailable is the minimum reclaim for memory.available.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	MemoryAvailable *string `json:"memoryAvailable,omitempty" protobuf:"bytes,1,opt,name=memoryAvailable"`
-	// NodefsAvailable is the minimum reclaim for nodefs.available.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	NodefsAvailable *string `json:"nodefsAvailable,omitempty" protobuf:"bytes,2,opt,name=nodefsAvailable"`
-	// ImagefsAvailable is the minimum reclaim for imagefs.available.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	ImagefsAvailable *string `json:"imagefsAvailable,omitempty" protobuf:"bytes,3,opt,name=imagefsAvailable"`
-	// ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty" protobuf:"bytes,4,opt,name=imagefsInodesFree"`
-	// NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty" protobuf:"bytes,5,opt,name=nodefsInodesFree"`
-	// PidAvailable is the minimum reclaim for pid.available.
-	// The value must be a percentage, e.g., "5%".
-	// The value must be positive and less than 10%.
-	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]+)?%$`
-	// +optional
-	PidAvailable *string `json:"pidAvailable,omitempty" protobuf:"bytes,6,opt,name=pidAvailable"`
 }
 
 // KubeletConfig defines kubelet config for a node.
@@ -902,37 +673,6 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:items:MaxLength=253
 	// +kubebuilder:validation:items:Pattern="^([a-z0-9]([-_a-z0-9]*[a-z0-9])?[./])*([a-z0-9][-_a-z0-9]*)?[a-z0-9*]$"
 	AllowedUnsafeSysctls []string `json:"allowedUnsafeSysctls,omitempty" protobuf:"bytes,11,opt,name=allowedUnsafeSysctls"`
-	// This setting sets the maximum number of image pulls in parallel. Default is 2 or 3 depending on boot disk type.
-	//
-	// +kubebuilder:validation:Minimum=2
-	// +kubebuilder:validation:Maximum=5
-	// +kubebuilder:validation:Optional
-	MaxParallelImagePulls *int64 `json:"maxParallelImagePulls,omitempty" protobuf:"bytes,12,opt,name=maxParallelImagePulls"`
-	// This setting sets whether to enable single process OOM killer.
-	// If set to true, the processes in a container will be OOM killed individually instead of as a group.
-	//
-	// +kubebuilder:validation:Optional
-	SingleProcessOOMKill *bool `json:"singleProcessOOMKill,omitempty" protobuf:"bytes,13,opt,name=singleProcessOOMKill"`
-	// EvictionSoft defines soft eviction thresholds.
-	//
-	// +kubebuilder:validation:Optional
-	EvictionSoft *EvictionSoft `json:"evictionSoft,omitempty" protobuf:"bytes,13,opt,name=evictionSoft"`
-	// EvictionSoftGracePeriod defines grace periods for soft eviction thresholds.
-	//
-	// +kubebuilder:validation:Optional
-	EvictionSoftGracePeriod *EvictionSoftGracePeriod `json:"evictionSoftGracePeriod,omitempty" protobuf:"bytes,14,opt,name=evictionSoftGracePeriod"`
-	// EvictionMinimumReclaim defines minimum reclaims.
-	//
-	// +kubebuilder:validation:Optional
-	EvictionMinimumReclaim *EvictionMinimumReclaim `json:"evictionMinimumReclaim,omitempty" protobuf:"bytes,15,opt,name=evictionMinimumReclaim"`
-	// EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
-	// (in seconds) to use when terminating pods in response to a soft eviction
-	// threshold being met.
-	//
-	// +kubebuilder:validation:Minimum=0
-	// +kubebuilder:validation:Maximum=300
-	// +kubebuilder:validation:Optional
-	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty" protobuf:"int,16,opt,name=evictionMaxPodGracePeriodSeconds"`
 }
 
 // SysctlsConfig defines sysctls config for a node.
@@ -1153,30 +893,6 @@ type SysctlsConfig struct {
 	// +kubebuilder:validation:Maximum=4194304
 	// +kubebuilder:validation:Optional
 	Fs_aio_max_nr *int64 `json:"fs.aio-max-nr,omitempty" protobuf:"bytes,36,opt,name=fs.aio-max-nr"`
-	// Maximal number of TCP sockets not attached to any user file handle.
-
-	// +kubebuilder:validation:Minimum=16384
-	// +kubebuilder:validation:Maximum=262144
-	// +kubebuilder:validation:Optional
-	Net_ipv4_tcp_max_orphans *int64 `json:"net.ipv4.tcp_max_orphans,omitempty" protobuf:"bytes,37,opt,name=net.ipv4.tcp_max_orphans"`
-	// Controls the tendency of the kernel to move processes out of physical memory and onto the swap disk.
-
-	// +kubebuilder:validation:Minimum=0
-	// +kubebuilder:validation:Maximum=200
-	// +kubebuilder:validation:Optional
-	Vm_swappiness *int64 `json:"vm.swappiness,omitempty" protobuf:"bytes,38,opt,name=vm.swappiness"`
-	// Controls the aggressiveness of kswapd. The flag defines the amount of memory left in a node before kswapd is woken up and how much memory needs to be freed before kswapd goes back to sleep.
-
-	// +kubebuilder:validation:Minimum=10
-	// +kubebuilder:validation:Maximum=3000
-	// +kubebuilder:validation:Optional
-	Vm_watermark_scale_factor *int64 `json:"vm.watermark_scale_factor,omitempty" protobuf:"bytes,39,opt,name=vm.watermark_scale_factor"`
-	// Minimum free memory before OOM.
-
-	// +kubebuilder:validation:Minimum=67584
-	// +kubebuilder:validation:Maximum=1048576
-	// +kubebuilder:validation:Optional
-	Vm_min_free_kbytes *int64 `json:"vm.min_free_kbytes,omitempty" protobuf:"bytes,40,opt,name=vm.min_free_kbytes"`
 }
 
 // HugepagesConfig defines hugepages config for a node.
@@ -1201,15 +917,6 @@ type Location struct {
 	// +kubebuilder:validation:MinItems=1
 	// +optional
 	Zones []string `json:"zones,omitempty" protobuf:"bytes,1,opt,name=zones"`
-
-	// LocationPolicy specifies the strategy for selecting zones when scaling up a node
-	// pool managed by this Compute Class. This setting controls the distribution of new
-	// nodes across zones in the node pool's region and corresponds to the node pool
-	// setting of the same name.
-	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
-	// +optional
-	// +kubebuilder:validation:Enum=ANY;BALANCED
-	LocationPolicy *string `json:"locationPolicy,omitempty" protobuf:"bytes,2,opt,name=locationPolicy"`
 }
 
 // PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
@@ -1249,19 +956,6 @@ type TaintConfig struct {
 	// +kubebuilder:validation:Enum=NoSchedule;PreferNoSchedule;NoExecute
 	// +kubebuilder:validation:Required
 	Effect string `json:"effect,omitempty" protobuf:"bytes,3,opt,name=effect"`
-}
-
-// Tags define the key/value of resource manager tags.
-// Tags must be in one of the following formats ([KEY]=[VALUE])
-// 1. tagKeys/{tag_key_id}=tagValues/{tag_value_id}
-// 2. {org_id}/{tag_key_name}={tag_value_name}
-// 3. {project_id}/{tag_key_name}={tag_value_name}
-type Tags struct {
-	// +kubebuilder:validation:Required
-	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
-
-	// +kubebuilder:validation:Required
-	Value string `json:"value,omitempty" protobuf:"bytes,2,opt,name=value"`
 }
 
 // ComputeClassStatus is the current status of the ComputeClass.

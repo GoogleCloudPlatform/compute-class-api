@@ -39,9 +39,6 @@ type PriorityApplyConfiguration struct {
 	Location                     *LocationApplyConfiguration         `json:"location,omitempty"`
 	Placement                    *PlacementApplyConfiguration        `json:"placement,omitempty"`
 	CapacityCheckWaitTimeSeconds *int                                `json:"capacityCheckWaitTimeSeconds,omitempty"`
-	MinCpuPlatform               *string                             `json:"minCpuPlatform,omitempty"`
-	NodeLabels                   map[string]string                   `json:"nodeLabels,omitempty"`
-	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -193,40 +190,5 @@ func (b *PriorityApplyConfiguration) WithPlacement(value *PlacementApplyConfigur
 // If called multiple times, the CapacityCheckWaitTimeSeconds field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithCapacityCheckWaitTimeSeconds(value int) *PriorityApplyConfiguration {
 	b.CapacityCheckWaitTimeSeconds = &value
-	return b
-}
-
-// WithMinCpuPlatform sets the MinCpuPlatform field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the MinCpuPlatform field is set to the value of the last call.
-func (b *PriorityApplyConfiguration) WithMinCpuPlatform(value string) *PriorityApplyConfiguration {
-	b.MinCpuPlatform = &value
-	return b
-}
-
-// WithNodeLabels puts the entries into the NodeLabels field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, the entries provided by each call will be put on the NodeLabels field,
-// overwriting an existing map entries in NodeLabels field with the same key.
-func (b *PriorityApplyConfiguration) WithNodeLabels(entries map[string]string) *PriorityApplyConfiguration {
-	if b.NodeLabels == nil && len(entries) > 0 {
-		b.NodeLabels = make(map[string]string, len(entries))
-	}
-	for k, v := range entries {
-		b.NodeLabels[k] = v
-	}
-	return b
-}
-
-// WithTaints adds the given value to the Taints field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the Taints field.
-func (b *PriorityApplyConfiguration) WithTaints(values ...*TaintConfigApplyConfiguration) *PriorityApplyConfiguration {
-	for i := range values {
-		if values[i] == nil {
-			panic("nil value passed to WithTaints")
-		}
-		b.Taints = append(b.Taints, *values[i])
-	}
 	return b
 }
