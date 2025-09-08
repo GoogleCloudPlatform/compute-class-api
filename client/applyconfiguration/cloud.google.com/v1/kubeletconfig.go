@@ -21,23 +21,17 @@ package v1
 // KubeletConfigApplyConfiguration represents an declarative configuration of the KubeletConfig type for use
 // with apply.
 type KubeletConfigApplyConfiguration struct {
-	CpuCfsQuota                      *bool                                      `json:"cpuCfsQuota,omitempty"`
-	CpuCfsQuotaPeriod                *string                                    `json:"cpuCfsQuotaPeriod,omitempty"`
-	CpuManagerPolicy                 *string                                    `json:"cpuManagerPolicy,omitempty"`
-	PodPidsLimit                     *int64                                     `json:"podPidsLimit,omitempty"`
-	ImageGcLowThresholdPercent       *int64                                     `json:"imageGcLowThresholdPercent,omitempty"`
-	ImageGcHighThresholdPercent      *int64                                     `json:"imageGcHighThresholdPercent,omitempty"`
-	ImageMinimumGcAge                *string                                    `json:"imageMinimumGcAge,omitempty"`
-	ImageMaximumGcAge                *string                                    `json:"imageMaximumGcAge,omitempty"`
-	ContainerLogMaxSize              *string                                    `json:"containerLogMaxSize,omitempty"`
-	ContainerLogMaxFiles             *int64                                     `json:"containerLogMaxFiles,omitempty"`
-	AllowedUnsafeSysctls             []string                                   `json:"allowedUnsafeSysctls,omitempty"`
-	MaxParallelImagePulls            *int64                                     `json:"maxParallelImagePulls,omitempty"`
-	SingleProcessOOMKill             *bool                                      `json:"singleProcessOOMKill,omitempty"`
-	EvictionSoft                     *EvictionSoftApplyConfiguration            `json:"evictionSoft,omitempty"`
-	EvictionSoftGracePeriod          *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
-	EvictionMinimumReclaim           *EvictionMinimumReclaimApplyConfiguration  `json:"evictionMinimumReclaim,omitempty"`
-	EvictionMaxPodGracePeriodSeconds *int64                                     `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
+	CpuCfsQuota                 *bool    `json:"cpuCfsQuota,omitempty"`
+	CpuCfsQuotaPeriod           *string  `json:"cpuCfsQuotaPeriod,omitempty"`
+	CpuManagerPolicy            *string  `json:"cpuManagerPolicy,omitempty"`
+	PodPidsLimit                *int64   `json:"podPidsLimit,omitempty"`
+	ImageGcLowThresholdPercent  *int64   `json:"imageGcLowThresholdPercent,omitempty"`
+	ImageGcHighThresholdPercent *int64   `json:"imageGcHighThresholdPercent,omitempty"`
+	ImageMinimumGcAge           *string  `json:"imageMinimumGcAge,omitempty"`
+	ImageMaximumGcAge           *string  `json:"imageMaximumGcAge,omitempty"`
+	ContainerLogMaxSize         *string  `json:"containerLogMaxSize,omitempty"`
+	ContainerLogMaxFiles        *int64   `json:"containerLogMaxFiles,omitempty"`
+	AllowedUnsafeSysctls        []string `json:"allowedUnsafeSysctls,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs an declarative configuration of the KubeletConfig type for use with
@@ -133,53 +127,5 @@ func (b *KubeletConfigApplyConfiguration) WithAllowedUnsafeSysctls(values ...str
 	for i := range values {
 		b.AllowedUnsafeSysctls = append(b.AllowedUnsafeSysctls, values[i])
 	}
-	return b
-}
-
-// WithMaxParallelImagePulls sets the MaxParallelImagePulls field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the MaxParallelImagePulls field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithMaxParallelImagePulls(value int64) *KubeletConfigApplyConfiguration {
-	b.MaxParallelImagePulls = &value
-	return b
-}
-
-// WithSingleProcessOOMKill sets the SingleProcessOOMKill field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the SingleProcessOOMKill field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithSingleProcessOOMKill(value bool) *KubeletConfigApplyConfiguration {
-	b.SingleProcessOOMKill = &value
-	return b
-}
-
-// WithEvictionSoft sets the EvictionSoft field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the EvictionSoft field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithEvictionSoft(value *EvictionSoftApplyConfiguration) *KubeletConfigApplyConfiguration {
-	b.EvictionSoft = value
-	return b
-}
-
-// WithEvictionSoftGracePeriod sets the EvictionSoftGracePeriod field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the EvictionSoftGracePeriod field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithEvictionSoftGracePeriod(value *EvictionSoftGracePeriodApplyConfiguration) *KubeletConfigApplyConfiguration {
-	b.EvictionSoftGracePeriod = value
-	return b
-}
-
-// WithEvictionMinimumReclaim sets the EvictionMinimumReclaim field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the EvictionMinimumReclaim field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithEvictionMinimumReclaim(value *EvictionMinimumReclaimApplyConfiguration) *KubeletConfigApplyConfiguration {
-	b.EvictionMinimumReclaim = value
-	return b
-}
-
-// WithEvictionMaxPodGracePeriodSeconds sets the EvictionMaxPodGracePeriodSeconds field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the EvictionMaxPodGracePeriodSeconds field is set to the value of the last call.
-func (b *KubeletConfigApplyConfiguration) WithEvictionMaxPodGracePeriodSeconds(value int64) *KubeletConfigApplyConfiguration {
-	b.EvictionMaxPodGracePeriodSeconds = &value
 	return b
 }

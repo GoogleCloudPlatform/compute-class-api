@@ -21,9 +21,7 @@ package v1
 // NodePoolAutoCreationApplyConfiguration represents an declarative configuration of the NodePoolAutoCreation type for use
 // with apply.
 type NodePoolAutoCreationApplyConfiguration struct {
-	Enabled               *bool `json:"enabled,omitempty"`
-	DynamicMaxPodsPerNode *bool `json:"dynamicMaxPodsPerNode,omitempty"`
-	DynamicBootDiskSize   *bool `json:"dynamicBootDiskSize,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 }
 
 // NodePoolAutoCreationApplyConfiguration constructs an declarative configuration of the NodePoolAutoCreation type for use with
@@ -37,21 +35,5 @@ func NodePoolAutoCreation() *NodePoolAutoCreationApplyConfiguration {
 // If called multiple times, the Enabled field is set to the value of the last call.
 func (b *NodePoolAutoCreationApplyConfiguration) WithEnabled(value bool) *NodePoolAutoCreationApplyConfiguration {
 	b.Enabled = &value
-	return b
-}
-
-// WithDynamicMaxPodsPerNode sets the DynamicMaxPodsPerNode field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the DynamicMaxPodsPerNode field is set to the value of the last call.
-func (b *NodePoolAutoCreationApplyConfiguration) WithDynamicMaxPodsPerNode(value bool) *NodePoolAutoCreationApplyConfiguration {
-	b.DynamicMaxPodsPerNode = &value
-	return b
-}
-
-// WithDynamicBootDiskSize sets the DynamicBootDiskSize field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the DynamicBootDiskSize field is set to the value of the last call.
-func (b *NodePoolAutoCreationApplyConfiguration) WithDynamicBootDiskSize(value bool) *NodePoolAutoCreationApplyConfiguration {
-	b.DynamicBootDiskSize = &value
 	return b
 }

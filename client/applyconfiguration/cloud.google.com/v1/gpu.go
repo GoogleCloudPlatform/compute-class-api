@@ -24,7 +24,6 @@ type GPUApplyConfiguration struct {
 	Type          *string `json:"type,omitempty"`
 	Count         *int64  `json:"count,omitempty"`
 	DriverVersion *string `json:"driverVersion,omitempty"`
-	Topology      *string `json:"topology,omitempty"`
 }
 
 // GPUApplyConfiguration constructs an declarative configuration of the GPU type for use with
@@ -54,13 +53,5 @@ func (b *GPUApplyConfiguration) WithCount(value int64) *GPUApplyConfiguration {
 // If called multiple times, the DriverVersion field is set to the value of the last call.
 func (b *GPUApplyConfiguration) WithDriverVersion(value string) *GPUApplyConfiguration {
 	b.DriverVersion = &value
-	return b
-}
-
-// WithTopology sets the Topology field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Topology field is set to the value of the last call.
-func (b *GPUApplyConfiguration) WithTopology(value string) *GPUApplyConfiguration {
-	b.Topology = &value
 	return b
 }

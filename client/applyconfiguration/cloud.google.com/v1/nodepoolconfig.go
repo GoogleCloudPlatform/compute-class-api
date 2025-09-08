@@ -21,17 +21,12 @@ package v1
 // NodePoolConfigApplyConfiguration represents an declarative configuration of the NodePoolConfig type for use
 // with apply.
 type NodePoolConfigApplyConfiguration struct {
-	ServiceAccount       *string                           `json:"serviceAccount,omitempty"`
-	ImageType            *string                           `json:"imageType,omitempty"`
-	WorkloadType         *string                           `json:"workloadType,omitempty"`
-	NodeLabels           map[string]string                 `json:"nodeLabels,omitempty"`
-	Taints               []TaintConfigApplyConfiguration   `json:"taints,omitempty"`
-	ConfidentialNodeType *string                           `json:"confidentialNodeType,omitempty"`
-	AutoRepair           *bool                             `json:"autoRepair,omitempty"`
-	AutoUpgrade          *bool                             `json:"autoUpgrade,omitempty"`
-	ImageStreaming       *ImageStreamingApplyConfiguration `json:"imageStreaming,omitempty"`
-	ResourceManagerTags  []TagsApplyConfiguration          `json:"resourceManagerTags,omitempty"`
-	Gvnic                *GvnicApplyConfiguration          `json:"gvnic,omitempty"`
+	ServiceAccount       *string                         `json:"serviceAccount,omitempty"`
+	ImageType            *string                         `json:"imageType,omitempty"`
+	WorkloadType         *string                         `json:"workloadType,omitempty"`
+	NodeLabels           map[string]string               `json:"nodeLabels,omitempty"`
+	Taints               []TaintConfigApplyConfiguration `json:"taints,omitempty"`
+	ConfidentialNodeType *string                         `json:"confidentialNodeType,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -96,50 +91,5 @@ func (b *NodePoolConfigApplyConfiguration) WithTaints(values ...*TaintConfigAppl
 // If called multiple times, the ConfidentialNodeType field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithConfidentialNodeType(value string) *NodePoolConfigApplyConfiguration {
 	b.ConfidentialNodeType = &value
-	return b
-}
-
-// WithAutoRepair sets the AutoRepair field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the AutoRepair field is set to the value of the last call.
-func (b *NodePoolConfigApplyConfiguration) WithAutoRepair(value bool) *NodePoolConfigApplyConfiguration {
-	b.AutoRepair = &value
-	return b
-}
-
-// WithAutoUpgrade sets the AutoUpgrade field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the AutoUpgrade field is set to the value of the last call.
-func (b *NodePoolConfigApplyConfiguration) WithAutoUpgrade(value bool) *NodePoolConfigApplyConfiguration {
-	b.AutoUpgrade = &value
-	return b
-}
-
-// WithImageStreaming sets the ImageStreaming field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the ImageStreaming field is set to the value of the last call.
-func (b *NodePoolConfigApplyConfiguration) WithImageStreaming(value *ImageStreamingApplyConfiguration) *NodePoolConfigApplyConfiguration {
-	b.ImageStreaming = value
-	return b
-}
-
-// WithResourceManagerTags adds the given value to the ResourceManagerTags field in the declarative configuration
-// and returns the receiver, so that objects can be build by chaining "With" function invocations.
-// If called multiple times, values provided by each call will be appended to the ResourceManagerTags field.
-func (b *NodePoolConfigApplyConfiguration) WithResourceManagerTags(values ...*TagsApplyConfiguration) *NodePoolConfigApplyConfiguration {
-	for i := range values {
-		if values[i] == nil {
-			panic("nil value passed to WithResourceManagerTags")
-		}
-		b.ResourceManagerTags = append(b.ResourceManagerTags, *values[i])
-	}
-	return b
-}
-
-// WithGvnic sets the Gvnic field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Gvnic field is set to the value of the last call.
-func (b *NodePoolConfigApplyConfiguration) WithGvnic(value *GvnicApplyConfiguration) *NodePoolConfigApplyConfiguration {
-	b.Gvnic = value
 	return b
 }
