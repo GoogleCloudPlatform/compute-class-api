@@ -38,6 +38,8 @@ type KubeletConfigApplyConfiguration struct {
 	EvictionSoftGracePeriod          *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
 	EvictionMinimumReclaim           *EvictionMinimumReclaimApplyConfiguration  `json:"evictionMinimumReclaim,omitempty"`
 	EvictionMaxPodGracePeriodSeconds *int64                                     `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
+	TopologyManager                  *TopologyManagerApplyConfiguration         `json:"topologyManager,omitempty"`
+	MemoryManager                    *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs an declarative configuration of the KubeletConfig type for use with
@@ -181,5 +183,21 @@ func (b *KubeletConfigApplyConfiguration) WithEvictionMinimumReclaim(value *Evic
 // If called multiple times, the EvictionMaxPodGracePeriodSeconds field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithEvictionMaxPodGracePeriodSeconds(value int64) *KubeletConfigApplyConfiguration {
 	b.EvictionMaxPodGracePeriodSeconds = &value
+	return b
+}
+
+// WithTopologyManager sets the TopologyManager field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the TopologyManager field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithTopologyManager(value *TopologyManagerApplyConfiguration) *KubeletConfigApplyConfiguration {
+	b.TopologyManager = value
+	return b
+}
+
+// WithMemoryManager sets the MemoryManager field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MemoryManager field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithMemoryManager(value *MemoryManagerApplyConfiguration) *KubeletConfigApplyConfiguration {
+	b.MemoryManager = value
 	return b
 }
