@@ -12,7 +12,7 @@
 *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *     See the License for the specific language governing permissions and
 *     limitations under the License.
-*/
+ */
 package v1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -988,6 +988,14 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:Maximum=300
 	// +kubebuilder:validation:Optional
 	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty" protobuf:"bytes,17,opt,name=evictionMaxPodGracePeriodSeconds"`
+	// TopologyManager contains the configuration for the Kubelet Topology Manager.
+	//
+	// +kubebuilder:validation:Optional
+	TopologyManager *TopologyManager `json:"topologyManager,omitempty" protobuf:"bytes,18,opt,name=topologyManager"`
+	// MemoryManager contains the configuration for the Kubelet Memory Manager.
+	//
+	// +kubebuilder:validation:Optional
+	MemoryManager *MemoryManager `json:"memoryManager,omitempty" protobuf:"bytes,19,opt,name=memoryManager"`
 }
 
 // SysctlsConfig defines sysctls config for a node.
