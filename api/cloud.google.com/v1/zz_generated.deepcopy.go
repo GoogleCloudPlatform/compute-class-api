@@ -573,6 +573,16 @@ func (in *KubeletConfig) DeepCopyInto(out *KubeletConfig) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.TopologyManager != nil {
+		in, out := &in.TopologyManager, &out.TopologyManager
+		*out = new(TopologyManager)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.MemoryManager != nil {
+		in, out := &in.MemoryManager, &out.MemoryManager
+		*out = new(MemoryManager)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 
