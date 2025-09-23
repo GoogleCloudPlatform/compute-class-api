@@ -922,15 +922,15 @@ type KubeletConfig struct {
 	// EvictionSoft defines soft eviction thresholds.
 	//
 	// +kubebuilder:validation:Optional
-	EvictionSoft *EvictionSoft `json:"evictionSoft,omitempty" protobuf:"bytes,13,opt,name=evictionSoft"`
+	EvictionSoft *EvictionSoft `json:"evictionSoft,omitempty" protobuf:"bytes,14,opt,name=evictionSoft"`
 	// EvictionSoftGracePeriod defines grace periods for soft eviction thresholds.
 	//
 	// +kubebuilder:validation:Optional
-	EvictionSoftGracePeriod *EvictionSoftGracePeriod `json:"evictionSoftGracePeriod,omitempty" protobuf:"bytes,14,opt,name=evictionSoftGracePeriod"`
+	EvictionSoftGracePeriod *EvictionSoftGracePeriod `json:"evictionSoftGracePeriod,omitempty" protobuf:"bytes,15,opt,name=evictionSoftGracePeriod"`
 	// EvictionMinimumReclaim defines minimum reclaims.
 	//
 	// +kubebuilder:validation:Optional
-	EvictionMinimumReclaim *EvictionMinimumReclaim `json:"evictionMinimumReclaim,omitempty" protobuf:"bytes,15,opt,name=evictionMinimumReclaim"`
+	EvictionMinimumReclaim *EvictionMinimumReclaim `json:"evictionMinimumReclaim,omitempty" protobuf:"bytes,16,opt,name=evictionMinimumReclaim"`
 	// EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
 	// (in seconds) to use when terminating pods in response to a soft eviction
 	// threshold being met.
@@ -938,7 +938,7 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:Minimum=0
 	// +kubebuilder:validation:Maximum=300
 	// +kubebuilder:validation:Optional
-	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty" protobuf:"int,16,opt,name=evictionMaxPodGracePeriodSeconds"`
+	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty" protobuf:"bytes,17,opt,name=evictionMaxPodGracePeriodSeconds"`
 }
 
 // SysctlsConfig defines sysctls config for a node.
