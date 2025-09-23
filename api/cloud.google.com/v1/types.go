@@ -706,6 +706,40 @@ type LinuxNodeConfig struct {
 	TransparentHugepageDefrag *string `json:"transparentHugepageDefrag,omitempty" protobuf:"bytes,4,opt,name=transparentHugepageDefrag"`
 }
 
+type TopologyManager struct {
+	// Policy controls the Kubelet's Topology Manager policy.
+	// Policies:
+	// * none: (default) The Kubelet does not perform any topology alignment.
+	// * best-effort: The Kubelet will attempt to align resources but will not fail pod admission.
+	// * restricted: The Kubelet will reject pods that do not align to the minimal number of NUMA domains.
+	// * single-numa-node: The Kubelet will reject pods that do not align to a single NUMA domain.
+	//
+	// +kubebuilder:validation:Enum=none;best-effort;restricted;single-numa-node
+	// +kubebuilder:validation:Optional
+	Policy *string `json:"policy,omitempty" protobuf:"bytes,1,opt,name=policy"`
+	// Scope controls the Kubelet's Topology Manager scope.
+	// Scopes:
+	// * container: (default) The Kubelet performs topology alignment for each container in a pod.
+	// * pod: The Kubelet performs topology alignment for the pod as a whole. This setting ensures pod-level topology alignment, where the Topology Manager treats all containers as a single unit to place them on a common set of NUMA nodes.
+	//
+	// +kubebuilder:validation:Enum=container;pod
+	// +kubebuilder:validation:Optional
+	Scope *string `json:"scope,omitempty" protobuf:"bytes,2,opt,name=scope"`
+}
+
+// MemoryManagerConfig defines the configuration for the Kubelet Memory Manager.
+type MemoryManager struct {
+	// Policy controls the Kubelet's Memory Manager policy.
+	// The Static policy is required for the Topology Manager to perform memory affinity alignment.
+	// Policies:
+	// * None: (default) The Kubelet does not perform any memory alignment.
+	// * Static: The Kubelet allows pods in the Guaranteed QoS class to be granted memory from a single NUMA node.
+	//
+	// +kubebuilder:validation:Enum=None;Static
+	// +kubebuilder:validation:Optional
+	Policy *string `json:"policy,omitempty" protobuf:"bytes,1,opt,name=policy"`
+}
+
 // EvictionSoft is a map of signal names to quantities that defines soft eviction thresholds.
 // A soft eviction threshold pairs with a grace period. The kubelet does not evict pods until the grace period is exceeded.
 // +kubebuilder:validation:Optional

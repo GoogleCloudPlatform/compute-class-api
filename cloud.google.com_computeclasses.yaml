@@ -777,6 +777,22 @@ spec:
                               maximum: 5
                               minimum: 2
                               type: integer
+                            memoryManager:
+                              description: MemoryManager contains the configuration
+                                for the Kubelet Memory Manager.
+                              properties:
+                                policy:
+                                  description: |-
+                                    Policy controls the Kubelet's Memory Manager policy.
+                                    The Static policy is required for the Topology Manager to perform memory affinity alignment.
+                                    Policies:
+                                    * None: (default) The Kubelet does not perform any memory alignment.
+                                    * Static: The Kubelet allows pods in the Guaranteed QoS class to be granted memory from a single NUMA node.
+                                  enum:
+                                  - None
+                                  - Static
+                                  type: string
+                              type: object
                             podPidsLimit:
                               description: This setting sets the maximum number of
                                 process IDs (PIDs) that each Pod can use.
@@ -789,6 +805,35 @@ spec:
                                 This setting sets whether to enable single process OOM killer.
                                 If set to true, the processes in a container will be OOM killed individually instead of as a group.
                               type: boolean
+                            topologyManager:
+                              description: TopologyManager contains the configuration
+                                for the Kubelet Topology Manager.
+                              properties:
+                                policy:
+                                  description: |-
+                                    Policy controls the Kubelet's Topology Manager policy.
+                                    Policies:
+                                    * none: (default) The Kubelet does not perform any topology alignment.
+                                    * best-effort: The Kubelet will attempt to align resources but will not fail pod admission.
+                                    * restricted: The Kubelet will reject pods that do not align to the minimal number of NUMA domains.
+                                    * single-numa-node: The Kubelet will reject pods that do not align to a single NUMA domain.
+                                  enum:
+                                  - none
+                                  - best-effort
+                                  - restricted
+                                  - single-numa-node
+                                  type: string
+                                scope:
+                                  description: |-
+                                    Scope controls the Kubelet's Topology Manager scope.
+                                    Scopes:
+                                    * container: (default) The Kubelet performs topology alignment for each container in a pod.
+                                    * pod: The Kubelet performs topology alignment for the pod as a whole. This setting ensures pod-level topology alignment, where the Topology Manager treats all containers as a single unit to place them on a common set of NUMA nodes.
+                                  enum:
+                                  - container
+                                  - pod
+                                  type: string
+                              type: object
                           type: object
                           x-kubernetes-validations:
                           - message: ImageGcLowThresholdPercent must be lower than
@@ -1687,6 +1732,22 @@ spec:
                             maximum: 5
                             minimum: 2
                             type: integer
+                          memoryManager:
+                            description: MemoryManager contains the configuration
+                              for the Kubelet Memory Manager.
+                            properties:
+                              policy:
+                                description: |-
+                                  Policy controls the Kubelet's Memory Manager policy.
+                                  The Static policy is required for the Topology Manager to perform memory affinity alignment.
+                                  Policies:
+                                  * None: (default) The Kubelet does not perform any memory alignment.
+                                  * Static: The Kubelet allows pods in the Guaranteed QoS class to be granted memory from a single NUMA node.
+                                enum:
+                                - None
+                                - Static
+                                type: string
+                            type: object
                           podPidsLimit:
                             description: This setting sets the maximum number of process
                               IDs (PIDs) that each Pod can use.
@@ -1699,6 +1760,35 @@ spec:
                               This setting sets whether to enable single process OOM killer.
                               If set to true, the processes in a container will be OOM killed individually instead of as a group.
                             type: boolean
+                          topologyManager:
+                            description: TopologyManager contains the configuration
+                              for the Kubelet Topology Manager.
+                            properties:
+                              policy:
+                                description: |-
+                                  Policy controls the Kubelet's Topology Manager policy.
+                                  Policies:
+                                  * none: (default) The Kubelet does not perform any topology alignment.
+                                  * best-effort: The Kubelet will attempt to align resources but will not fail pod admission.
+                                  * restricted: The Kubelet will reject pods that do not align to the minimal number of NUMA domains.
+                                  * single-numa-node: The Kubelet will reject pods that do not align to a single NUMA domain.
+                                enum:
+                                - none
+                                - best-effort
+                                - restricted
+                                - single-numa-node
+                                type: string
+                              scope:
+                                description: |-
+                                  Scope controls the Kubelet's Topology Manager scope.
+                                  Scopes:
+                                  * container: (default) The Kubelet performs topology alignment for each container in a pod.
+                                  * pod: The Kubelet performs topology alignment for the pod as a whole. This setting ensures pod-level topology alignment, where the Topology Manager treats all containers as a single unit to place them on a common set of NUMA nodes.
+                                enum:
+                                - container
+                                - pod
+                                type: string
+                            type: object
                         type: object
                         x-kubernetes-validations:
                         - message: ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent
