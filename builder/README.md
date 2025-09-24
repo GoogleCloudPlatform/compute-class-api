@@ -1,0 +1,1 @@
+A Docker image that is used to build compute-class-api binaries.
