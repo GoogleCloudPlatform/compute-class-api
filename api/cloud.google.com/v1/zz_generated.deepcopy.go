@@ -1386,6 +1386,76 @@ func (in *SysctlsConfig) DeepCopyInto(out *SysctlsConfig) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.Net_ipv4_tcp_mtu_probing != nil {
+		in, out := &in.Net_ipv4_tcp_mtu_probing, &out.Net_ipv4_tcp_mtu_probing
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_tcp_max_tw_buckets != nil {
+		in, out := &in.Net_ipv4_tcp_max_tw_buckets, &out.Net_ipv4_tcp_max_tw_buckets
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_tcp_syn_retries != nil {
+		in, out := &in.Net_ipv4_tcp_syn_retries, &out.Net_ipv4_tcp_syn_retries
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_tcp_ecn != nil {
+		in, out := &in.Net_ipv4_tcp_ecn, &out.Net_ipv4_tcp_ecn
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_tcp_congestion_control != nil {
+		in, out := &in.Net_ipv4_tcp_congestion_control, &out.Net_ipv4_tcp_congestion_control
+		*out = new(string)
+		**out = **in
+	}
+	if in.Kernel_perf_event_paranoid != nil {
+		in, out := &in.Kernel_perf_event_paranoid, &out.Kernel_perf_event_paranoid
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Kernel_sched_rt_runtime_us != nil {
+		in, out := &in.Kernel_sched_rt_runtime_us, &out.Kernel_sched_rt_runtime_us
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Kernel_softlockup_panic != nil {
+		in, out := &in.Kernel_softlockup_panic, &out.Kernel_softlockup_panic
+		*out = new(bool)
+		**out = **in
+	}
+	if in.Kernel_yama_ptrace_scope != nil {
+		in, out := &in.Kernel_yama_ptrace_scope, &out.Kernel_yama_ptrace_scope
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Kernel_kptr_restrict != nil {
+		in, out := &in.Kernel_kptr_restrict, &out.Kernel_kptr_restrict
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Kernel_dmesg_restrict != nil {
+		in, out := &in.Kernel_dmesg_restrict, &out.Kernel_dmesg_restrict
+		*out = new(bool)
+		**out = **in
+	}
+	if in.Kernel_sysrq != nil {
+		in, out := &in.Kernel_sysrq, &out.Kernel_sysrq
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Vm_dirty_background_bytes != nil {
+		in, out := &in.Vm_dirty_background_bytes, &out.Vm_dirty_background_bytes
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Vm_dirty_bytes != nil {
+		in, out := &in.Vm_dirty_bytes, &out.Vm_dirty_bytes
+		*out = new(int64)
+		**out = **in
+	}
 	return
 }
 

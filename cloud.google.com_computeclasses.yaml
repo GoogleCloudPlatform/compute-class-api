@@ -930,6 +930,34 @@ spec:
                                   maximum: 2147483584
                                   minimum: 1048576
                                   type: integer
+                                kernel.dmesg_restrict:
+                                  description: Indicates whether unprivileged users
+                                    are prevented from using dmesg(8) to view messages
+                                    from the kernel’s log buffer.
+                                  type: boolean
+                                kernel.kptr_restrict:
+                                  description: Indicates whether restrictions are
+                                    placed on exposing kernel addresses via /proc
+                                    and other interfaces.
+                                  format: int64
+                                  maximum: 2
+                                  minimum: 0
+                                  type: integer
+                                kernel.perf_event_paranoid:
+                                  description: Controls use of the performance events
+                                    system by unprivileged users (without CAP_PERFMON).
+                                    The default value is 2 in kernel.
+                                  format: int64
+                                  maximum: 3
+                                  minimum: -1
+                                  type: integer
+                                kernel.sched_rt_runtime_us:
+                                  description: A global limit on how much time real-time
+                                    scheduling may use.
+                                  format: int64
+                                  maximum: 1000000
+                                  minimum: -1
+                                  type: integer
                                 kernel.shmall:
                                   description: |-
                                     The maximum size (in bytes) of a single shared memory segment allowed by the kernel.
@@ -952,6 +980,31 @@ spec:
                                   format: int64
                                   maximum: 32768
                                   minimum: 4096
+                                  type: integer
+                                kernel.softlockup_panic:
+                                  description: Control whether the kernel panics when
+                                    a soft lockup is detected.
+                                  type: boolean
+                                kernel.sysrq:
+                                  description: |-
+                                    Controls the functions allowed to be invoked via the SysRq key. List of possible values:
+                                    0: Disables sysrq completely.
+                                    1: Enables all sysrq functions.
+                                    >1 - bitmask of allowed sysrq functions. More details in https://docs.kernel.org/admin-guide/sysrq.html.
+                                  format: int64
+                                  maximum: 511
+                                  minimum: 0
+                                  type: integer
+                                kernel.yama.ptrace_scope:
+                                  description: |-
+                                    Defines the scope and restrictions for the ptrace() system call, impacting process debugging and tracing. Supported values:
+                                    0: Classic ptrace permissions.
+                                    1: Restricted ptrace (default in many distributions) - only child processes or CAP_SYS_PTRACE.
+                                    2: Admin-only ptrace - only processes with CAP_SYS_PTRACE.
+                                    3: No ptrace - ptrace calls are disallowed.
+                                  format: int64
+                                  maximum: 3
+                                  minimum: 0
                                   type: integer
                                 net.core.busy_poll:
                                   description: Low latency busy poll timeout for poll
@@ -1023,10 +1076,49 @@ spec:
                                   maximum: 2147483647
                                   minimum: 4608
                                   type: integer
+                                net.ipv4.tcp_congestion_control:
+                                  description: Set the congestion control algorithm
+                                    to be used for new connections. The algorithm
+                                    “reno” is always available, but additional choices
+                                    may be available based on kernel configuration.
+                                    Default is set as part of kernel configuration.
+                                    For passive connections, the listener congestion
+                                    control choice is inherited.
+                                  maxLength: 10
+                                  pattern: ^[a-zA-Z0-9_]+$
+                                  type: string
+                                net.ipv4.tcp_ecn:
+                                  description: Control use of Explicit Congestion
+                                    Notification (ECN) by TCP. ECN is used only when
+                                    both ends of the TCP connection indicate support
+                                    for it.
+                                  format: int64
+                                  maximum: 2
+                                  minimum: 0
+                                  type: integer
                                 net.ipv4.tcp_max_orphans:
                                   format: int64
                                   maximum: 262144
                                   minimum: 16384
+                                  type: integer
+                                net.ipv4.tcp_max_tw_buckets:
+                                  description: Maximal number of timewait sockets
+                                    held by system simultaneously. If this number
+                                    is exceeded time-wait socket is immediately destroyed
+                                    and warning is printed.
+                                  format: int64
+                                  maximum: 2147483647
+                                  minimum: 4096
+                                  type: integer
+                                net.ipv4.tcp_mtu_probing:
+                                  description: |-
+                                    Controls TCP Packetization-Layer Path MTU Discovery. Supported values:
+                                    0: Disabled
+                                    1: Disabled by default, enabled when an ICMP black hole detected
+                                    2: Always enabled, use initial MSS of tcp_base_mss.
+                                  format: int64
+                                  maximum: 2
+                                  minimum: 0
                                   type: integer
                                 net.ipv4.tcp_rmem:
                                   description: 'Minimal size of receive buffer used
@@ -1036,6 +1128,13 @@ spec:
                                     The unit is byte. Default: 1 page. The three values
                                     are: min, default, max. Eg. ''4096 87380 6291456''.'
                                   type: string
+                                net.ipv4.tcp_syn_retries:
+                                  description: Number of times initial SYNs for an
+                                    active TCP connection attempt will be retransmitted.
+                                  format: int64
+                                  maximum: 127
+                                  minimum: 1
+                                  type: integer
                                 net.ipv4.tcp_tw_reuse:
                                   description: Allow to reuse TIME-WAIT sockets for
                                     new connections when it is safe from protocol
@@ -1103,6 +1202,14 @@ spec:
                                   maximum: 600
                                   minimum: 1
                                   type: integer
+                                vm.dirty_background_bytes:
+                                  description: |-
+                                    Contains the amount of dirty memory at which the background kernel flusher threads will start writeback.
+                                    Note: Vm_dirty_background_bytes is the counterpart of Vm_dirty_background_ratio. Only one of them may be specified at a time.
+                                  format: int64
+                                  maximum: 68719476736
+                                  minimum: 0
+                                  type: integer
                                 vm.dirty_background_ratio:
                                   description: |-
                                     Percentage of system memory that can be filled with dirty pages (modified but not yet written to disk) before background kernel flusher threads begin writeback.
@@ -1110,6 +1217,15 @@ spec:
                                   format: int64
                                   maximum: 100
                                   minimum: 1
+                                  type: integer
+                                vm.dirty_bytes:
+                                  description: |-
+                                    Contains the amount of dirty memory at which a process generating disk writes will itself start writeback.
+                                    Note: Vm_dirty_bytes is the counterpart of Vm_dirty_ratio. Only one of them may be specified at a time.
+                                    Note: the minimum value allowed for Vm_dirty_bytes is two pages (in bytes); any value lower than this limit will be ignored and the old configuration will be retained.
+                                  format: int64
+                                  maximum: 68719476736
+                                  minimum: 0
                                   type: integer
                                 vm.dirty_expire_centisecs:
                                   description: |-
@@ -1868,6 +1984,34 @@ spec:
                                 maximum: 2147483584
                                 minimum: 1048576
                                 type: integer
+                              kernel.dmesg_restrict:
+                                description: Indicates whether unprivileged users
+                                  are prevented from using dmesg(8) to view messages
+                                  from the kernel’s log buffer.
+                                type: boolean
+                              kernel.kptr_restrict:
+                                description: Indicates whether restrictions are placed
+                                  on exposing kernel addresses via /proc and other
+                                  interfaces.
+                                format: int64
+                                maximum: 2
+                                minimum: 0
+                                type: integer
+                              kernel.perf_event_paranoid:
+                                description: Controls use of the performance events
+                                  system by unprivileged users (without CAP_PERFMON).
+                                  The default value is 2 in kernel.
+                                format: int64
+                                maximum: 3
+                                minimum: -1
+                                type: integer
+                              kernel.sched_rt_runtime_us:
+                                description: A global limit on how much time real-time
+                                  scheduling may use.
+                                format: int64
+                                maximum: 1000000
+                                minimum: -1
+                                type: integer
                               kernel.shmall:
                                 description: |-
                                   The maximum size (in bytes) of a single shared memory segment allowed by the kernel.
@@ -1890,6 +2034,31 @@ spec:
                                 format: int64
                                 maximum: 32768
                                 minimum: 4096
+                                type: integer
+                              kernel.softlockup_panic:
+                                description: Control whether the kernel panics when
+                                  a soft lockup is detected.
+                                type: boolean
+                              kernel.sysrq:
+                                description: |-
+                                  Controls the functions allowed to be invoked via the SysRq key. List of possible values:
+                                  0: Disables sysrq completely.
+                                  1: Enables all sysrq functions.
+                                  >1 - bitmask of allowed sysrq functions. More details in https://docs.kernel.org/admin-guide/sysrq.html.
+                                format: int64
+                                maximum: 511
+                                minimum: 0
+                                type: integer
+                              kernel.yama.ptrace_scope:
+                                description: |-
+                                  Defines the scope and restrictions for the ptrace() system call, impacting process debugging and tracing. Supported values:
+                                  0: Classic ptrace permissions.
+                                  1: Restricted ptrace (default in many distributions) - only child processes or CAP_SYS_PTRACE.
+                                  2: Admin-only ptrace - only processes with CAP_SYS_PTRACE.
+                                  3: No ptrace - ptrace calls are disallowed.
+                                format: int64
+                                maximum: 3
+                                minimum: 0
                                 type: integer
                               net.core.busy_poll:
                                 description: Low latency busy poll timeout for poll
@@ -1961,10 +2130,48 @@ spec:
                                 maximum: 2147483647
                                 minimum: 4608
                                 type: integer
+                              net.ipv4.tcp_congestion_control:
+                                description: Set the congestion control algorithm
+                                  to be used for new connections. The algorithm “reno”
+                                  is always available, but additional choices may
+                                  be available based on kernel configuration. Default
+                                  is set as part of kernel configuration. For passive
+                                  connections, the listener congestion control choice
+                                  is inherited.
+                                maxLength: 10
+                                pattern: ^[a-zA-Z0-9_]+$
+                                type: string
+                              net.ipv4.tcp_ecn:
+                                description: Control use of Explicit Congestion Notification
+                                  (ECN) by TCP. ECN is used only when both ends of
+                                  the TCP connection indicate support for it.
+                                format: int64
+                                maximum: 2
+                                minimum: 0
+                                type: integer
                               net.ipv4.tcp_max_orphans:
                                 format: int64
                                 maximum: 262144
                                 minimum: 16384
+                                type: integer
+                              net.ipv4.tcp_max_tw_buckets:
+                                description: Maximal number of timewait sockets held
+                                  by system simultaneously. If this number is exceeded
+                                  time-wait socket is immediately destroyed and warning
+                                  is printed.
+                                format: int64
+                                maximum: 2147483647
+                                minimum: 4096
+                                type: integer
+                              net.ipv4.tcp_mtu_probing:
+                                description: |-
+                                  Controls TCP Packetization-Layer Path MTU Discovery. Supported values:
+                                  0: Disabled
+                                  1: Disabled by default, enabled when an ICMP black hole detected
+                                  2: Always enabled, use initial MSS of tcp_base_mss.
+                                format: int64
+                                maximum: 2
+                                minimum: 0
                                 type: integer
                               net.ipv4.tcp_rmem:
                                 description: 'Minimal size of receive buffer used
@@ -1974,6 +2181,13 @@ spec:
                                   The unit is byte. Default: 1 page. The three values
                                   are: min, default, max. Eg. ''4096 87380 6291456''.'
                                 type: string
+                              net.ipv4.tcp_syn_retries:
+                                description: Number of times initial SYNs for an active
+                                  TCP connection attempt will be retransmitted.
+                                format: int64
+                                maximum: 127
+                                minimum: 1
+                                type: integer
                               net.ipv4.tcp_tw_reuse:
                                 description: Allow to reuse TIME-WAIT sockets for
                                   new connections when it is safe from protocol viewpoint.
@@ -2039,6 +2253,14 @@ spec:
                                 maximum: 600
                                 minimum: 1
                                 type: integer
+                              vm.dirty_background_bytes:
+                                description: |-
+                                  Contains the amount of dirty memory at which the background kernel flusher threads will start writeback.
+                                  Note: Vm_dirty_background_bytes is the counterpart of Vm_dirty_background_ratio. Only one of them may be specified at a time.
+                                format: int64
+                                maximum: 68719476736
+                                minimum: 0
+                                type: integer
                               vm.dirty_background_ratio:
                                 description: |-
                                   Percentage of system memory that can be filled with dirty pages (modified but not yet written to disk) before background kernel flusher threads begin writeback.
@@ -2046,6 +2268,15 @@ spec:
                                 format: int64
                                 maximum: 100
                                 minimum: 1
+                                type: integer
+                              vm.dirty_bytes:
+                                description: |-
+                                  Contains the amount of dirty memory at which a process generating disk writes will itself start writeback.
+                                  Note: Vm_dirty_bytes is the counterpart of Vm_dirty_ratio. Only one of them may be specified at a time.
+                                  Note: the minimum value allowed for Vm_dirty_bytes is two pages (in bytes); any value lower than this limit will be ignored and the old configuration will be retained.
+                                format: int64
+                                maximum: 68719476736
+                                minimum: 0
                                 type: integer
                               vm.dirty_expire_centisecs:
                                 description: |-

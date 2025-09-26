@@ -61,6 +61,20 @@ type SysctlsConfigApplyConfiguration struct {
 	Vm_swappiness                                      *int64  `json:"vm.swappiness,omitempty"`
 	Vm_watermark_scale_factor                          *int64  `json:"vm.watermark_scale_factor,omitempty"`
 	Vm_min_free_kbytes                                 *int64  `json:"vm.min_free_kbytes,omitempty"`
+	Net_ipv4_tcp_mtu_probing                           *int64  `json:"net.ipv4.tcp_mtu_probing,omitempty"`
+	Net_ipv4_tcp_max_tw_buckets                        *int64  `json:"net.ipv4.tcp_max_tw_buckets,omitempty"`
+	Net_ipv4_tcp_syn_retries                           *int64  `json:"net.ipv4.tcp_syn_retries,omitempty"`
+	Net_ipv4_tcp_ecn                                   *int64  `json:"net.ipv4.tcp_ecn,omitempty"`
+	Net_ipv4_tcp_congestion_control                    *string `json:"net.ipv4.tcp_congestion_control,omitempty"`
+	Kernel_perf_event_paranoid                         *int64  `json:"kernel.perf_event_paranoid,omitempty"`
+	Kernel_sched_rt_runtime_us                         *int64  `json:"kernel.sched_rt_runtime_us,omitempty"`
+	Kernel_softlockup_panic                            *bool   `json:"kernel.softlockup_panic,omitempty"`
+	Kernel_yama_ptrace_scope                           *int64  `json:"kernel.yama.ptrace_scope,omitempty"`
+	Kernel_kptr_restrict                               *int64  `json:"kernel.kptr_restrict,omitempty"`
+	Kernel_dmesg_restrict                              *bool   `json:"kernel.dmesg_restrict,omitempty"`
+	Kernel_sysrq                                       *int64  `json:"kernel.sysrq,omitempty"`
+	Vm_dirty_background_bytes                          *int64  `json:"vm.dirty_background_bytes,omitempty"`
+	Vm_dirty_bytes                                     *int64  `json:"vm.dirty_bytes,omitempty"`
 }
 
 // SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
@@ -386,5 +400,117 @@ func (b *SysctlsConfigApplyConfiguration) WithVm_watermark_scale_factor(value in
 // If called multiple times, the Vm_min_free_kbytes field is set to the value of the last call.
 func (b *SysctlsConfigApplyConfiguration) WithVm_min_free_kbytes(value int64) *SysctlsConfigApplyConfiguration {
 	b.Vm_min_free_kbytes = &value
+	return b
+}
+
+// WithNet_ipv4_tcp_mtu_probing sets the Net_ipv4_tcp_mtu_probing field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_tcp_mtu_probing field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_mtu_probing(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_tcp_mtu_probing = &value
+	return b
+}
+
+// WithNet_ipv4_tcp_max_tw_buckets sets the Net_ipv4_tcp_max_tw_buckets field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_tcp_max_tw_buckets field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_max_tw_buckets(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_tcp_max_tw_buckets = &value
+	return b
+}
+
+// WithNet_ipv4_tcp_syn_retries sets the Net_ipv4_tcp_syn_retries field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_tcp_syn_retries field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_syn_retries(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_tcp_syn_retries = &value
+	return b
+}
+
+// WithNet_ipv4_tcp_ecn sets the Net_ipv4_tcp_ecn field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_tcp_ecn field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_ecn(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_tcp_ecn = &value
+	return b
+}
+
+// WithNet_ipv4_tcp_congestion_control sets the Net_ipv4_tcp_congestion_control field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_tcp_congestion_control field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_tcp_congestion_control(value string) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_tcp_congestion_control = &value
+	return b
+}
+
+// WithKernel_perf_event_paranoid sets the Kernel_perf_event_paranoid field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_perf_event_paranoid field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_perf_event_paranoid(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_perf_event_paranoid = &value
+	return b
+}
+
+// WithKernel_sched_rt_runtime_us sets the Kernel_sched_rt_runtime_us field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_sched_rt_runtime_us field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_sched_rt_runtime_us(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_sched_rt_runtime_us = &value
+	return b
+}
+
+// WithKernel_softlockup_panic sets the Kernel_softlockup_panic field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_softlockup_panic field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_softlockup_panic(value bool) *SysctlsConfigApplyConfiguration {
+	b.Kernel_softlockup_panic = &value
+	return b
+}
+
+// WithKernel_yama_ptrace_scope sets the Kernel_yama_ptrace_scope field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_yama_ptrace_scope field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_yama_ptrace_scope(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_yama_ptrace_scope = &value
+	return b
+}
+
+// WithKernel_kptr_restrict sets the Kernel_kptr_restrict field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_kptr_restrict field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_kptr_restrict(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_kptr_restrict = &value
+	return b
+}
+
+// WithKernel_dmesg_restrict sets the Kernel_dmesg_restrict field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_dmesg_restrict field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_dmesg_restrict(value bool) *SysctlsConfigApplyConfiguration {
+	b.Kernel_dmesg_restrict = &value
+	return b
+}
+
+// WithKernel_sysrq sets the Kernel_sysrq field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_sysrq field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_sysrq(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_sysrq = &value
+	return b
+}
+
+// WithVm_dirty_background_bytes sets the Vm_dirty_background_bytes field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Vm_dirty_background_bytes field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithVm_dirty_background_bytes(value int64) *SysctlsConfigApplyConfiguration {
+	b.Vm_dirty_background_bytes = &value
+	return b
+}
+
+// WithVm_dirty_bytes sets the Vm_dirty_bytes field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Vm_dirty_bytes field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithVm_dirty_bytes(value int64) *SysctlsConfigApplyConfiguration {
+	b.Vm_dirty_bytes = &value
 	return b
 }
