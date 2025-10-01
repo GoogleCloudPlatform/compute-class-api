@@ -65,6 +65,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.LinuxNodeConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Location"):
 		return &cloudgooglecomv1.LocationApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("LoggingVariantConfig"):
+		return &cloudgooglecomv1.LoggingVariantConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MemoryManager"):
 		return &cloudgooglecomv1.MemoryManagerApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodePoolAutoCreation"):
@@ -73,6 +75,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.NodePoolConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodePoolGroup"):
 		return &cloudgooglecomv1.NodePoolGroupApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodePoolLoggingConfig"):
+		return &cloudgooglecomv1.NodePoolLoggingConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeRecyclingConfig"):
 		return &cloudgooglecomv1.NodeRecyclingConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeSystemConfig"):

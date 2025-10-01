@@ -210,6 +210,20 @@ spec:
                     - cos_containerd
                     - ubuntu_containerd
                     type: string
+                  loggingConfig:
+                    description: Contains logging configuration.
+                    properties:
+                      loggingVariantConfig:
+                        description: Logging variant configuration.
+                        properties:
+                          variant:
+                            description: Logging variant deployed on nodes.
+                            enum:
+                            - DEFAULT
+                            - MAX_THROUGHPUT
+                            type: string
+                        type: object
+                    type: object
                   nodeLabels:
                     additionalProperties:
                       type: string

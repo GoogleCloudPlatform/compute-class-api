@@ -21,17 +21,18 @@ package v1
 // NodePoolConfigApplyConfiguration represents an declarative configuration of the NodePoolConfig type for use
 // with apply.
 type NodePoolConfigApplyConfiguration struct {
-	ServiceAccount       *string                           `json:"serviceAccount,omitempty"`
-	ImageType            *string                           `json:"imageType,omitempty"`
-	WorkloadType         *string                           `json:"workloadType,omitempty"`
-	NodeLabels           map[string]string                 `json:"nodeLabels,omitempty"`
-	Taints               []TaintConfigApplyConfiguration   `json:"taints,omitempty"`
-	ConfidentialNodeType *string                           `json:"confidentialNodeType,omitempty"`
-	AutoRepair           *bool                             `json:"autoRepair,omitempty"`
-	AutoUpgrade          *bool                             `json:"autoUpgrade,omitempty"`
-	ImageStreaming       *ImageStreamingApplyConfiguration `json:"imageStreaming,omitempty"`
-	ResourceManagerTags  []TagsApplyConfiguration          `json:"resourceManagerTags,omitempty"`
-	Gvnic                *GvnicApplyConfiguration          `json:"gvnic,omitempty"`
+	ServiceAccount       *string                                  `json:"serviceAccount,omitempty"`
+	ImageType            *string                                  `json:"imageType,omitempty"`
+	WorkloadType         *string                                  `json:"workloadType,omitempty"`
+	NodeLabels           map[string]string                        `json:"nodeLabels,omitempty"`
+	Taints               []TaintConfigApplyConfiguration          `json:"taints,omitempty"`
+	ConfidentialNodeType *string                                  `json:"confidentialNodeType,omitempty"`
+	AutoRepair           *bool                                    `json:"autoRepair,omitempty"`
+	AutoUpgrade          *bool                                    `json:"autoUpgrade,omitempty"`
+	ImageStreaming       *ImageStreamingApplyConfiguration        `json:"imageStreaming,omitempty"`
+	ResourceManagerTags  []TagsApplyConfiguration                 `json:"resourceManagerTags,omitempty"`
+	Gvnic                *GvnicApplyConfiguration                 `json:"gvnic,omitempty"`
+	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration `json:"loggingConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -141,5 +142,13 @@ func (b *NodePoolConfigApplyConfiguration) WithResourceManagerTags(values ...*Ta
 // If called multiple times, the Gvnic field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithGvnic(value *GvnicApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.Gvnic = value
+	return b
+}
+
+// WithLoggingConfig sets the LoggingConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the LoggingConfig field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithLoggingConfig(value *NodePoolLoggingConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.LoggingConfig = value
 	return b
 }
