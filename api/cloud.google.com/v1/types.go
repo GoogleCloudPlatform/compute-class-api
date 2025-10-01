@@ -316,6 +316,25 @@ type NodePoolConfig struct {
 	// Gvnic contains Google Virtual NIC settings.
 	// +optional
 	Gvnic *Gvnic `json:"gvnic,omitempty" protobuf:"bytes,11,opt,name=gvnic"`
+
+	// Contains logging configuration.
+	// +optional
+	LoggingConfig *NodePoolLoggingConfig `json:"loggingConfig,omitempty" protobuf:"bytes,12,opt,name=loggingConfig"`
+}
+
+// NodePoolLoggingConfig specifies logging configuration for nodepools.
+type NodePoolLoggingConfig struct {
+	// Logging variant configuration.
+	// +optional
+	LoggingVariantConfig *LoggingVariantConfig `json:"loggingVariantConfig,omitempty" protobuf:"bytes,1,opt,name=loggingVariantConfig"`
+}
+
+// LoggingVariantConfig specifies logging variant configuration.
+type LoggingVariantConfig struct {
+	// Logging variant deployed on nodes.
+	// +optional
+	// +kubebuilder:validation:Enum=DEFAULT;MAX_THROUGHPUT
+	Variant string `json:"variant,omitempty" protobuf:"string,1,opt,name=variant"`
 }
 
 // Gvnic stores Google Virtual NIC settings.
