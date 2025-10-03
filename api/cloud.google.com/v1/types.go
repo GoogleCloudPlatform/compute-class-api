@@ -638,6 +638,10 @@ type GPU struct {
 	// The topology defines the physical arrangement of GPUs chips within a slice.
 	// +optional
 	Topology string `json:"topology,omitempty" protobuf:"bytes,4,name=topology"`
+
+	// GpuSharing defines the way the nodes would share the GPU.
+	// +optional
+	GpuSharing *GpuSharing `json:"gpuSharing,omitempty" protobuf:"bytes,5,name=gpuSharing"`
 }
 
 // TPU describes preference on given TPU config.
@@ -1352,4 +1356,28 @@ type HostMaintenancePolicy struct {
 	// +optional
 	// +kubebuilder:validation:Enum=AS_NEEDED;PERIODIC
 	MaintenanceInterval string `json:"maintenanceInterval" protobuf:"bytes,1,opt,name=maintenanceInterval"`
+}
+
+// GpuSharing represents the GPU sharing configuration for
+// Hardware Accelerators.
+type GpuSharing struct {
+	// SharingStrategy The type of GPU sharing strategy to enable on the GPU node.
+	// Possible values:
+	// * TIME_SHARING - GPUs are time-shared between containers.
+	// * MPS - GPUs are shared between containers with NVIDIA MPS.
+	// +kubebuilder:validation:Enum=MPS;TIME_SHARING
+	// +optional
+	SharingStrategy string `json:"sharingStrategy,omitempty" protobuf:"bytes,1,opt,name=sharingStrategy"`
+
+	// MaxSharedClientsPerGPU describes the max number of containers that can
+	// share a physical GPU.
+	// +kubebuilder:validation:Minimum=0
+	// +optional
+	MaxSharedClientsPerGPU int64 `json:"maxSharedClientsPerGPU,omitempty" protobuf:"bytes,2,name=maxSharedClientsPerGPU"`
+
+	// GpuPartitionSize is size of partitions to create on the GPU. Valid values are
+	// described in the NVIDIA mig user guide. Example: "1g.5gb"
+	// (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
+	// +optional
+	GpuPartitionSize string `json:"gpuPartitionSize,omitempty" protobuf:"bytes,3,name=gpuPartitionSize"`
 }
