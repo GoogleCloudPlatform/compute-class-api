@@ -21,10 +21,11 @@ package v1
 // GPUApplyConfiguration represents an declarative configuration of the GPU type for use
 // with apply.
 type GPUApplyConfiguration struct {
-	Type          *string `json:"type,omitempty"`
-	Count         *int64  `json:"count,omitempty"`
-	DriverVersion *string `json:"driverVersion,omitempty"`
-	Topology      *string `json:"topology,omitempty"`
+	Type          *string                       `json:"type,omitempty"`
+	Count         *int64                        `json:"count,omitempty"`
+	DriverVersion *string                       `json:"driverVersion,omitempty"`
+	Topology      *string                       `json:"topology,omitempty"`
+	GpuSharing    *GpuSharingApplyConfiguration `json:"gpuSharing,omitempty"`
 }
 
 // GPUApplyConfiguration constructs an declarative configuration of the GPU type for use with
@@ -62,5 +63,13 @@ func (b *GPUApplyConfiguration) WithDriverVersion(value string) *GPUApplyConfigu
 // If called multiple times, the Topology field is set to the value of the last call.
 func (b *GPUApplyConfiguration) WithTopology(value string) *GPUApplyConfiguration {
 	b.Topology = &value
+	return b
+}
+
+// WithGpuSharing sets the GpuSharing field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the GpuSharing field is set to the value of the last call.
+func (b *GPUApplyConfiguration) WithGpuSharing(value *GpuSharingApplyConfiguration) *GPUApplyConfiguration {
+	b.GpuSharing = value
 	return b
 }
