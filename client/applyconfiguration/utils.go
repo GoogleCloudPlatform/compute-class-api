@@ -55,8 +55,6 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.GpuSharingApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Gvnic"):
 		return &cloudgooglecomv1.GvnicApplyConfiguration{}
-	case v1.SchemeGroupVersion.WithKind("HostMaintenancePolicy"):
-		return &cloudgooglecomv1.HostMaintenancePolicyApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("HugepagesConfig"):
 		return &cloudgooglecomv1.HugepagesConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ImageStreaming"):

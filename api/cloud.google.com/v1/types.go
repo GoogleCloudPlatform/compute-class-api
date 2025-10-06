@@ -625,12 +625,6 @@ type Priority struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=20
 	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
-
-	// HostMaintenancePolicy contains the desired maintenance policy for the
-	// Google Compute Engine hosts.
-	//
-	// +kubebuilder:validation:Optional
-	HostMaintenancePolicy *HostMaintenancePolicy `json:"hostMaintenancePolicy,omitempty" protobuf:"bytes,22,opt,name=hostMaintenancePolicy"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
@@ -1308,12 +1302,6 @@ type PriorityDefaults struct {
 	//
 	// +optional
 	Location *Location `json:"location,omitempty" protobuf:"bytes,2,opt,name=location"`
-
-	// HostMaintenancePolicy contains the desired maintenance policy for the
-	// Google Compute Engine hosts.
-	//
-	// +kubebuilder:validation:Optional
-	HostMaintenancePolicy *HostMaintenancePolicy `json:"hostMaintenancePolicy,omitempty" protobuf:"bytes,3,opt,name=hostMaintenancePolicy"`
 }
 
 // TaintConfig applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling.
@@ -1362,19 +1350,6 @@ type ComputeClassStatus struct {
 	//
 	// +optional
 	Conditions []metav1.Condition `json:"conditions" protobuf:"bytes,1,rep,name=conditions"`
-}
-
-// HostMaintenancePolicy contains the maintenance policy for the hosts on which
-// the GKE VMs run on.
-type HostMaintenancePolicy struct {
-	// Specifies the frequency of planned maintenance events.
-	// Currently supported values:
-	// * AS_NEEDED
-	// * PERIODIC
-	//
-	// +optional
-	// +kubebuilder:validation:Enum=AS_NEEDED;PERIODIC
-	MaintenanceInterval string `json:"maintenanceInterval" protobuf:"bytes,1,opt,name=maintenanceInterval"`
 }
 
 // GpuSharing represents the GPU sharing configuration for
