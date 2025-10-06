@@ -21,28 +21,27 @@ package v1
 // PriorityApplyConfiguration represents an declarative configuration of the Priority type for use
 // with apply.
 type PriorityApplyConfiguration struct {
-	MachineFamily                *string                                  `json:"machineFamily,omitempty"`
-	Spot                         *bool                                    `json:"spot,omitempty"`
-	MinCores                     *int                                     `json:"minCores,omitempty"`
-	MinMemoryGb                  *int                                     `json:"minMemoryGb,omitempty"`
-	Nodepools                    []string                                 `json:"nodepools,omitempty"`
-	Storage                      *StorageApplyConfiguration               `json:"storage,omitempty"`
-	MachineType                  *string                                  `json:"machineType,omitempty"`
-	Gpu                          *GPUApplyConfiguration                   `json:"gpu,omitempty"`
-	Tpu                          *TPUApplyConfiguration                   `json:"tpu,omitempty"`
-	Reservations                 *ReservationsApplyConfiguration          `json:"reservations,omitempty"`
-	MaxRunDurationSeconds        *int                                     `json:"maxRunDurationSeconds,omitempty"`
-	MaxPodsPerNode               *int                                     `json:"maxPodsPerNode,omitempty"`
-	NodeSystemConfig             *NodeSystemConfigApplyConfiguration      `json:"nodeSystemConfig,omitempty"`
-	FlexStart                    *FlexStartApplyConfiguration             `json:"flexStart,omitempty"`
-	PodFamily                    *string                                  `json:"podFamily,omitempty"`
-	Location                     *LocationApplyConfiguration              `json:"location,omitempty"`
-	Placement                    *PlacementApplyConfiguration             `json:"placement,omitempty"`
-	CapacityCheckWaitTimeSeconds *int                                     `json:"capacityCheckWaitTimeSeconds,omitempty"`
-	MinCpuPlatform               *string                                  `json:"minCpuPlatform,omitempty"`
-	NodeLabels                   map[string]string                        `json:"nodeLabels,omitempty"`
-	Taints                       []TaintConfigApplyConfiguration          `json:"taints,omitempty"`
-	HostMaintenancePolicy        *HostMaintenancePolicyApplyConfiguration `json:"hostMaintenancePolicy,omitempty"`
+	MachineFamily                *string                             `json:"machineFamily,omitempty"`
+	Spot                         *bool                               `json:"spot,omitempty"`
+	MinCores                     *int                                `json:"minCores,omitempty"`
+	MinMemoryGb                  *int                                `json:"minMemoryGb,omitempty"`
+	Nodepools                    []string                            `json:"nodepools,omitempty"`
+	Storage                      *StorageApplyConfiguration          `json:"storage,omitempty"`
+	MachineType                  *string                             `json:"machineType,omitempty"`
+	Gpu                          *GPUApplyConfiguration              `json:"gpu,omitempty"`
+	Tpu                          *TPUApplyConfiguration              `json:"tpu,omitempty"`
+	Reservations                 *ReservationsApplyConfiguration     `json:"reservations,omitempty"`
+	MaxRunDurationSeconds        *int                                `json:"maxRunDurationSeconds,omitempty"`
+	MaxPodsPerNode               *int                                `json:"maxPodsPerNode,omitempty"`
+	NodeSystemConfig             *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
+	FlexStart                    *FlexStartApplyConfiguration        `json:"flexStart,omitempty"`
+	PodFamily                    *string                             `json:"podFamily,omitempty"`
+	Location                     *LocationApplyConfiguration         `json:"location,omitempty"`
+	Placement                    *PlacementApplyConfiguration        `json:"placement,omitempty"`
+	CapacityCheckWaitTimeSeconds *int                                `json:"capacityCheckWaitTimeSeconds,omitempty"`
+	MinCpuPlatform               *string                             `json:"minCpuPlatform,omitempty"`
+	NodeLabels                   map[string]string                   `json:"nodeLabels,omitempty"`
+	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -229,13 +228,5 @@ func (b *PriorityApplyConfiguration) WithTaints(values ...*TaintConfigApplyConfi
 		}
 		b.Taints = append(b.Taints, *values[i])
 	}
-	return b
-}
-
-// WithHostMaintenancePolicy sets the HostMaintenancePolicy field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the HostMaintenancePolicy field is set to the value of the last call.
-func (b *PriorityApplyConfiguration) WithHostMaintenancePolicy(value *HostMaintenancePolicyApplyConfiguration) *PriorityApplyConfiguration {
-	b.HostMaintenancePolicy = value
 	return b
 }

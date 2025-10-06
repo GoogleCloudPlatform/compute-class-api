@@ -443,22 +443,6 @@ spec:
                             for a node.
                           type: string
                       type: object
-                    hostMaintenancePolicy:
-                      description: |-
-                        HostMaintenancePolicy contains the desired maintenance policy for the
-                        Google Compute Engine hosts.
-                      properties:
-                        maintenanceInterval:
-                          description: |-
-                            Specifies the frequency of planned maintenance events.
-                            Currently supported values:
-                            * AS_NEEDED
-                            * PERIODIC
-                          enum:
-                          - AS_NEEDED
-                          - PERIODIC
-                          type: string
-                      type: object
                     location:
                       description: Location describes CCC zonal preferences config.
                       properties:
@@ -1479,22 +1463,6 @@ spec:
                   PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
                   Note: PriorityDefaults doesn't apply to priorities with only Nodepools.
                 properties:
-                  hostMaintenancePolicy:
-                    description: |-
-                      HostMaintenancePolicy contains the desired maintenance policy for the
-                      Google Compute Engine hosts.
-                    properties:
-                      maintenanceInterval:
-                        description: |-
-                          Specifies the frequency of planned maintenance events.
-                          Currently supported values:
-                          * AS_NEEDED
-                          * PERIODIC
-                        enum:
-                        - AS_NEEDED
-                        - PERIODIC
-                        type: string
-                    type: object
                   location:
                     description: Location describes CCC zonal preferences config.
                     properties:
