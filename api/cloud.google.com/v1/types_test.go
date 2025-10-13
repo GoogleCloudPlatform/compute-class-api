@@ -16,6 +16,7 @@
 package v1
 
 import (
+	_ "embed"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -25,6 +26,12 @@ import (
 	"testing"
 )
 
+// Embedding the file is needed because the test is also executed inside google3 (this repo is copied by copybara)
+// where it's not executed from the package root directory.
+//
+//go:embed types.go
+var typesGoSource []byte
+
 // TestProtobufOrderIsIncreasing automatically checks that for every struct in
 // types.go, the protobuf field numbers are in strictly increasing order.
 // This test works by parsing the source file and inspecting the AST, so it
@@ -32,7 +39,7 @@ import (
 func TestProtobufOrderIsIncreasing(t *testing.T) {
 	fset := token.NewFileSet()
 	// The path is relative to the package directory.
-	node, err := parser.ParseFile(fset, "types.go", nil, 0)
+	node, err := parser.ParseFile(fset, "types.go", typesGoSource, 0)
 	if err != nil {
 		t.Fatalf("Failed to parse types.go: %v", err)
 	}
