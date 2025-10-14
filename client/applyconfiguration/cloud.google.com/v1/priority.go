@@ -42,6 +42,7 @@ type PriorityApplyConfiguration struct {
 	MinCpuPlatform               *string                             `json:"minCpuPlatform,omitempty"`
 	NodeLabels                   map[string]string                   `json:"nodeLabels,omitempty"`
 	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
+	Rank                         *int                                `json:"rank,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -228,5 +229,13 @@ func (b *PriorityApplyConfiguration) WithTaints(values ...*TaintConfigApplyConfi
 		}
 		b.Taints = append(b.Taints, *values[i])
 	}
+	return b
+}
+
+// WithRank sets the Rank field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Rank field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithRank(value int) *PriorityApplyConfiguration {
+	b.Rank = &value
 	return b
 }
