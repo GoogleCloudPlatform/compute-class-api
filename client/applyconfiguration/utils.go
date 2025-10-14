@@ -99,6 +99,16 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.SpecificReservationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Storage"):
 		return &cloudgooglecomv1.StorageApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SwapConfig"):
+		return &cloudgooglecomv1.SwapConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SwapConfigBootDiskProfile"):
+		return &cloudgooglecomv1.SwapConfigBootDiskProfileApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SwapConfigDedicatedLocalSsdProfile"):
+		return &cloudgooglecomv1.SwapConfigDedicatedLocalSsdProfileApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SwapConfigEncryptionConfig"):
+		return &cloudgooglecomv1.SwapConfigEncryptionConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SwapConfigEphemeralLocalSsdProfile"):
+		return &cloudgooglecomv1.SwapConfigEphemeralLocalSsdProfileApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SysctlsConfig"):
 		return &cloudgooglecomv1.SysctlsConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Tags"):

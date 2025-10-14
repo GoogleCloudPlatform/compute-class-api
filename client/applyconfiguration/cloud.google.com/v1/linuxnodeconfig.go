@@ -25,6 +25,7 @@ type LinuxNodeConfigApplyConfiguration struct {
 	Hugepages                  *HugepagesConfigApplyConfiguration `json:"hugepageConfig,omitempty"`
 	TransparentHugepageEnabled *string                            `json:"transparentHugepageEnabled,omitempty"`
 	TransparentHugepageDefrag  *string                            `json:"transparentHugepageDefrag,omitempty"`
+	SwapConfig                 *SwapConfigApplyConfiguration      `json:"swapConfig,omitempty"`
 }
 
 // LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
@@ -62,5 +63,13 @@ func (b *LinuxNodeConfigApplyConfiguration) WithTransparentHugepageEnabled(value
 // If called multiple times, the TransparentHugepageDefrag field is set to the value of the last call.
 func (b *LinuxNodeConfigApplyConfiguration) WithTransparentHugepageDefrag(value string) *LinuxNodeConfigApplyConfiguration {
 	b.TransparentHugepageDefrag = &value
+	return b
+}
+
+// WithSwapConfig sets the SwapConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the SwapConfig field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithSwapConfig(value *SwapConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.SwapConfig = value
 	return b
 }
