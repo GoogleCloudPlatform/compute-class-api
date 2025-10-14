@@ -1257,6 +1257,99 @@ type SysctlsConfig struct {
 	// +kubebuilder:validation:Maximum=1048576
 	// +kubebuilder:validation:Optional
 	Vm_min_free_kbytes *int64 `json:"vm.min_free_kbytes,omitempty" protobuf:"bytes,40,opt,name=vm.min_free_kbytes"`
+	// Controls TCP Packetization-Layer Path MTU Discovery. Supported values:
+	// 0: Disabled
+	// 1: Disabled by default, enabled when an ICMP black hole detected
+	// 2: Always enabled, use initial MSS of tcp_base_mss.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=2
+	// +kubebuilder:validation:Optional
+	Net_ipv4_tcp_mtu_probing *int64 `json:"net.ipv4.tcp_mtu_probing,omitempty" protobuf:"bytes,41,opt,name=net.ipv4.tcp_mtu_probing"`
+	// Maximal number of timewait sockets held by system simultaneously. If this number is exceeded time-wait socket is immediately destroyed and warning is printed.
+	//
+	// +kubebuilder:validation:Minimum=4096
+	// +kubebuilder:validation:Maximum=2147483647
+	// +kubebuilder:validation:Optional
+	Net_ipv4_tcp_max_tw_buckets *int64 `json:"net.ipv4.tcp_max_tw_buckets,omitempty" protobuf:"bytes,42,opt,name=net.ipv4.tcp_max_tw_buckets"`
+	// Number of times initial SYNs for an active TCP connection attempt will be retransmitted.
+	//
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=127
+	// +kubebuilder:validation:Optional
+	Net_ipv4_tcp_syn_retries *int64 `json:"net.ipv4.tcp_syn_retries,omitempty" protobuf:"bytes,43,opt,name=net.ipv4.tcp_syn_retries"`
+	// Control use of Explicit Congestion Notification (ECN) by TCP. ECN is used only when both ends of the TCP connection indicate support for it.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=2
+	// +kubebuilder:validation:Optional
+	Net_ipv4_tcp_ecn *int64 `json:"net.ipv4.tcp_ecn,omitempty" protobuf:"bytes,44,opt,name=net.ipv4.tcp_ecn"`
+	// Set the congestion control algorithm to be used for new connections. The algorithm “reno” is always available, but additional choices may be available based on kernel configuration. Default is set as part of kernel configuration. For passive connections, the listener congestion control choice is inherited.
+	//
+	// +kubebuilder:validation:MaxLength=10
+	// +kubebuilder:validation:Pattern=`^[a-zA-Z0-9_]+$`
+	// +kubebuilder:validation:Optional
+	Net_ipv4_tcp_congestion_control *string `json:"net.ipv4.tcp_congestion_control,omitempty" protobuf:"bytes,45,opt,name=net.ipv4.tcp_congestion_control"`
+	// Controls use of the performance events system by unprivileged users (without CAP_PERFMON). The default value is 2 in kernel.
+	//
+	// +kubebuilder:validation:Minimum=-1
+	// +kubebuilder:validation:Maximum=3
+	// +kubebuilder:validation:Optional
+	Kernel_perf_event_paranoid *int64 `json:"kernel.perf_event_paranoid,omitempty" protobuf:"bytes,46,opt,name=kernel.perf_event_paranoid"`
+	// A global limit on how much time real-time scheduling may use.
+	//
+	// +kubebuilder:validation:Minimum=-1
+	// +kubebuilder:validation:Maximum=1000000
+	// +kubebuilder:validation:Optional
+	Kernel_sched_rt_runtime_us *int64 `json:"kernel.sched_rt_runtime_us,omitempty" protobuf:"bytes,47,opt,name=kernel.sched_rt_runtime_us"`
+	// Control whether the kernel panics when a soft lockup is detected.
+	//
+	// +kubebuilder:validation:Optional
+	Kernel_softlockup_panic *bool `json:"kernel.softlockup_panic,omitempty" protobuf:"bytes,48,opt,name=kernel.softlockup_panic"`
+	// Defines the scope and restrictions for the ptrace() system call, impacting process debugging and tracing. Supported values:
+	// 0: Classic ptrace permissions.
+	// 1: Restricted ptrace (default in many distributions) - only child processes or CAP_SYS_PTRACE.
+	// 2: Admin-only ptrace - only processes with CAP_SYS_PTRACE.
+	// 3: No ptrace - ptrace calls are disallowed.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=3
+	// +kubebuilder:validation:Optional
+	Kernel_yama_ptrace_scope *int64 `json:"kernel.yama.ptrace_scope,omitempty" protobuf:"bytes,49,opt,name=kernel.yama.ptrace_scope"`
+	// Indicates whether restrictions are placed on exposing kernel addresses via /proc and other interfaces.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=2
+	// +kubebuilder:validation:Optional
+	Kernel_kptr_restrict *int64 `json:"kernel.kptr_restrict,omitempty" protobuf:"bytes,50,opt,name=kernel.kptr_restrict"`
+	// Indicates whether unprivileged users are prevented from using dmesg(8) to view messages from the kernel’s log buffer.
+	//
+	// +kubebuilder:validation:Optional
+	Kernel_dmesg_restrict *bool `json:"kernel.dmesg_restrict,omitempty" protobuf:"bytes,51,opt,name=kernel.dmesg_restrict"`
+	// Controls the functions allowed to be invoked via the SysRq key. List of possible values:
+	// 0: Disables sysrq completely.
+	// 1: Enables all sysrq functions.
+	// >1 - bitmask of allowed sysrq functions. More details in https://docs.kernel.org/admin-guide/sysrq.html.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=511
+	// +kubebuilder:validation:Optional
+	Kernel_sysrq *int64 `json:"kernel.sysrq,omitempty" protobuf:"bytes,52,opt,name=kernel.sysrq"`
+	// Contains the amount of dirty memory at which the background kernel flusher threads will start writeback.
+	// Note: Vm_dirty_background_bytes is the counterpart of Vm_dirty_background_ratio. Only one of them may be specified at a time.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=68719476736
+	// +kubebuilder:validation:Optional
+	Vm_dirty_background_bytes *int64 `json:"vm.dirty_background_bytes,omitempty" protobuf:"bytes,53,opt,name=vm.dirty_background_bytes"`
+	// Contains the amount of dirty memory at which a process generating disk writes will itself start writeback.
+	// Note: Vm_dirty_bytes is the counterpart of Vm_dirty_ratio. Only one of them may be specified at a time.
+	// Note: the minimum value allowed for Vm_dirty_bytes is two pages (in bytes); any value lower than this limit will be ignored and the old configuration will be retained.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=68719476736
+	// +kubebuilder:validation:Optional
+	Vm_dirty_bytes *int64 `json:"vm.dirty_bytes,omitempty" protobuf:"bytes,54,opt,name=vm.dirty_bytes"`
 }
 
 // HugepagesConfig defines hugepages config for a node.
