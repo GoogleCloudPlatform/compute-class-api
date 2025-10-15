@@ -902,8 +902,8 @@ spec:
                                   x-kubernetes-validations:
                                   - message: only one of swap_size_gib or swap_size_percent
                                       may be set
-                                    rule: has(self.swap_size_gib) + has(self.swap_size_percent)
-                                      <= 1
+                                    rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                      ? 1 : 0) <= 1'
                                 dedicated_local_ssd_profile:
                                   description: Provision a new, separate local NVMe
                                     SSD exclusively for swap.
@@ -949,14 +949,15 @@ spec:
                                   x-kubernetes-validations:
                                   - message: only one of swap_size_gib or swap_size_percent
                                       may be set
-                                    rule: has(self.swap_size_gib) + has(self.swap_size_percent)
-                                      <= 1
+                                    rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                      ? 1 : 0) <= 1'
                               type: object
                               x-kubernetes-validations:
                               - message: only one of boot_disk_profile, ephemeral_local_ssd_profile,
                                   or dedicated_local_ssd_profile may be set
-                                rule: has(self.boot_disk_profile) + has(self.ephemeral_local_ssd_profile)
-                                  + has(self.dedicated_local_ssd_profile) <= 1
+                                rule: '(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile)
+                                  ? 1 : 0) + (has(self.dedicated_local_ssd_profile)
+                                  ? 1 : 0) <= 1'
                             sysctls:
                               description: SysctlsConfig defines sysctls config for
                                 a node.
@@ -2034,8 +2035,8 @@ spec:
                                 x-kubernetes-validations:
                                 - message: only one of swap_size_gib or swap_size_percent
                                     may be set
-                                  rule: has(self.swap_size_gib) + has(self.swap_size_percent)
-                                    <= 1
+                                  rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                    ? 1 : 0) <= 1'
                               dedicated_local_ssd_profile:
                                 description: Provision a new, separate local NVMe
                                   SSD exclusively for swap.
@@ -2081,14 +2082,15 @@ spec:
                                 x-kubernetes-validations:
                                 - message: only one of swap_size_gib or swap_size_percent
                                     may be set
-                                  rule: has(self.swap_size_gib) + has(self.swap_size_percent)
-                                    <= 1
+                                  rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                    ? 1 : 0) <= 1'
                             type: object
                             x-kubernetes-validations:
                             - message: only one of boot_disk_profile, ephemeral_local_ssd_profile,
                                 or dedicated_local_ssd_profile may be set
-                              rule: has(self.boot_disk_profile) + has(self.ephemeral_local_ssd_profile)
-                                + has(self.dedicated_local_ssd_profile) <= 1
+                              rule: '(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile)
+                                ? 1 : 0) + (has(self.dedicated_local_ssd_profile)
+                                ? 1 : 0) <= 1'
                           sysctls:
                             description: SysctlsConfig defines sysctls config for
                               a node.
