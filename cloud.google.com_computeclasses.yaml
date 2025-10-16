@@ -1630,10 +1630,6 @@ spec:
                     rule: '!(has(self.machineFamily) && has(self.machineType))'
                   - message: MachineType cannot be set together with MinCores/MinMemoryGb
                     rule: '!(has(self.machineType) && (has(self.minCores) || has(self.minMemoryGb)))'
-                  - message: Non-TPU reservations can be used only with machine type
-                      or machine family defined
-                    rule: 'has(self.reservations) && !has(self.tpu) ? has(self.machineFamily)
-                      || has(self.machineType) : true'
                   - message: MachineFamily cannot be equal to 'ek'
                     rule: '!(has(self.machineFamily) && self.machineFamily == ''ek'')'
                   - message: MachineType cannot start with 'ek' prefix
