@@ -883,15 +883,15 @@ spec:
                               description: SwapConfig specifies the swap memory configuration
                                 for a node pool.
                               properties:
-                                boot_disk_profile:
+                                bootDiskProfile:
                                   description: Use the node's boot disk for swap.
                                   properties:
-                                    swap_size_gib:
+                                    swapSizeGib:
                                       description: The size of the swap space in GiB.
                                       format: int64
                                       minimum: 1
                                       type: integer
-                                    swap_size_percent:
+                                    swapSizePercent:
                                       description: The size of the swap space as a
                                         percentage of the node's memory.
                                       format: int32
@@ -900,15 +900,15 @@ spec:
                                       type: integer
                                   type: object
                                   x-kubernetes-validations:
-                                  - message: only one of swap_size_gib or swap_size_percent
+                                  - message: only one of swapSizeGib or swapSizePercent
                                       may be set
-                                    rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                    rule: '(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent)
                                       ? 1 : 0) <= 1'
-                                dedicated_local_ssd_profile:
+                                dedicatedLocalSsdProfile:
                                   description: Provision a new, separate local NVMe
                                     SSD exclusively for swap.
                                   properties:
-                                    disk_count:
+                                    diskCount:
                                       description: The number of physical local NVMe
                                         SSD disks to attach.
                                       format: int64
@@ -919,7 +919,7 @@ spec:
                                   description: Enables or disables swap for the node
                                     pool. Default to false.
                                   type: boolean
-                                encryption_config:
+                                encryptionConfig:
                                   description: If omitted, swap space is encrypted
                                     by default.
                                   properties:
@@ -929,16 +929,16 @@ spec:
                                         Defaults to false, swap space is encrypted by default.
                                       type: boolean
                                   type: object
-                                ephemeral_local_ssd_profile:
+                                ephemeralLocalSsdProfile:
                                   description: Use the local SSD (shared with ephemeral
                                     storage) for swap.
                                   properties:
-                                    swap_size_gib:
+                                    swapSizeGib:
                                       description: The size of the swap space in GiB.
                                       format: int64
                                       minimum: 1
                                       type: integer
-                                    swap_size_percent:
+                                    swapSizePercent:
                                       description: The size of the swap space as a
                                         percentage of the node's memory.
                                       format: int32
@@ -947,17 +947,17 @@ spec:
                                       type: integer
                                   type: object
                                   x-kubernetes-validations:
-                                  - message: only one of swap_size_gib or swap_size_percent
+                                  - message: only one of swapSizeGib or swapSizePercent
                                       may be set
-                                    rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                    rule: '(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent)
                                       ? 1 : 0) <= 1'
                               type: object
                               x-kubernetes-validations:
-                              - message: only one of boot_disk_profile, ephemeral_local_ssd_profile,
-                                  or dedicated_local_ssd_profile may be set
-                                rule: '(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile)
-                                  ? 1 : 0) + (has(self.dedicated_local_ssd_profile)
-                                  ? 1 : 0) <= 1'
+                              - message: only one of bootDiskProfile, ephemeralLocalSsdProfile,
+                                  or dedicatedLocalSsdProfile may be set
+                                rule: '(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile)
+                                  ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ?
+                                  1 : 0) <= 1'
                             sysctls:
                               description: SysctlsConfig defines sysctls config for
                                 a node.
@@ -2012,15 +2012,15 @@ spec:
                             description: SwapConfig specifies the swap memory configuration
                               for a node pool.
                             properties:
-                              boot_disk_profile:
+                              bootDiskProfile:
                                 description: Use the node's boot disk for swap.
                                 properties:
-                                  swap_size_gib:
+                                  swapSizeGib:
                                     description: The size of the swap space in GiB.
                                     format: int64
                                     minimum: 1
                                     type: integer
-                                  swap_size_percent:
+                                  swapSizePercent:
                                     description: The size of the swap space as a percentage
                                       of the node's memory.
                                     format: int32
@@ -2029,15 +2029,15 @@ spec:
                                     type: integer
                                 type: object
                                 x-kubernetes-validations:
-                                - message: only one of swap_size_gib or swap_size_percent
+                                - message: only one of swapSizeGib or swapSizePercent
                                     may be set
-                                  rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                  rule: '(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent)
                                     ? 1 : 0) <= 1'
-                              dedicated_local_ssd_profile:
+                              dedicatedLocalSsdProfile:
                                 description: Provision a new, separate local NVMe
                                   SSD exclusively for swap.
                                 properties:
-                                  disk_count:
+                                  diskCount:
                                     description: The number of physical local NVMe
                                       SSD disks to attach.
                                     format: int64
@@ -2048,7 +2048,7 @@ spec:
                                 description: Enables or disables swap for the node
                                   pool. Default to false.
                                 type: boolean
-                              encryption_config:
+                              encryptionConfig:
                                 description: If omitted, swap space is encrypted by
                                   default.
                                 properties:
@@ -2058,16 +2058,16 @@ spec:
                                       Defaults to false, swap space is encrypted by default.
                                     type: boolean
                                 type: object
-                              ephemeral_local_ssd_profile:
+                              ephemeralLocalSsdProfile:
                                 description: Use the local SSD (shared with ephemeral
                                   storage) for swap.
                                 properties:
-                                  swap_size_gib:
+                                  swapSizeGib:
                                     description: The size of the swap space in GiB.
                                     format: int64
                                     minimum: 1
                                     type: integer
-                                  swap_size_percent:
+                                  swapSizePercent:
                                     description: The size of the swap space as a percentage
                                       of the node's memory.
                                     format: int32
@@ -2076,17 +2076,17 @@ spec:
                                     type: integer
                                 type: object
                                 x-kubernetes-validations:
-                                - message: only one of swap_size_gib or swap_size_percent
+                                - message: only one of swapSizeGib or swapSizePercent
                                     may be set
-                                  rule: '(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent)
+                                  rule: '(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent)
                                     ? 1 : 0) <= 1'
                             type: object
                             x-kubernetes-validations:
-                            - message: only one of boot_disk_profile, ephemeral_local_ssd_profile,
-                                or dedicated_local_ssd_profile may be set
-                              rule: '(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile)
-                                ? 1 : 0) + (has(self.dedicated_local_ssd_profile)
-                                ? 1 : 0) <= 1'
+                            - message: only one of bootDiskProfile, ephemeralLocalSsdProfile,
+                                or dedicatedLocalSsdProfile may be set
+                              rule: '(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile)
+                                ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ? 1
+                                : 0) <= 1'
                           sysctls:
                             description: SysctlsConfig defines sysctls config for
                               a node.

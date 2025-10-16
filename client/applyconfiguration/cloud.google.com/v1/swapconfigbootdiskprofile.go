@@ -21,8 +21,8 @@ package v1
 // SwapConfigBootDiskProfileApplyConfiguration represents an declarative configuration of the SwapConfigBootDiskProfile type for use
 // with apply.
 type SwapConfigBootDiskProfileApplyConfiguration struct {
-	SwapSizeGib     *int64 `json:"swap_size_gib,omitempty"`
-	SwapSizePercent *int32 `json:"swap_size_percent,omitempty"`
+	SwapSizeGib     *int64 `json:"swapSizeGib,omitempty"`
+	SwapSizePercent *int32 `json:"swapSizePercent,omitempty"`
 }
 
 // SwapConfigBootDiskProfileApplyConfiguration constructs an declarative configuration of the SwapConfigBootDiskProfile type for use with

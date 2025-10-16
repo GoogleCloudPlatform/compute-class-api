@@ -1471,27 +1471,27 @@ type GpuSharing struct {
 }
 
 // SwapConfig specifies the swap memory configuration for a node pool.
-// +kubebuilder:validation:XValidation:rule="(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile) ? 1 : 0) + (has(self.dedicated_local_ssd_profile) ? 1 : 0) <= 1",message="only one of boot_disk_profile, ephemeral_local_ssd_profile, or dedicated_local_ssd_profile may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile) ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ? 1 : 0) <= 1",message="only one of bootDiskProfile, ephemeralLocalSsdProfile, or dedicatedLocalSsdProfile may be set"
 type SwapConfig struct {
 	// Enables or disables swap for the node pool. Default to false.
 	Enabled bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
 
 	// If omitted, swap space is encrypted by default.
 	// +optional
-	EncryptionConfig *SwapConfigEncryptionConfig `json:"encryption_config,omitempty" protobuf:"bytes,2,opt,name=encryption_config"`
+	EncryptionConfig *SwapConfigEncryptionConfig `json:"encryptionConfig,omitempty" protobuf:"bytes,2,opt,name=encryptionConfig"`
 
 	// --- Performance Profile (oneof) ---
 	// Only ONE of the following profile fields should be set (non-nil).
 
 	// Use the node's boot disk for swap.
 	// +optional
-	BootDiskProfile *SwapConfigBootDiskProfile `json:"boot_disk_profile,omitempty" protobuf:"bytes,3,opt,name=boot_disk_profile,oneof=performance_profile"`
+	BootDiskProfile *SwapConfigBootDiskProfile `json:"bootDiskProfile,omitempty" protobuf:"bytes,3,opt,name=bootDiskProfile,oneof=performanceProfile"`
 	// Use the local SSD (shared with ephemeral storage) for swap.
 	// +optional
-	EphemeralLocalSsdProfile *SwapConfigEphemeralLocalSsdProfile `json:"ephemeral_local_ssd_profile,omitempty" protobuf:"bytes,4,opt,name=ephemeral_local_ssd_profile,oneof=performance_profile"`
+	EphemeralLocalSsdProfile *SwapConfigEphemeralLocalSsdProfile `json:"ephemeralLocalSsdProfile,omitempty" protobuf:"bytes,4,opt,name=ephemeralLocalSsdProfile,oneof=performanceProfile"`
 	// Provision a new, separate local NVMe SSD exclusively for swap.
 	// +optional
-	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfile `json:"dedicated_local_ssd_profile,omitempty" protobuf:"bytes,5,opt,name=dedicated_local_ssd_profile,oneof=performance_profile"`
+	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfile `json:"dedicatedLocalSsdProfile,omitempty" protobuf:"bytes,5,opt,name=dedicatedLocalSsdProfile,oneof=performanceProfile"`
 }
 
 // SwapConfigEncryptionConfig defines encryption settings for the swap space.
@@ -1502,7 +1502,7 @@ type SwapConfigEncryptionConfig struct {
 }
 
 // SwapConfigBootDiskProfile defines swap on the node's boot disk.
-// +kubebuilder:validation:XValidation:rule="(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent) ? 1 : 0) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent) ? 1 : 0) <= 1",message="only one of swapSizeGib or swapSizePercent may be set"
 type SwapConfigBootDiskProfile struct {
 	// --- Swap Size (oneof) ---
 	// Only one of the following size fields should be set.
@@ -1510,16 +1510,16 @@ type SwapConfigBootDiskProfile struct {
 	// The size of the swap space in GiB.
 	// +kubebuilder:validation:Minimum=1
 	// +optional
-	SwapSizeGib *int64 `json:"swap_size_gib,omitempty" protobuf:"bytes,1,opt,name=swap_size_gib,oneof=swap_size"`
+	SwapSizeGib *int64 `json:"swapSizeGib,omitempty" protobuf:"bytes,1,opt,name=swapSizeGib,oneof=swapSize"`
 	// The size of the swap space as a percentage of the node's memory.
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=50
 	// +optional
-	SwapSizePercent *int32 `json:"swap_size_percent,omitempty" protobuf:"bytes,2,opt,name=swap_size_percent,oneof=swap_size"`
+	SwapSizePercent *int32 `json:"swapSizePercent,omitempty" protobuf:"bytes,2,opt,name=swapSizePercent,oneof=swapSize"`
 }
 
 // SwapConfigEphemeralLocalSsdProfile defines swap on the local SSD.
-// +kubebuilder:validation:XValidation:rule="(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent) ? 1 : 0) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.swapSizeGib) ? 1 : 0) + (has(self.swapSizePercent) ? 1 : 0) <= 1",message="only one of swapSizeGib or swapSizePercent may be set"
 type SwapConfigEphemeralLocalSsdProfile struct {
 	// --- Swap Size (oneof) ---
 	// Only one of the following size fields should be set.
@@ -1527,17 +1527,17 @@ type SwapConfigEphemeralLocalSsdProfile struct {
 	// The size of the swap space in GiB.
 	// +kubebuilder:validation:Minimum=1
 	// +optional
-	SwapSizeGib *int64 `json:"swap_size_gib,omitempty" protobuf:"bytes,1,opt,name=swap_size_gib,oneof=swap_size"`
+	SwapSizeGib *int64 `json:"swapSizeGib,omitempty" protobuf:"bytes,1,opt,name=swapSizeGib,oneof=swapSize"`
 	// The size of the swap space as a percentage of the node's memory.
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=50
 	// +optional
-	SwapSizePercent *int32 `json:"swap_size_percent,omitempty" protobuf:"bytes,2,opt,name=swap_size_percent,oneof=swap_size"`
+	SwapSizePercent *int32 `json:"swapSizePercent,omitempty" protobuf:"bytes,2,opt,name=swapSizePercent,oneof=swapSize"`
 }
 
 // SwapConfigDedicatedLocalSsdProfile provisions a new local SSD for swap.
 type SwapConfigDedicatedLocalSsdProfile struct {
 	// +kubebuilder:validation:Minimum=1
 	// The number of physical local NVMe SSD disks to attach.
-	DiskCount int64 `json:"disk_count,omitempty" protobuf:"bytes,1,opt,name=disk_count"`
+	DiskCount int64 `json:"diskCount,omitempty" protobuf:"bytes,1,opt,name=diskCount"`
 }

@@ -22,10 +22,10 @@ package v1
 // with apply.
 type SwapConfigApplyConfiguration struct {
 	Enabled                  *bool                                                 `json:"enabled,omitempty"`
-	EncryptionConfig         *SwapConfigEncryptionConfigApplyConfiguration         `json:"encryption_config,omitempty"`
-	BootDiskProfile          *SwapConfigBootDiskProfileApplyConfiguration          `json:"boot_disk_profile,omitempty"`
-	EphemeralLocalSsdProfile *SwapConfigEphemeralLocalSsdProfileApplyConfiguration `json:"ephemeral_local_ssd_profile,omitempty"`
-	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfileApplyConfiguration `json:"dedicated_local_ssd_profile,omitempty"`
+	EncryptionConfig         *SwapConfigEncryptionConfigApplyConfiguration         `json:"encryptionConfig,omitempty"`
+	BootDiskProfile          *SwapConfigBootDiskProfileApplyConfiguration          `json:"bootDiskProfile,omitempty"`
+	EphemeralLocalSsdProfile *SwapConfigEphemeralLocalSsdProfileApplyConfiguration `json:"ephemeralLocalSsdProfile,omitempty"`
+	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfileApplyConfiguration `json:"dedicatedLocalSsdProfile,omitempty"`
 }
 
 // SwapConfigApplyConfiguration constructs an declarative configuration of the SwapConfig type for use with
