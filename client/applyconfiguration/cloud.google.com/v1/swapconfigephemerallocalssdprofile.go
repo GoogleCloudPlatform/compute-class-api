@@ -21,8 +21,8 @@ package v1
 // SwapConfigEphemeralLocalSsdProfileApplyConfiguration represents an declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use
 // with apply.
 type SwapConfigEphemeralLocalSsdProfileApplyConfiguration struct {
-	SwapSizeGib     *int64 `json:"swap_size_gib,omitempty"`
-	SwapSizePercent *int32 `json:"swap_size_percent,omitempty"`
+	SwapSizeGib     *int64 `json:"swapSizeGib,omitempty"`
+	SwapSizePercent *int32 `json:"swapSizePercent,omitempty"`
 }
 
 // SwapConfigEphemeralLocalSsdProfileApplyConfiguration constructs an declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use with
