@@ -1471,7 +1471,7 @@ type GpuSharing struct {
 }
 
 // SwapConfig specifies the swap memory configuration for a node pool.
-// +kubebuilder:validation:XValidation:rule="has(self.boot_disk_profile) + has(self.ephemeral_local_ssd_profile) + has(self.dedicated_local_ssd_profile) <= 1",message="only one of boot_disk_profile, ephemeral_local_ssd_profile, or dedicated_local_ssd_profile may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.boot_disk_profile) ? 1 : 0) + (has(self.ephemeral_local_ssd_profile) ? 1 : 0) + (has(self.dedicated_local_ssd_profile) ? 1 : 0) <= 1",message="only one of boot_disk_profile, ephemeral_local_ssd_profile, or dedicated_local_ssd_profile may be set"
 type SwapConfig struct {
 	// Enables or disables swap for the node pool. Default to false.
 	Enabled bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
@@ -1502,7 +1502,7 @@ type SwapConfigEncryptionConfig struct {
 }
 
 // SwapConfigBootDiskProfile defines swap on the node's boot disk.
-// +kubebuilder:validation:XValidation:rule="has(self.swap_size_gib) + has(self.swap_size_percent) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent) ? 1 : 0) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
 type SwapConfigBootDiskProfile struct {
 	// --- Swap Size (oneof) ---
 	// Only one of the following size fields should be set.
@@ -1519,7 +1519,7 @@ type SwapConfigBootDiskProfile struct {
 }
 
 // SwapConfigEphemeralLocalSsdProfile defines swap on the local SSD.
-// +kubebuilder:validation:XValidation:rule="has(self.swap_size_gib) + has(self.swap_size_percent) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.swap_size_gib) ? 1 : 0) + (has(self.swap_size_percent) ? 1 : 0) <= 1",message="only one of swap_size_gib or swap_size_percent may be set"
 type SwapConfigEphemeralLocalSsdProfile struct {
 	// --- Swap Size (oneof) ---
 	// Only one of the following size fields should be set.
