@@ -41,6 +41,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Dra"):
+		return &cloudgooglecomv1.DraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
 		return &cloudgooglecomv1.EvictionMinimumReclaimApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionSoft"):
@@ -49,6 +51,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.EvictionSoftGracePeriodApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("FlexStart"):
 		return &cloudgooglecomv1.FlexStartApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("GoogleTpuDraDriver"):
+		return &cloudgooglecomv1.GoogleTpuDraDriverApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GPU"):
 		return &cloudgooglecomv1.GPUApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GpuSharing"):
@@ -81,6 +85,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.NodeRecyclingConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeSystemConfig"):
 		return &cloudgooglecomv1.NodeSystemConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NvidiaGpuDraDriver"):
+		return &cloudgooglecomv1.NvidiaGpuDraDriverApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Placement"):
 		return &cloudgooglecomv1.PlacementApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Priority"):
