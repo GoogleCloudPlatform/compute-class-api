@@ -893,7 +893,7 @@ spec:
                                       type: integer
                                     swapSizePercent:
                                       description: The size of the swap space as a
-                                        percentage of the node's memory.
+                                        percentage of the node's boot disk.
                                       format: int32
                                       maximum: 50
                                       minimum: 1
@@ -940,9 +940,10 @@ spec:
                                       type: integer
                                     swapSizePercent:
                                       description: The size of the swap space as a
-                                        percentage of the node's memory.
+                                        percentage of the node's ephemeral storage
+                                        local SSDs.
                                       format: int32
-                                      maximum: 50
+                                      maximum: 80
                                       minimum: 1
                                       type: integer
                                   type: object
@@ -2022,7 +2023,7 @@ spec:
                                     type: integer
                                   swapSizePercent:
                                     description: The size of the swap space as a percentage
-                                      of the node's memory.
+                                      of the node's boot disk.
                                     format: int32
                                     maximum: 50
                                     minimum: 1
@@ -2069,9 +2070,9 @@ spec:
                                     type: integer
                                   swapSizePercent:
                                     description: The size of the swap space as a percentage
-                                      of the node's memory.
+                                      of the node's ephemeral storage local SSDs.
                                     format: int32
-                                    maximum: 50
+                                    maximum: 80
                                     minimum: 1
                                     type: integer
                                 type: object

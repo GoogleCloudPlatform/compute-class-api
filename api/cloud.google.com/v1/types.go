@@ -1511,7 +1511,7 @@ type SwapConfigBootDiskProfile struct {
 	// +kubebuilder:validation:Minimum=1
 	// +optional
 	SwapSizeGib *int64 `json:"swapSizeGib,omitempty" protobuf:"bytes,1,opt,name=swapSizeGib,oneof=swapSize"`
-	// The size of the swap space as a percentage of the node's memory.
+	// The size of the swap space as a percentage of the node's boot disk.
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=50
 	// +optional
@@ -1528,9 +1528,9 @@ type SwapConfigEphemeralLocalSsdProfile struct {
 	// +kubebuilder:validation:Minimum=1
 	// +optional
 	SwapSizeGib *int64 `json:"swapSizeGib,omitempty" protobuf:"bytes,1,opt,name=swapSizeGib,oneof=swapSize"`
-	// The size of the swap space as a percentage of the node's memory.
+	// The size of the swap space as a percentage of the node's ephemeral storage local SSDs.
 	// +kubebuilder:validation:Minimum=1
-	// +kubebuilder:validation:Maximum=50
+	// +kubebuilder:validation:Maximum=80
 	// +optional
 	SwapSizePercent *int32 `json:"swapSizePercent,omitempty" protobuf:"bytes,2,opt,name=swapSizePercent,oneof=swapSize"`
 }
