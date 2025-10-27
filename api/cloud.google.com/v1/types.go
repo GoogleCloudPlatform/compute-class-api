@@ -616,6 +616,7 @@ type Priority struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
+
 	// A higher value is treated as a higher priority.
 	// Priorities with the same rank value are treated equally.
 	// Not more than 3 priorities can have the same rank.
@@ -624,6 +625,11 @@ type Priority struct {
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=1000
 	Rank *int `json:"rank,omitempty" protobuf:"bytes,22,opt,name=rank"`
+
+	// Identifier is a string used to identify compute classes' priorities. It is set automatically to the index of a priority within the priority list.
+	//
+	// +optional
+	Identifier string `json:"identifier,omitempty" protobuf:"bytes,23,opt,name=identifier"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
