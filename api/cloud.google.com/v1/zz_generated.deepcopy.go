@@ -1132,6 +1132,11 @@ func (in *SpecificReservation) DeepCopyInto(out *SpecificReservation) {
 		*out = new(ReservationBlock)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Zones != nil {
+		in, out := &in.Zones, &out.Zones
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

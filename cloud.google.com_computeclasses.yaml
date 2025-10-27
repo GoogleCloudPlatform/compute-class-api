@@ -1476,6 +1476,13 @@ spec:
                                 required:
                                 - name
                                 type: object
+                              zones:
+                                description: Zones is a list of GCE zones where reservations
+                                  are to be consumed.
+                                items:
+                                  type: string
+                                minItems: 1
+                                type: array
                             required:
                             - name
                             type: object

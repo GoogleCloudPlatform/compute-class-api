@@ -433,6 +433,12 @@ type SpecificReservation struct {
 	//
 	// +optional
 	ReservationBlock *ReservationBlock `json:"reservationBlock,omitempty" protobuf:"bytes,3,opt,name=reservationBlock"`
+	// Zones is a list of GCE zones where reservations are to be consumed.
+	//
+	// +kubebuilder:listType=atomic
+	// +kubebuilder:validation:MinItems=1
+	// +optional
+	Zones []string `json:"zones,omitempty" protobuf:"bytes,4,opt,name=zones"`
 }
 
 // ReservationBlock is the block of the reservation.
