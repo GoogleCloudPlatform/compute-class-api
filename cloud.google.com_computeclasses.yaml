@@ -234,21 +234,6 @@ spec:
                       More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
                     maxProperties: 100
                     type: object
-                    x-kubernetes-validations:
-                    - message: Node labels must begin with a letter or number, and
-                        may contain letters, numbers, hyphens, dots, and underscores,
-                        up to 63 characters each.
-                      rule: self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))
-                    - message: Node labels cannot contain reserved `cloud.google.com`
-                        substring.
-                      rule: self.all(key, !key.contains('cloud.google.com'))
-                    - message: Node labels cannot contain reserved `kubernetes.io`
-                        substring.
-                      rule: self.all(key, !key.contains('kubernetes.io'))
-                    - message: Node labels cannot contain reserved `gke.io` substring.
-                      rule: self.all(key, !key.contains('gke.io'))
-                    - message: Node labels cannot contain reserved `k8s.io` substring.
-                      rule: self.all(key, !key.contains('k8s.io'))
                   resourceManagerTags:
                     description: |-
                       ResourceManagerTags defines what existing GCE resource manager tag key/value pairs
@@ -292,27 +277,15 @@ spec:
                           - NoExecute
                           type: string
                         key:
-                          description: Node taint key. The key must begin with a letter
-                            or number, and may contain letters, numbers, hyphens,
-                            dots, and underscores up to 253 characters.
-                          maxLength: 253
-                          pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                          description: Node taint key. The key must conform to syntax
+                            described in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set.
+                          maxLength: 320
                           type: string
-                          x-kubernetes-validations:
-                          - message: Taint keys cannot contain reserved `cloud.google.com`
-                              substring.
-                            rule: '!self.contains(''cloud.google.com'')'
-                          - message: Taint keys cannot contain reserved `kubernetes.io`
-                              substring.
-                            rule: '!self.contains(''kubernetes.io'')'
-                          - message: Taint keys cannot contain reserved `gke.io` substring.
-                            rule: '!self.contains(''gke.io'')'
-                          - message: Taint keys cannot contain reserved `k8s.io` substring.
-                            rule: '!self.contains(''k8s.io'')'
                         value:
                           description: The value that matches the specified taint
                             key.
-                          pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                          maxLength: 63
+                          pattern: ^([a-z0-9][-A-Za-z0-9_.]{1,61})?[A-Za-z0-9]$
                           type: string
                       type: object
                     maxItems: 100
@@ -526,23 +499,8 @@ spec:
                         These labels are applied to the Kubernetes API node object and can be used in nodeSelectors for pod scheduling.
                         Note: Node labels are distinct from GKE labels.
                         More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
-                      maxProperties: 20
+                      maxProperties: 100
                       type: object
-                      x-kubernetes-validations:
-                      - message: Node labels must begin with a letter or number, and
-                          may contain letters, numbers, hyphens, dots, and underscores,
-                          up to 63 characters each.
-                        rule: self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))
-                      - message: Node labels cannot contain reserved `cloud.google.com`
-                          substring.
-                        rule: self.all(key, !key.contains('cloud.google.com'))
-                      - message: Node labels cannot contain reserved `kubernetes.io`
-                          substring.
-                        rule: self.all(key, !key.contains('kubernetes.io'))
-                      - message: Node labels cannot contain reserved `gke.io` substring.
-                        rule: self.all(key, !key.contains('gke.io'))
-                      - message: Node labels cannot contain reserved `k8s.io` substring.
-                        rule: self.all(key, !key.contains('k8s.io'))
                     nodeSystemConfig:
                       description: NodeSystemConfig defines node system config for
                         a node.
@@ -1581,32 +1539,18 @@ spec:
                             - NoExecute
                             type: string
                           key:
-                            description: Node taint key. The key must begin with a
-                              letter or number, and may contain letters, numbers,
-                              hyphens, dots, and underscores up to 253 characters.
-                            maxLength: 253
-                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                            description: Node taint key. The key must conform to syntax
+                              described in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set.
+                            maxLength: 320
                             type: string
-                            x-kubernetes-validations:
-                            - message: Taint keys cannot contain reserved `cloud.google.com`
-                                substring.
-                              rule: '!self.contains(''cloud.google.com'')'
-                            - message: Taint keys cannot contain reserved `kubernetes.io`
-                                substring.
-                              rule: '!self.contains(''kubernetes.io'')'
-                            - message: Taint keys cannot contain reserved `gke.io`
-                                substring.
-                              rule: '!self.contains(''gke.io'')'
-                            - message: Taint keys cannot contain reserved `k8s.io`
-                                substring.
-                              rule: '!self.contains(''k8s.io'')'
                           value:
                             description: The value that matches the specified taint
                               key.
-                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                            maxLength: 63
+                            pattern: ^([a-z0-9][-A-Za-z0-9_.]{1,61})?[A-Za-z0-9]$
                             type: string
                         type: object
-                      maxItems: 20
+                      maxItems: 100
                       type: array
                     tpu:
                       description: Tpu defines preferred TPU config for a node.

@@ -264,11 +264,6 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	// +kubebuilder:validation:MaxProperties=100
-	// +kubebuilder:validation:XValidation:rule="self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))",message="Node labels must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters each."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('cloud.google.com'))",message="Node labels cannot contain reserved `cloud.google.com` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('kubernetes.io'))",message="Node labels cannot contain reserved `kubernetes.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('gke.io'))",message="Node labels cannot contain reserved `gke.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('k8s.io'))",message="Node labels cannot contain reserved `k8s.io` substring."
 	NodeLabels map[string]string `json:"nodeLabels,omitempty" protobuf:"bytes,4,opt,name=nodeLabels"`
 
 	// Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
@@ -610,19 +605,14 @@ type Priority struct {
 	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
 	//
 	// +optional
-	// +kubebuilder:validation:MaxProperties=20
-	// +kubebuilder:validation:XValidation:rule="self.all(key, key.matches('^[a-zA-Z0-9][a-zA-Z0-9-._]{0,62}$'))",message="Node labels must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters each."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('cloud.google.com'))",message="Node labels cannot contain reserved `cloud.google.com` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('kubernetes.io'))",message="Node labels cannot contain reserved `kubernetes.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('gke.io'))",message="Node labels cannot contain reserved `gke.io` substring."
-	// +kubebuilder:validation:XValidation:rule="self.all(key, !key.contains('k8s.io'))",message="Node labels cannot contain reserved `k8s.io` substring."
+	// +kubebuilder:validation:MaxProperties=100
 	NodeLabels map[string]string `json:"nodeLabels,omitempty" protobuf:"bytes,20,opt,name=nodeLabels"`
 
 	// Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
 	// These taints are applied to the Kubernetes API node object and can be used in tolerations for pod scheduling.
 	//
 	// +optional
-	// +kubebuilder:validation:MaxItems=20
+	// +kubebuilder:validation:MaxItems=100
 	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
 }
 
@@ -1403,19 +1393,15 @@ type PriorityDefaults struct {
 // More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-taints
 type TaintConfig struct {
 
-	// Node taint key. The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores up to 253 characters.
+	// Node taint key. The key must conform to syntax described in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set.
 	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Pattern=`^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$`
-	// +kubebuilder:validation:XValidation:rule="!self.contains('cloud.google.com')",message="Taint keys cannot contain reserved `cloud.google.com` substring."
-	// +kubebuilder:validation:XValidation:rule="!self.contains('kubernetes.io')",message="Taint keys cannot contain reserved `kubernetes.io` substring."
-	// +kubebuilder:validation:XValidation:rule="!self.contains('gke.io')",message="Taint keys cannot contain reserved `gke.io` substring."
-	// +kubebuilder:validation:XValidation:rule="!self.contains('k8s.io')",message="Taint keys cannot contain reserved `k8s.io` substring."
-	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:MaxLength=320
 	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
 
 	// The value that matches the specified taint key.
-	// +kubebuilder:validation:Pattern=`^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$`
+	// +kubebuilder:validation:Pattern=`^([a-z0-9][-A-Za-z0-9_.]{1,61})?[A-Za-z0-9]$`
 	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:MaxLength=63
 	Value string `json:"value,omitempty" protobuf:"bytes,2,opt,name=value"`
 
 	// It defines the taint's effect on pods that does not have the necessary toleration.
