@@ -1385,6 +1385,14 @@ spec:
                       enum:
                       - general-purpose
                       type: string
+                    rank:
+                      description: |-
+                        A higher value is treated as a higher priority.
+                        Priorities with the same rank value are treated equally.
+                        Not more than 3 priorities can have the same rank.
+                      maximum: 100
+                      minimum: 1
+                      type: integer
                     reservations:
                       description: Reservations defines reservations config for a
                         node.
@@ -2555,6 +2563,12 @@ spec:
                 && has(self.priorityDefaults.location) && has(self.priorityDefaults.location.zones))
                 || self.priorities.all(priority, has(priority.location) && has(priority.location.zones))
                 : true'
+            - message: Rank must be set for all priorities or for none of them
+              rule: self.priorities.all(p, has(p.rank)) || self.priorities.all(p,
+                !has(p.rank))
+            - message: No more than 3 priorities can have the same rank
+              rule: self.priorities.all(p1, self.priorities.filter(p2, p1.rank ==
+                p2.rank).size() <= 3)
           status:
             description: Status of the ComputeClass.
             properties:
