@@ -87,12 +87,18 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.PriorityApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("PriorityDefaults"):
 		return &cloudgooglecomv1.PriorityDefaultsApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("PriorityStatus"):
+		return &cloudgooglecomv1.PriorityStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationBlock"):
 		return &cloudgooglecomv1.ReservationBlockApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Reservations"):
 		return &cloudgooglecomv1.ReservationsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationSubBlock"):
 		return &cloudgooglecomv1.ReservationSubBlockApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ResourceInfo"):
+		return &cloudgooglecomv1.ResourceInfoApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ScalingEventsHistory"):
+		return &cloudgooglecomv1.ScalingEventsHistoryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SecondaryBootDisk"):
 		return &cloudgooglecomv1.SecondaryBootDiskApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SpecificReservation"):
