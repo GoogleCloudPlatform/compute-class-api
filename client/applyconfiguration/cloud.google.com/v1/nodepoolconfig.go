@@ -33,6 +33,7 @@ type NodePoolConfigApplyConfiguration struct {
 	ResourceManagerTags  []TagsApplyConfiguration                 `json:"resourceManagerTags,omitempty"`
 	Gvnic                *GvnicApplyConfiguration                 `json:"gvnic,omitempty"`
 	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration `json:"loggingConfig,omitempty"`
+	Dra                  *DraApplyConfiguration                   `json:"dra,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -150,5 +151,13 @@ func (b *NodePoolConfigApplyConfiguration) WithGvnic(value *GvnicApplyConfigurat
 // If called multiple times, the LoggingConfig field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithLoggingConfig(value *NodePoolLoggingConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.LoggingConfig = value
+	return b
+}
+
+// WithDra sets the Dra field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Dra field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithDra(value *DraApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.Dra = value
 	return b
 }
