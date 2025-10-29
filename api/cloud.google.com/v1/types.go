@@ -151,6 +151,35 @@ type ComputeClassSpec struct {
 	Description string `json:"description,omitempty" protobuf:"bytes,10,opt,name=description"`
 }
 
+// Dra represents a set of settings related to dynamic resource allocation
+type Dra struct {
+	// Gpu defines settings configuring integration with NVIDIA GPU DRA driver
+	// (https://github.com/NVIDIA/k8s-dra-driver-gpu)
+	//
+	// +optional
+	Gpu NvidiaGpuDraDriver `json:"gpu,omitempty" protobuf:"bytes,1,opt,name=gpu"`
+	// TPU defines settings configuring integration with Google TPU DRA driver
+	//
+	// +optional
+	Tpu GoogleTpuDraDriver `json:"tpu,omitempty" protobuf:"bytes,2,opt,name=tpu"`
+}
+
+// NvidiaGpuDraDriver describes whether and how NVIDIA GPU DRA driver should be functioning
+type NvidiaGpuDraDriver struct {
+	// Enabled indicates whether GPU DRA driver is enabled for a given ComputeClass
+	//
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
+}
+
+// GoogleTpuDraDriver describes whether and how Google TPU DRA driver should be functioning
+type GoogleTpuDraDriver struct {
+	// Enabled indicates whether TPU DRA driver is enabled for a given ComputeClass
+	//
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
+}
+
 // AutoscalingPolicy defines autoscaling related settings.
 type AutoscalingPolicy struct {
 	// ConsolidationDelayMinutes determines how long a node should be unneeded before it is eligible for scale down.
@@ -317,6 +346,13 @@ type NodePoolConfig struct {
 	// Contains logging configuration.
 	// +optional
 	LoggingConfig *NodePoolLoggingConfig `json:"loggingConfig,omitempty" protobuf:"bytes,12,opt,name=loggingConfig"`
+
+	// Dra describes settings related to dynamic resource allocation
+	// and its integration with autoprovisioning
+	//
+	// +optional
+	// +kubebuilder:validation:Optional
+	Dra Dra `json:"dra,omitempty" protobuf:"bytes,13,opt,name=dra"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.
