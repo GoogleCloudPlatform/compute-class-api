@@ -24,6 +24,7 @@ type SpecificReservationApplyConfiguration struct {
 	Name             *string                             `json:"name,omitempty"`
 	Project          *string                             `json:"project,omitempty"`
 	ReservationBlock *ReservationBlockApplyConfiguration `json:"reservationBlock,omitempty"`
+	Zones            []string                            `json:"zones,omitempty"`
 }
 
 // SpecificReservationApplyConfiguration constructs an declarative configuration of the SpecificReservation type for use with
@@ -53,5 +54,15 @@ func (b *SpecificReservationApplyConfiguration) WithProject(value string) *Speci
 // If called multiple times, the ReservationBlock field is set to the value of the last call.
 func (b *SpecificReservationApplyConfiguration) WithReservationBlock(value *ReservationBlockApplyConfiguration) *SpecificReservationApplyConfiguration {
 	b.ReservationBlock = value
+	return b
+}
+
+// WithZones adds the given value to the Zones field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Zones field.
+func (b *SpecificReservationApplyConfiguration) WithZones(values ...string) *SpecificReservationApplyConfiguration {
+	for i := range values {
+		b.Zones = append(b.Zones, values[i])
+	}
 	return b
 }
