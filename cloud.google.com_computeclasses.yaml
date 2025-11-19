@@ -2547,6 +2547,13 @@ spec:
               rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
                 || !has(self.nodePoolConfig.imageType) || self.nodePoolConfig.imageType
                 == "cos_containerd") : true'
+            - message: Only DEFAULT logging variant can be used when Autopilot is
+                enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
+                || !has(self.nodePoolConfig.loggingConfig) || !has(self.nodePoolConfig.loggingConfig.loggingVariantConfig)
+                || !has(self.nodePoolConfig.loggingConfig.loggingVariantConfig.variant)
+                || self.nodePoolConfig.loggingConfig.loggingVariantConfig.variant
+                == "DEFAULT") : true'
             - message: If NodePoolGroup is not specified NodePoolConfig.WorkloadType
                 can only be HIGH_AVAILABILITY if set
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.workloadType)
