@@ -533,13 +533,13 @@ type Reservations struct {
 // Priority is a specification of preferred machine characteristics.
 //
 // +kubebuilder:validation:MinProperties=1
-// +kubebuilder:validation:XValidation:rule="has(self.nodepools) ? (size(dyn(self)) == 1) : true", message="Nodepool field cannot be set along with other fields"
+// +kubebuilder:validation:XValidation:rule="!has(self.nodepools) || (size(dyn(self)) == 1 + (has(self.identifier) ? 1 : 0))", message="Nodepool field cannot be set along with other fields"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineFamily) && has(self.machineType))",message="MachineFamily and MachineType cannot be set together"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineType) && (has(self.minCores) || has(self.minMemoryGb)))",message="MachineType cannot be set together with MinCores/MinMemoryGb"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineFamily) && self.machineFamily == 'ek')", message="MachineFamily cannot be equal to 'ek'"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineType) && self.machineType.startsWith('ek'))", message="MachineType cannot start with 'ek' prefix"
 // +kubebuilder:validation:XValidation:rule="!(has(self.flexStart) && has(self.spot) && self.spot == true && self.flexStart.enabled == true)", message="Flex Start provisioning model is incompatible with Spot"
-// +kubebuilder:validation:XValidation:rule="has(self.podFamily) ? (has(self.spot) ? (size(dyn(self)) == 2) : (size(dyn(self)) == 1)) : true", message="Spot selection is the only configurable priority setting when using podFamily"
+// +kubebuilder:validation:XValidation:rule="!has(self.podFamily) || (size(dyn(self)) == 1 + (has(self.spot) ? 1 : 0) + (has(self.identifier) ? 1 : 0))", message="Spot selection is the only configurable priority setting when using podFamily"
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
 type Priority struct {
 	// Machine family describes preferred instance family for a node. If none is specified,
