@@ -235,6 +235,16 @@ spec:
                     - cos_containerd
                     - ubuntu_containerd
                     type: string
+                  ipType:
+                    description: |-
+                      IPType specifies whether the nodes in the node pool use public or private IP addresses.
+                      Possible values are "public" or "private".
+                      An empty string indicates the default IP type.
+                      This setting corresponds to the presence and value of the cloud.google.com/private-node node selector.
+                    enum:
+                    - public
+                    - private
+                    type: string
                   loggingConfig:
                     description: Contains logging configuration.
                     properties:

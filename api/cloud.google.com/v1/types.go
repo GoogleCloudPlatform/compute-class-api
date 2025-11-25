@@ -353,6 +353,15 @@ type NodePoolConfig struct {
 	// +optional
 	// +kubebuilder:validation:Optional
 	Dra Dra `json:"dra,omitempty" protobuf:"bytes,13,opt,name=dra"`
+
+	// IPType specifies whether the nodes in the node pool use public or private IP addresses.
+	// Possible values are "public" or "private".
+	// An empty string indicates the default IP type.
+	// This setting corresponds to the presence and value of the cloud.google.com/private-node node selector.
+	//
+	// +optional
+	// +kubebuilder:validation:Enum=public;private
+	IPType string `json:"ipType,omitempty" protobuf:"string,14,opt,name=ipType"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.
