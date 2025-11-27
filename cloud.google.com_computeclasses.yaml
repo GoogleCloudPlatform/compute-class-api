@@ -2695,6 +2695,220 @@ spec:
                   - type
                   type: object
                 type: array
+              priorityStatuses:
+                description: PriorityStatuses represent the statuses of Priorities
+                  within a given ComputeClass.
+                items:
+                  description: PriorityStatus describes a Status of ComputeClass priority.
+                  properties:
+                    conditions:
+                      description: Conditions represent the observations of a priority
+                        current state.
+                      items:
+                        description: "Condition contains details for one aspect of
+                          the current state of this API Resource.\n---\nThis struct
+                          is intended for direct use as an array at the field path
+                          .status.conditions.  For example,\n\n\n\ttype FooStatus
+                          struct{\n\t    // Represents the observations of a foo's
+                          current state.\n\t    // Known .status.conditions.type are:
+                          \"Available\", \"Progressing\", and \"Degraded\"\n\t    //
+                          +patchMergeKey=type\n\t    // +patchStrategy=merge\n\t    //
+                          +listType=map\n\t    // +listMapKey=type\n\t    Conditions
+                          []metav1.Condition `json:\"conditions,omitempty\" patchStrategy:\"merge\"
+                          patchMergeKey:\"type\" protobuf:\"bytes,1,rep,name=conditions\"`\n\n\n\t
+                          \   // other fields\n\t}"
+                        properties:
+                          lastTransitionTime:
+                            description: |-
+                              lastTransitionTime is the last time the condition transitioned from one status to another.
+                              This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                            format: date-time
+                            type: string
+                          message:
+                            description: |-
+                              message is a human readable message indicating details about the transition.
+                              This may be an empty string.
+                            maxLength: 32768
+                            type: string
+                          observedGeneration:
+                            description: |-
+                              observedGeneration represents the .metadata.generation that the condition was set based upon.
+                              For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                              with respect to the current state of the instance.
+                            format: int64
+                            minimum: 0
+                            type: integer
+                          reason:
+                            description: |-
+                              reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                              Producers of specific condition types may define expected values and meanings for this field,
+                              and whether the values are considered a guaranteed API.
+                              The value should be a CamelCase string.
+                              This field may not be empty.
+                            maxLength: 1024
+                            minLength: 1
+                            pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                            type: string
+                          status:
+                            description: status of the condition, one of True, False,
+                              Unknown.
+                            enum:
+                            - "True"
+                            - "False"
+                            - Unknown
+                            type: string
+                          type:
+                            description: |-
+                              type of condition in CamelCase or in foo.example.com/CamelCase.
+                              ---
+                              Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be
+                              useful (see .node.status.conditions), the ability to deconflict is important.
+                              The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                            maxLength: 316
+                            pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                            type: string
+                        required:
+                        - lastTransitionTime
+                        - message
+                        - reason
+                        - status
+                        - type
+                        type: object
+                      type: array
+                    identifier:
+                      description: |-
+                        Identifier represents the identifier of priority this PriorityStatus refers to.
+                        If WhenUnsatisfiable is set to "ScaleUpAnyway", there will be an additional PriorityStatus with the identifier "ScaleUpAnyway",
+                        and it will contain information about capacity provisioned as part of the implicit "ScaleUpAnyway" rule.
+                      type: string
+                    resourceInfo:
+                      description: ResourceInfo represents the current information
+                        about resource allocation and usage within the priority.
+                      items:
+                        description: ResourceInfo describes current usage of resources.
+                        properties:
+                          currentCount:
+                            description: CurrentCount represents the current count
+                              of a given resource.
+                            type: integer
+                          currentUtilization:
+                            description: CurrentUtilization represents the percentage
+                              of utilization for the resource `Name` at the `MeasuredAt`
+                              timestamp.
+                            maximum: 100
+                            minimum: 0
+                            type: integer
+                          measuredAt:
+                            description: MeasuredAt represents the timestamp at which
+                              the resource information was measured.
+                            format: date-time
+                            type: string
+                          name:
+                            description: Name is the name of a given resource measured
+                              in this ResourceInfo.
+                            enum:
+                            - CPU
+                            - Memory
+                            - GPU
+                            - TPU
+                            type: string
+                          targetCount:
+                            description: TargetCount represents the target count of
+                              a given resource within a priority. Can be lower than
+                              current count if there is ongoing node consolidation
+                              or higher, if there is ongoing node provisioning event.
+                            type: integer
+                          unit:
+                            description: Unit is a unit a given resource was measured
+                              in.
+                            enum:
+                            - Cores
+                            - GiB
+                            - Cards
+                            type: string
+                        type: object
+                      type: array
+                    scalingEventsHistory:
+                      description: ScalingEventsHistory represents the aggregated
+                        information about scaling events.
+                      properties:
+                        consolidatedNodesCount:
+                          description: ConsolidatedNodesCount represents how many
+                            nodes in this priority were consolidated.
+                          type: integer
+                        measuredAt:
+                          description: MeasuredAt represents a timestamp at which
+                            the data was gathered.
+                          format: date-time
+                          type: string
+                        measuredSince:
+                          description: MeasuredSince represents a timestamp at which
+                            data started being collected.
+                          format: date-time
+                          type: string
+                        migratedNodesCount:
+                          description: MigratedNodesCount represents how many nodes
+                            in this priority were removed as part of high priority
+                            migration.
+                          type: integer
+                        provisionedNodesCount:
+                          description: ProvisionedNodesCount represents how many nodes
+                            in this priority were added.
+                          type: integer
+                      type: object
+                  required:
+                  - conditions
+                  - resourceInfo
+                  type: object
+                type: array
+              resourceInfo:
+                description: ResourceInfo represents the current information about
+                  resource allocation and usage within the Compute Class.
+                items:
+                  description: ResourceInfo describes current usage of resources.
+                  properties:
+                    currentCount:
+                      description: CurrentCount represents the current count of a
+                        given resource.
+                      type: integer
+                    currentUtilization:
+                      description: CurrentUtilization represents the percentage of
+                        utilization for the resource `Name` at the `MeasuredAt` timestamp.
+                      maximum: 100
+                      minimum: 0
+                      type: integer
+                    measuredAt:
+                      description: MeasuredAt represents the timestamp at which the
+                        resource information was measured.
+                      format: date-time
+                      type: string
+                    name:
+                      description: Name is the name of a given resource measured in
+                        this ResourceInfo.
+                      enum:
+                      - CPU
+                      - Memory
+                      - GPU
+                      - TPU
+                      type: string
+                    targetCount:
+                      description: TargetCount represents the target count of a given
+                        resource within a priority. Can be lower than current count
+                        if there is ongoing node consolidation or higher, if there
+                        is ongoing node provisioning event.
+                      type: integer
+                    unit:
+                      description: Unit is a unit a given resource was measured in.
+                      enum:
+                      - Cores
+                      - GiB
+                      - Cards
+                      type: string
+                  type: object
+                type: array
+            required:
+            - priorityStatuses
+            - resourceInfo
             type: object
         required:
         - spec

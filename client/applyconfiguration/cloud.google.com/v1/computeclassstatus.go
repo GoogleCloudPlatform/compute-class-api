@@ -25,7 +25,9 @@ import (
 // ComputeClassStatusApplyConfiguration represents an declarative configuration of the ComputeClassStatus type for use
 // with apply.
 type ComputeClassStatusApplyConfiguration struct {
-	Conditions []v1.ConditionApplyConfiguration `json:"conditions,omitempty"`
+	Conditions       []v1.ConditionApplyConfiguration   `json:"conditions,omitempty"`
+	PriorityStatuses []PriorityStatusApplyConfiguration `json:"priorityStatuses,omitempty"`
+	ResourceInfo     []ResourceInfoApplyConfiguration   `json:"resourceInfo,omitempty"`
 }
 
 // ComputeClassStatusApplyConfiguration constructs an declarative configuration of the ComputeClassStatus type for use with
@@ -43,6 +45,32 @@ func (b *ComputeClassStatusApplyConfiguration) WithConditions(values ...*v1.Cond
 			panic("nil value passed to WithConditions")
 		}
 		b.Conditions = append(b.Conditions, *values[i])
+	}
+	return b
+}
+
+// WithPriorityStatuses adds the given value to the PriorityStatuses field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the PriorityStatuses field.
+func (b *ComputeClassStatusApplyConfiguration) WithPriorityStatuses(values ...*PriorityStatusApplyConfiguration) *ComputeClassStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithPriorityStatuses")
+		}
+		b.PriorityStatuses = append(b.PriorityStatuses, *values[i])
+	}
+	return b
+}
+
+// WithResourceInfo adds the given value to the ResourceInfo field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the ResourceInfo field.
+func (b *ComputeClassStatusApplyConfiguration) WithResourceInfo(values ...*ResourceInfoApplyConfiguration) *ComputeClassStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithResourceInfo")
+		}
+		b.ResourceInfo = append(b.ResourceInfo, *values[i])
 	}
 	return b
 }

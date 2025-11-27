@@ -15,7 +15,9 @@
  */
 package v1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 // +genclient
 // +genclient:nonNamespaced
@@ -1494,9 +1496,80 @@ type Tags struct {
 // ComputeClassStatus is the current status of the ComputeClass.
 type ComputeClassStatus struct {
 	// Conditions represent the observations of a ComputeClass's current state.
-	//
 	// +optional
 	Conditions []metav1.Condition `json:"conditions" protobuf:"bytes,1,rep,name=conditions"`
+
+	// PriorityStatuses represent the statuses of Priorities within a given ComputeClass.
+	PriorityStatuses []PriorityStatus `json:"priorityStatuses" protobuf:"bytes,2,rep,name=priorityStatuses"`
+
+	// ResourceInfo represents the current information about resource allocation and usage within the Compute Class.
+	ResourceInfo []ResourceInfo `json:"resourceInfo" protobuf:"bytes,3,rep,name=resourceInfo"`
+}
+
+// PriorityStatus describes a Status of ComputeClass priority.
+type PriorityStatus struct {
+	// Identifier represents the identifier of priority this PriorityStatus refers to.
+	// If WhenUnsatisfiable is set to "ScaleUpAnyway", there will be an additional PriorityStatus with the identifier "ScaleUpAnyway",
+	// and it will contain information about capacity provisioned as part of the implicit "ScaleUpAnyway" rule.
+	Identifier string `json:"identifier,omitempty" protobuf:"bytes,1,opt,name=identifier"`
+
+	// Conditions represent the observations of a priority current state.
+	Conditions []metav1.Condition `json:"conditions" protobuf:"bytes,2,rep,name=conditions"`
+
+	// ResourceInfo represents the current information about resource allocation and usage within the priority.
+	ResourceInfo []ResourceInfo `json:"resourceInfo" protobuf:"bytes,3,rep,name=resourceInfo"`
+
+	// ScalingEventsHistory represents the aggregated information about scaling events.
+	ScalingEventsHistory *ScalingEventsHistory `json:"scalingEventsHistory,omitempty" protobuf:"bytes,4,opt,name=scalingEventsHistory"`
+}
+
+// ResourceName represents the resource a given ResourceInfo applies to. Can be one of CPU, Memory, GPU or TPU.
+// +kubebuilder:validation:Enum=CPU;Memory;GPU;TPU
+type ResourceName string
+
+// ResourceUnit specifies the unit used to measure a resource.
+// +kubebuilder:validation:Enum=Cores;GiB;Cards
+type ResourceUnit string
+
+// ResourceInfo describes current usage of resources.
+type ResourceInfo struct {
+	// Name is the name of a given resource measured in this ResourceInfo.
+	Name *ResourceName `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
+
+	// Unit is a unit a given resource was measured in.
+	Unit *ResourceUnit `json:"unit,omitempty" protobuf:"bytes,2,opt,name=unit"`
+
+	// TargetCount represents the target count of a given resource within a priority. Can be lower than current count if there is ongoing node consolidation or higher, if there is ongoing node provisioning event.
+	TargetCount *int `json:"targetCount,omitempty" protobuf:"bytes,3,opt,name=targetCount"`
+
+	// CurrentCount represents the current count of a given resource.
+	CurrentCount *int `json:"currentCount,omitempty" protobuf:"bytes,4,opt,name=currentCount"`
+
+	// CurrentUtilization represents the percentage of utilization for the resource `Name` at the `MeasuredAt` timestamp.
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=100
+	CurrentUtilization *int `json:"currentUtilization,omitempty" protobuf:"bytes,5,opt,name=currentUtilization"`
+
+	// MeasuredAt represents the timestamp at which the resource information was measured.
+	MeasuredAt *metav1.Time `json:"measuredAt,omitempty" protobuf:"bytes,6,opt,name=measuredAt"`
+}
+
+// ScalingEventsHistory represents the aggregated information about scaling events.
+type ScalingEventsHistory struct {
+	// ConsolidatedNodesCount represents how many nodes in this priority were consolidated.
+	ConsolidatedNodesCount *int `json:"consolidatedNodesCount,omitempty" protobuf:"bytes,1,opt,name=consolidatedNodesCount"`
+
+	// ProvisionedNodesCount represents how many nodes in this priority were added.
+	ProvisionedNodesCount *int `json:"provisionedNodesCount,omitempty" protobuf:"bytes,2,opt,name=provisionedNodesCount"`
+
+	// MigratedNodesCount represents how many nodes in this priority were removed as part of high priority migration.
+	MigratedNodesCount *int `json:"migratedNodesCount,omitempty" protobuf:"bytes,3,opt,name=migratedNodesCount"`
+
+	// MeasuredAt represents a timestamp at which the data was gathered.
+	MeasuredAt *metav1.Time `json:"measuredAt,omitempty" protobuf:"bytes,4,opt,name=measuredAt"`
+
+	// MeasuredSince represents a timestamp at which data started being collected.
+	MeasuredSince *metav1.Time `json:"measuredSince,omitempty" protobuf:"bytes,5,opt,name=measuredSince"`
 }
 
 // GpuSharing represents the GPU sharing configuration for
