@@ -1424,6 +1424,7 @@ spec:
                         billing config.
                       enum:
                       - general-purpose
+                      - general-purpose-arm
                       type: string
                     rank:
                       description: |-

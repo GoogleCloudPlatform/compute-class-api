@@ -628,7 +628,7 @@ type Priority struct {
 	// PodFamily represents pod-based provisioning and billing config.
 	//
 	// +optional
-	// +kubebuilder:validation:Enum=general-purpose
+	// +kubebuilder:validation:Enum=general-purpose;general-purpose-arm
 	PodFamily *string `json:"podFamily,omitempty" protobuf:"bytes,15,opt,name=podFamily"`
 
 	// Location describes CCC zonal preferences config.
