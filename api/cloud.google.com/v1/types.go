@@ -683,6 +683,13 @@ type Priority struct {
 	//
 	// +optional
 	Identifier string `json:"identifier,omitempty" protobuf:"bytes,23,opt,name=identifier"`
+
+	// AcceleratorNetworkProfile defines the type of automated accelerator network provisioning to use.
+	// Possible values:
+	// "auto": Enables automatic ANP configuration based on the machine type.
+	// "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
+	// +optional
+	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty" protobuf:"bytes,24,opt,name=acceleratorNetworkProfile"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP

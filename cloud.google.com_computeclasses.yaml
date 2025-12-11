@@ -366,6 +366,13 @@ spec:
                   description: Priority is a specification of preferred machine characteristics.
                   minProperties: 1
                   properties:
+                    acceleratorNetworkProfile:
+                      description: |-
+                        AcceleratorNetworkProfile defines the type of automated accelerator network provisioning to use.
+                        Possible values:
+                        "auto": Enables automatic ANP configuration based on the machine type.
+                        "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
+                      type: string
                     capacityCheckWaitTimeSeconds:
                       description: CapacityCheckWaitTimeSeconds defines for how long
                         will this priority be attempted to scale up before moving

@@ -1079,6 +1079,11 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.AcceleratorNetworkProfile != nil {
+		in, out := &in.AcceleratorNetworkProfile, &out.AcceleratorNetworkProfile
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

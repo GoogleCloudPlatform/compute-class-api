@@ -44,6 +44,7 @@ type PriorityApplyConfiguration struct {
 	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
 	Rank                         *int                                `json:"rank,omitempty"`
 	Identifier                   *string                             `json:"identifier,omitempty"`
+	AcceleratorNetworkProfile    *string                             `json:"acceleratorNetworkProfile,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -246,5 +247,13 @@ func (b *PriorityApplyConfiguration) WithRank(value int) *PriorityApplyConfigura
 // If called multiple times, the Identifier field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithIdentifier(value string) *PriorityApplyConfiguration {
 	b.Identifier = &value
+	return b
+}
+
+// WithAcceleratorNetworkProfile sets the AcceleratorNetworkProfile field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the AcceleratorNetworkProfile field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithAcceleratorNetworkProfile(value string) *PriorityApplyConfiguration {
+	b.AcceleratorNetworkProfile = &value
 	return b
 }
