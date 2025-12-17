@@ -364,6 +364,13 @@ type NodePoolConfig struct {
 	// +optional
 	// +kubebuilder:validation:Enum=public;private
 	IPType string `json:"ipType,omitempty" protobuf:"string,14,opt,name=ipType"`
+
+	// NodeVersion defines the GKE version to be used for the node pool.
+	// If unspecified, the GKE cluster server will automatically pick a version
+	// as per https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version.
+	//
+	// +optional
+	NodeVersion string `json:"nodeVersion,omitempty" protobuf:"string,15,opt,name=nodeVersion"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.

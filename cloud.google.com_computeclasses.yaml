@@ -269,6 +269,12 @@ spec:
                       More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
                     maxProperties: 100
                     type: object
+                  nodeVersion:
+                    description: |-
+                      NodeVersion defines the GKE version to be used for the node pool.
+                      If unspecified, the GKE cluster server will automatically pick a version
+                      as per https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version.
+                    type: string
                   resourceManagerTags:
                     description: |-
                       ResourceManagerTags defines what existing GCE resource manager tag key/value pairs

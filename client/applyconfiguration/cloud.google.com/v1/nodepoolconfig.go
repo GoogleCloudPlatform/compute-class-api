@@ -35,6 +35,7 @@ type NodePoolConfigApplyConfiguration struct {
 	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration `json:"loggingConfig,omitempty"`
 	Dra                  *DraApplyConfiguration                   `json:"dra,omitempty"`
 	IPType               *string                                  `json:"ipType,omitempty"`
+	NodeVersion          *string                                  `json:"nodeVersion,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -168,5 +169,13 @@ func (b *NodePoolConfigApplyConfiguration) WithDra(value *DraApplyConfiguration)
 // If called multiple times, the IPType field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithIPType(value string) *NodePoolConfigApplyConfiguration {
 	b.IPType = &value
+	return b
+}
+
+// WithNodeVersion sets the NodeVersion field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodeVersion field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithNodeVersion(value string) *NodePoolConfigApplyConfiguration {
+	b.NodeVersion = &value
 	return b
 }
