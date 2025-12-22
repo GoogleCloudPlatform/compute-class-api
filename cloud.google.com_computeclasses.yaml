@@ -373,6 +373,10 @@ spec:
                         "auto": Enables automatic ANP configuration based on the machine type.
                         "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
                       type: string
+                      x-kubernetes-validations:
+                      - message: acceleratorNetworkProfile must be 'auto' or start
+                          with 'auto-'
+                        rule: self == 'auto' || self.startsWith('auto-')
                     capacityCheckWaitTimeSeconds:
                       description: CapacityCheckWaitTimeSeconds defines for how long
                         will this priority be attempted to scale up before moving

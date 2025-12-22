@@ -688,6 +688,7 @@ type Priority struct {
 	// Possible values:
 	// "auto": Enables automatic ANP configuration based on the machine type.
 	// "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
+	// +kubebuilder:validation:XValidation:rule="self == 'auto' || self.startsWith('auto-')",message="acceleratorNetworkProfile must be 'auto' or start with 'auto-'"
 	// +optional
 	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty" protobuf:"bytes,24,opt,name=acceleratorNetworkProfile"`
 }
