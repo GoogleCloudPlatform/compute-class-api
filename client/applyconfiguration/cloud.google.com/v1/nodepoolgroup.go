@@ -18,13 +18,13 @@
 
 package v1
 
-// NodePoolGroupApplyConfiguration represents an declarative configuration of the NodePoolGroup type for use
+// NodePoolGroupApplyConfiguration represents a declarative configuration of the NodePoolGroup type for use
 // with apply.
 type NodePoolGroupApplyConfiguration struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// NodePoolGroupApplyConfiguration constructs an declarative configuration of the NodePoolGroup type for use with
+// NodePoolGroupApplyConfiguration constructs a declarative configuration of the NodePoolGroup type for use with
 // apply.
 func NodePoolGroup() *NodePoolGroupApplyConfiguration {
 	return &NodePoolGroupApplyConfiguration{}

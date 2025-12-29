@@ -19,18 +19,18 @@
 package v1
 
 import (
-	v1 "k8s.io/client-go/applyconfigurations/meta/v1"
+	metav1 "k8s.io/client-go/applyconfigurations/meta/v1"
 )
 
-// ComputeClassStatusApplyConfiguration represents an declarative configuration of the ComputeClassStatus type for use
+// ComputeClassStatusApplyConfiguration represents a declarative configuration of the ComputeClassStatus type for use
 // with apply.
 type ComputeClassStatusApplyConfiguration struct {
-	Conditions       []v1.ConditionApplyConfiguration   `json:"conditions,omitempty"`
-	PriorityStatuses []PriorityStatusApplyConfiguration `json:"priorityStatuses,omitempty"`
-	ResourceInfo     []ResourceInfoApplyConfiguration   `json:"resourceInfo,omitempty"`
+	Conditions       []metav1.ConditionApplyConfiguration `json:"conditions,omitempty"`
+	PriorityStatuses []PriorityStatusApplyConfiguration   `json:"priorityStatuses,omitempty"`
+	ResourceInfo     []ResourceInfoApplyConfiguration     `json:"resourceInfo,omitempty"`
 }
 
-// ComputeClassStatusApplyConfiguration constructs an declarative configuration of the ComputeClassStatus type for use with
+// ComputeClassStatusApplyConfiguration constructs a declarative configuration of the ComputeClassStatus type for use with
 // apply.
 func ComputeClassStatus() *ComputeClassStatusApplyConfiguration {
 	return &ComputeClassStatusApplyConfiguration{}
@@ -39,7 +39,7 @@ func ComputeClassStatus() *ComputeClassStatusApplyConfiguration {
 // WithConditions adds the given value to the Conditions field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the Conditions field.
-func (b *ComputeClassStatusApplyConfiguration) WithConditions(values ...*v1.ConditionApplyConfiguration) *ComputeClassStatusApplyConfiguration {
+func (b *ComputeClassStatusApplyConfiguration) WithConditions(values ...*metav1.ConditionApplyConfiguration) *ComputeClassStatusApplyConfiguration {
 	for i := range values {
 		if values[i] == nil {
 			panic("nil value passed to WithConditions")

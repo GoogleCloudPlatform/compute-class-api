@@ -18,14 +18,14 @@
 
 package v1
 
-// DraApplyConfiguration represents an declarative configuration of the Dra type for use
+// DraApplyConfiguration represents a declarative configuration of the Dra type for use
 // with apply.
 type DraApplyConfiguration struct {
 	Gpu *NvidiaGpuDraDriverApplyConfiguration `json:"gpu,omitempty"`
 	Tpu *GoogleTpuDraDriverApplyConfiguration `json:"tpu,omitempty"`
 }
 
-// DraApplyConfiguration constructs an declarative configuration of the Dra type for use with
+// DraApplyConfiguration constructs a declarative configuration of the Dra type for use with
 // apply.
 func Dra() *DraApplyConfiguration {
 	return &DraApplyConfiguration{}

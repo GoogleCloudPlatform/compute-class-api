@@ -18,13 +18,13 @@
 
 package v1
 
-// SwapConfigDedicatedLocalSsdProfileApplyConfiguration represents an declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use
+// SwapConfigDedicatedLocalSsdProfileApplyConfiguration represents a declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use
 // with apply.
 type SwapConfigDedicatedLocalSsdProfileApplyConfiguration struct {
 	DiskCount *int64 `json:"diskCount,omitempty"`
 }
 
-// SwapConfigDedicatedLocalSsdProfileApplyConfiguration constructs an declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use with
+// SwapConfigDedicatedLocalSsdProfileApplyConfiguration constructs a declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use with
 // apply.
 func SwapConfigDedicatedLocalSsdProfile() *SwapConfigDedicatedLocalSsdProfileApplyConfiguration {
 	return &SwapConfigDedicatedLocalSsdProfileApplyConfiguration{}

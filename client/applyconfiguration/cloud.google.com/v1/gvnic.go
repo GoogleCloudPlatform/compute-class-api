@@ -18,13 +18,13 @@
 
 package v1
 
-// GvnicApplyConfiguration represents an declarative configuration of the Gvnic type for use
+// GvnicApplyConfiguration represents a declarative configuration of the Gvnic type for use
 // with apply.
 type GvnicApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// GvnicApplyConfiguration constructs an declarative configuration of the Gvnic type for use with
+// GvnicApplyConfiguration constructs a declarative configuration of the Gvnic type for use with
 // apply.
 func Gvnic() *GvnicApplyConfiguration {
 	return &GvnicApplyConfiguration{}

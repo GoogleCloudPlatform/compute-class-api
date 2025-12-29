@@ -18,7 +18,7 @@
 
 package v1
 
-// LinuxNodeConfigApplyConfiguration represents an declarative configuration of the LinuxNodeConfig type for use
+// LinuxNodeConfigApplyConfiguration represents a declarative configuration of the LinuxNodeConfig type for use
 // with apply.
 type LinuxNodeConfigApplyConfiguration struct {
 	Sysctls                    *SysctlsConfigApplyConfiguration   `json:"sysctls,omitempty"`
@@ -28,7 +28,7 @@ type LinuxNodeConfigApplyConfiguration struct {
 	SwapConfig                 *SwapConfigApplyConfiguration      `json:"swapConfig,omitempty"`
 }
 
-// LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
+// LinuxNodeConfigApplyConfiguration constructs a declarative configuration of the LinuxNodeConfig type for use with
 // apply.
 func LinuxNodeConfig() *LinuxNodeConfigApplyConfiguration {
 	return &LinuxNodeConfigApplyConfiguration{}

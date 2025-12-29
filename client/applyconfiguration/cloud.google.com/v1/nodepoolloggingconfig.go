@@ -18,13 +18,13 @@
 
 package v1
 
-// NodePoolLoggingConfigApplyConfiguration represents an declarative configuration of the NodePoolLoggingConfig type for use
+// NodePoolLoggingConfigApplyConfiguration represents a declarative configuration of the NodePoolLoggingConfig type for use
 // with apply.
 type NodePoolLoggingConfigApplyConfiguration struct {
 	LoggingVariantConfig *LoggingVariantConfigApplyConfiguration `json:"loggingVariantConfig,omitempty"`
 }
 
-// NodePoolLoggingConfigApplyConfiguration constructs an declarative configuration of the NodePoolLoggingConfig type for use with
+// NodePoolLoggingConfigApplyConfiguration constructs a declarative configuration of the NodePoolLoggingConfig type for use with
 // apply.
 func NodePoolLoggingConfig() *NodePoolLoggingConfigApplyConfiguration {
 	return &NodePoolLoggingConfigApplyConfiguration{}

@@ -18,14 +18,14 @@
 
 package v1
 
-// LocationApplyConfiguration represents an declarative configuration of the Location type for use
+// LocationApplyConfiguration represents a declarative configuration of the Location type for use
 // with apply.
 type LocationApplyConfiguration struct {
 	Zones          []string `json:"zones,omitempty"`
 	LocationPolicy *string  `json:"locationPolicy,omitempty"`
 }
 
-// LocationApplyConfiguration constructs an declarative configuration of the Location type for use with
+// LocationApplyConfiguration constructs a declarative configuration of the Location type for use with
 // apply.
 func Location() *LocationApplyConfiguration {
 	return &LocationApplyConfiguration{}

@@ -18,13 +18,13 @@
 
 package v1
 
-// MemoryManagerApplyConfiguration represents an declarative configuration of the MemoryManager type for use
+// MemoryManagerApplyConfiguration represents a declarative configuration of the MemoryManager type for use
 // with apply.
 type MemoryManagerApplyConfiguration struct {
 	Policy *string `json:"policy,omitempty"`
 }
 
-// MemoryManagerApplyConfiguration constructs an declarative configuration of the MemoryManager type for use with
+// MemoryManagerApplyConfiguration constructs a declarative configuration of the MemoryManager type for use with
 // apply.
 func MemoryManager() *MemoryManagerApplyConfiguration {
 	return &MemoryManagerApplyConfiguration{}

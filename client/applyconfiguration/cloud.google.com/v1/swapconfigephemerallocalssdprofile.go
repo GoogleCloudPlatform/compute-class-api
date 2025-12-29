@@ -18,14 +18,14 @@
 
 package v1
 
-// SwapConfigEphemeralLocalSsdProfileApplyConfiguration represents an declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use
+// SwapConfigEphemeralLocalSsdProfileApplyConfiguration represents a declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use
 // with apply.
 type SwapConfigEphemeralLocalSsdProfileApplyConfiguration struct {
 	SwapSizeGib     *int64 `json:"swapSizeGib,omitempty"`
 	SwapSizePercent *int32 `json:"swapSizePercent,omitempty"`
 }
 
-// SwapConfigEphemeralLocalSsdProfileApplyConfiguration constructs an declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use with
+// SwapConfigEphemeralLocalSsdProfileApplyConfiguration constructs a declarative configuration of the SwapConfigEphemeralLocalSsdProfile type for use with
 // apply.
 func SwapConfigEphemeralLocalSsdProfile() *SwapConfigEphemeralLocalSsdProfileApplyConfiguration {
 	return &SwapConfigEphemeralLocalSsdProfileApplyConfiguration{}

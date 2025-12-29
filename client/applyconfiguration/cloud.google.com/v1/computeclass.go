@@ -19,21 +19,21 @@
 package v1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apismetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
-	v1 "k8s.io/client-go/applyconfigurations/meta/v1"
+	metav1 "k8s.io/client-go/applyconfigurations/meta/v1"
 )
 
-// ComputeClassApplyConfiguration represents an declarative configuration of the ComputeClass type for use
+// ComputeClassApplyConfiguration represents a declarative configuration of the ComputeClass type for use
 // with apply.
 type ComputeClassApplyConfiguration struct {
-	v1.TypeMetaApplyConfiguration    `json:",inline"`
-	*v1.ObjectMetaApplyConfiguration `json:"metadata,omitempty"`
-	Spec                             *ComputeClassSpecApplyConfiguration   `json:"spec,omitempty"`
-	Status                           *ComputeClassStatusApplyConfiguration `json:"status,omitempty"`
+	metav1.TypeMetaApplyConfiguration    `json:",inline"`
+	*metav1.ObjectMetaApplyConfiguration `json:"metadata,omitempty"`
+	Spec                                 *ComputeClassSpecApplyConfiguration   `json:"spec,omitempty"`
+	Status                               *ComputeClassStatusApplyConfiguration `json:"status,omitempty"`
 }
 
-// ComputeClass constructs an declarative configuration of the ComputeClass type for use with
+// ComputeClass constructs a declarative configuration of the ComputeClass type for use with
 // apply.
 func ComputeClass(name string) *ComputeClassApplyConfiguration {
 	b := &ComputeClassApplyConfiguration{}
@@ -42,12 +42,13 @@ func ComputeClass(name string) *ComputeClassApplyConfiguration {
 	b.WithAPIVersion("cloud.google.com/v1")
 	return b
 }
+func (b ComputeClassApplyConfiguration) IsApplyConfiguration() {}
 
 // WithKind sets the Kind field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Kind field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithKind(value string) *ComputeClassApplyConfiguration {
-	b.Kind = &value
+	b.TypeMetaApplyConfiguration.Kind = &value
 	return b
 }
 
@@ -55,7 +56,7 @@ func (b *ComputeClassApplyConfiguration) WithKind(value string) *ComputeClassApp
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the APIVersion field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithAPIVersion(value string) *ComputeClassApplyConfiguration {
-	b.APIVersion = &value
+	b.TypeMetaApplyConfiguration.APIVersion = &value
 	return b
 }
 
@@ -64,7 +65,7 @@ func (b *ComputeClassApplyConfiguration) WithAPIVersion(value string) *ComputeCl
 // If called multiple times, the Name field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithName(value string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.Name = &value
+	b.ObjectMetaApplyConfiguration.Name = &value
 	return b
 }
 
@@ -73,7 +74,7 @@ func (b *ComputeClassApplyConfiguration) WithName(value string) *ComputeClassApp
 // If called multiple times, the GenerateName field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithGenerateName(value string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.GenerateName = &value
+	b.ObjectMetaApplyConfiguration.GenerateName = &value
 	return b
 }
 
@@ -82,7 +83,7 @@ func (b *ComputeClassApplyConfiguration) WithGenerateName(value string) *Compute
 // If called multiple times, the Namespace field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithNamespace(value string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.Namespace = &value
+	b.ObjectMetaApplyConfiguration.Namespace = &value
 	return b
 }
 
@@ -91,7 +92,7 @@ func (b *ComputeClassApplyConfiguration) WithNamespace(value string) *ComputeCla
 // If called multiple times, the UID field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithUID(value types.UID) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.UID = &value
+	b.ObjectMetaApplyConfiguration.UID = &value
 	return b
 }
 
@@ -100,7 +101,7 @@ func (b *ComputeClassApplyConfiguration) WithUID(value types.UID) *ComputeClassA
 // If called multiple times, the ResourceVersion field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithResourceVersion(value string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.ResourceVersion = &value
+	b.ObjectMetaApplyConfiguration.ResourceVersion = &value
 	return b
 }
 
@@ -109,25 +110,25 @@ func (b *ComputeClassApplyConfiguration) WithResourceVersion(value string) *Comp
 // If called multiple times, the Generation field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithGeneration(value int64) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.Generation = &value
+	b.ObjectMetaApplyConfiguration.Generation = &value
 	return b
 }
 
 // WithCreationTimestamp sets the CreationTimestamp field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the CreationTimestamp field is set to the value of the last call.
-func (b *ComputeClassApplyConfiguration) WithCreationTimestamp(value metav1.Time) *ComputeClassApplyConfiguration {
+func (b *ComputeClassApplyConfiguration) WithCreationTimestamp(value apismetav1.Time) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.CreationTimestamp = &value
+	b.ObjectMetaApplyConfiguration.CreationTimestamp = &value
 	return b
 }
 
 // WithDeletionTimestamp sets the DeletionTimestamp field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the DeletionTimestamp field is set to the value of the last call.
-func (b *ComputeClassApplyConfiguration) WithDeletionTimestamp(value metav1.Time) *ComputeClassApplyConfiguration {
+func (b *ComputeClassApplyConfiguration) WithDeletionTimestamp(value apismetav1.Time) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.DeletionTimestamp = &value
+	b.ObjectMetaApplyConfiguration.DeletionTimestamp = &value
 	return b
 }
 
@@ -136,7 +137,7 @@ func (b *ComputeClassApplyConfiguration) WithDeletionTimestamp(value metav1.Time
 // If called multiple times, the DeletionGracePeriodSeconds field is set to the value of the last call.
 func (b *ComputeClassApplyConfiguration) WithDeletionGracePeriodSeconds(value int64) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	b.DeletionGracePeriodSeconds = &value
+	b.ObjectMetaApplyConfiguration.DeletionGracePeriodSeconds = &value
 	return b
 }
 
@@ -146,11 +147,11 @@ func (b *ComputeClassApplyConfiguration) WithDeletionGracePeriodSeconds(value in
 // overwriting an existing map entries in Labels field with the same key.
 func (b *ComputeClassApplyConfiguration) WithLabels(entries map[string]string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	if b.Labels == nil && len(entries) > 0 {
-		b.Labels = make(map[string]string, len(entries))
+	if b.ObjectMetaApplyConfiguration.Labels == nil && len(entries) > 0 {
+		b.ObjectMetaApplyConfiguration.Labels = make(map[string]string, len(entries))
 	}
 	for k, v := range entries {
-		b.Labels[k] = v
+		b.ObjectMetaApplyConfiguration.Labels[k] = v
 	}
 	return b
 }
@@ -161,11 +162,11 @@ func (b *ComputeClassApplyConfiguration) WithLabels(entries map[string]string) *
 // overwriting an existing map entries in Annotations field with the same key.
 func (b *ComputeClassApplyConfiguration) WithAnnotations(entries map[string]string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
-	if b.Annotations == nil && len(entries) > 0 {
-		b.Annotations = make(map[string]string, len(entries))
+	if b.ObjectMetaApplyConfiguration.Annotations == nil && len(entries) > 0 {
+		b.ObjectMetaApplyConfiguration.Annotations = make(map[string]string, len(entries))
 	}
 	for k, v := range entries {
-		b.Annotations[k] = v
+		b.ObjectMetaApplyConfiguration.Annotations[k] = v
 	}
 	return b
 }
@@ -173,13 +174,13 @@ func (b *ComputeClassApplyConfiguration) WithAnnotations(entries map[string]stri
 // WithOwnerReferences adds the given value to the OwnerReferences field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the OwnerReferences field.
-func (b *ComputeClassApplyConfiguration) WithOwnerReferences(values ...*v1.OwnerReferenceApplyConfiguration) *ComputeClassApplyConfiguration {
+func (b *ComputeClassApplyConfiguration) WithOwnerReferences(values ...*metav1.OwnerReferenceApplyConfiguration) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
 	for i := range values {
 		if values[i] == nil {
 			panic("nil value passed to WithOwnerReferences")
 		}
-		b.OwnerReferences = append(b.OwnerReferences, *values[i])
+		b.ObjectMetaApplyConfiguration.OwnerReferences = append(b.ObjectMetaApplyConfiguration.OwnerReferences, *values[i])
 	}
 	return b
 }
@@ -190,14 +191,14 @@ func (b *ComputeClassApplyConfiguration) WithOwnerReferences(values ...*v1.Owner
 func (b *ComputeClassApplyConfiguration) WithFinalizers(values ...string) *ComputeClassApplyConfiguration {
 	b.ensureObjectMetaApplyConfigurationExists()
 	for i := range values {
-		b.Finalizers = append(b.Finalizers, values[i])
+		b.ObjectMetaApplyConfiguration.Finalizers = append(b.ObjectMetaApplyConfiguration.Finalizers, values[i])
 	}
 	return b
 }
 
 func (b *ComputeClassApplyConfiguration) ensureObjectMetaApplyConfigurationExists() {
 	if b.ObjectMetaApplyConfiguration == nil {
-		b.ObjectMetaApplyConfiguration = &v1.ObjectMetaApplyConfiguration{}
+		b.ObjectMetaApplyConfiguration = &metav1.ObjectMetaApplyConfiguration{}
 	}
 }
 
@@ -215,4 +216,26 @@ func (b *ComputeClassApplyConfiguration) WithSpec(value *ComputeClassSpecApplyCo
 func (b *ComputeClassApplyConfiguration) WithStatus(value *ComputeClassStatusApplyConfiguration) *ComputeClassApplyConfiguration {
 	b.Status = value
 	return b
+}
+
+// GetKind retrieves the value of the Kind field in the declarative configuration.
+func (b *ComputeClassApplyConfiguration) GetKind() *string {
+	return b.TypeMetaApplyConfiguration.Kind
+}
+
+// GetAPIVersion retrieves the value of the APIVersion field in the declarative configuration.
+func (b *ComputeClassApplyConfiguration) GetAPIVersion() *string {
+	return b.TypeMetaApplyConfiguration.APIVersion
+}
+
+// GetName retrieves the value of the Name field in the declarative configuration.
+func (b *ComputeClassApplyConfiguration) GetName() *string {
+	b.ensureObjectMetaApplyConfigurationExists()
+	return b.ObjectMetaApplyConfiguration.Name
+}
+
+// GetNamespace retrieves the value of the Namespace field in the declarative configuration.
+func (b *ComputeClassApplyConfiguration) GetNamespace() *string {
+	b.ensureObjectMetaApplyConfigurationExists()
+	return b.ObjectMetaApplyConfiguration.Namespace
 }

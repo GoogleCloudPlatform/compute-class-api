@@ -18,7 +18,7 @@
 
 package v1
 
-// KubeletConfigApplyConfiguration represents an declarative configuration of the KubeletConfig type for use
+// KubeletConfigApplyConfiguration represents a declarative configuration of the KubeletConfig type for use
 // with apply.
 type KubeletConfigApplyConfiguration struct {
 	CpuCfsQuota                      *bool                                      `json:"cpuCfsQuota,omitempty"`
@@ -42,7 +42,7 @@ type KubeletConfigApplyConfiguration struct {
 	MemoryManager                    *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
 }
 
-// KubeletConfigApplyConfiguration constructs an declarative configuration of the KubeletConfig type for use with
+// KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
 // apply.
 func KubeletConfig() *KubeletConfigApplyConfiguration {
 	return &KubeletConfigApplyConfiguration{}

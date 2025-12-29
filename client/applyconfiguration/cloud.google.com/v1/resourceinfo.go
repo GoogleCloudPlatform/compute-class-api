@@ -19,22 +19,22 @@
 package v1
 
 import (
-	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ResourceInfoApplyConfiguration represents an declarative configuration of the ResourceInfo type for use
+// ResourceInfoApplyConfiguration represents a declarative configuration of the ResourceInfo type for use
 // with apply.
 type ResourceInfoApplyConfiguration struct {
-	Name               *v1.ResourceName `json:"name,omitempty"`
-	Unit               *v1.ResourceUnit `json:"unit,omitempty"`
-	TargetCount        *int             `json:"targetCount,omitempty"`
-	CurrentCount       *int             `json:"currentCount,omitempty"`
-	CurrentUtilization *int             `json:"currentUtilization,omitempty"`
-	MeasuredAt         *metav1.Time     `json:"measuredAt,omitempty"`
+	Name               *cloudgooglecomv1.ResourceName `json:"name,omitempty"`
+	Unit               *cloudgooglecomv1.ResourceUnit `json:"unit,omitempty"`
+	TargetCount        *int                           `json:"targetCount,omitempty"`
+	CurrentCount       *int                           `json:"currentCount,omitempty"`
+	CurrentUtilization *int                           `json:"currentUtilization,omitempty"`
+	MeasuredAt         *metav1.Time                   `json:"measuredAt,omitempty"`
 }
 
-// ResourceInfoApplyConfiguration constructs an declarative configuration of the ResourceInfo type for use with
+// ResourceInfoApplyConfiguration constructs a declarative configuration of the ResourceInfo type for use with
 // apply.
 func ResourceInfo() *ResourceInfoApplyConfiguration {
 	return &ResourceInfoApplyConfiguration{}
@@ -43,7 +43,7 @@ func ResourceInfo() *ResourceInfoApplyConfiguration {
 // WithName sets the Name field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Name field is set to the value of the last call.
-func (b *ResourceInfoApplyConfiguration) WithName(value v1.ResourceName) *ResourceInfoApplyConfiguration {
+func (b *ResourceInfoApplyConfiguration) WithName(value cloudgooglecomv1.ResourceName) *ResourceInfoApplyConfiguration {
 	b.Name = &value
 	return b
 }
@@ -51,7 +51,7 @@ func (b *ResourceInfoApplyConfiguration) WithName(value v1.ResourceName) *Resour
 // WithUnit sets the Unit field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Unit field is set to the value of the last call.
-func (b *ResourceInfoApplyConfiguration) WithUnit(value v1.ResourceUnit) *ResourceInfoApplyConfiguration {
+func (b *ResourceInfoApplyConfiguration) WithUnit(value cloudgooglecomv1.ResourceUnit) *ResourceInfoApplyConfiguration {
 	b.Unit = &value
 	return b
 }

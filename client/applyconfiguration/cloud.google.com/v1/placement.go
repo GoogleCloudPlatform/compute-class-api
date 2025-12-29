@@ -18,13 +18,13 @@
 
 package v1
 
-// PlacementApplyConfiguration represents an declarative configuration of the Placement type for use
+// PlacementApplyConfiguration represents a declarative configuration of the Placement type for use
 // with apply.
 type PlacementApplyConfiguration struct {
 	PolicyName *string `json:"policyName,omitempty"`
 }
 
-// PlacementApplyConfiguration constructs an declarative configuration of the Placement type for use with
+// PlacementApplyConfiguration constructs a declarative configuration of the Placement type for use with
 // apply.
 func Placement() *PlacementApplyConfiguration {
 	return &PlacementApplyConfiguration{}

@@ -18,13 +18,13 @@
 
 package v1
 
-// ImageStreamingApplyConfiguration represents an declarative configuration of the ImageStreaming type for use
+// ImageStreamingApplyConfiguration represents a declarative configuration of the ImageStreaming type for use
 // with apply.
 type ImageStreamingApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// ImageStreamingApplyConfiguration constructs an declarative configuration of the ImageStreaming type for use with
+// ImageStreamingApplyConfiguration constructs a declarative configuration of the ImageStreaming type for use with
 // apply.
 func ImageStreaming() *ImageStreamingApplyConfiguration {
 	return &ImageStreamingApplyConfiguration{}

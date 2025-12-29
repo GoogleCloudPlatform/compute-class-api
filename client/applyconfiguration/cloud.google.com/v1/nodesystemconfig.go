@@ -18,14 +18,14 @@
 
 package v1
 
-// NodeSystemConfigApplyConfiguration represents an declarative configuration of the NodeSystemConfig type for use
+// NodeSystemConfigApplyConfiguration represents a declarative configuration of the NodeSystemConfig type for use
 // with apply.
 type NodeSystemConfigApplyConfiguration struct {
 	LinuxNodeConfig *LinuxNodeConfigApplyConfiguration `json:"linuxNodeConfig,omitempty"`
 	KubeletConfig   *KubeletConfigApplyConfiguration   `json:"kubeletConfig,omitempty"`
 }
 
-// NodeSystemConfigApplyConfiguration constructs an declarative configuration of the NodeSystemConfig type for use with
+// NodeSystemConfigApplyConfiguration constructs a declarative configuration of the NodeSystemConfig type for use with
 // apply.
 func NodeSystemConfig() *NodeSystemConfigApplyConfiguration {
 	return &NodeSystemConfigApplyConfiguration{}

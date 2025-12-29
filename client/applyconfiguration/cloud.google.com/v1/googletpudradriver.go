@@ -18,13 +18,13 @@
 
 package v1
 
-// GoogleTpuDraDriverApplyConfiguration represents an declarative configuration of the GoogleTpuDraDriver type for use
+// GoogleTpuDraDriverApplyConfiguration represents a declarative configuration of the GoogleTpuDraDriver type for use
 // with apply.
 type GoogleTpuDraDriverApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// GoogleTpuDraDriverApplyConfiguration constructs an declarative configuration of the GoogleTpuDraDriver type for use with
+// GoogleTpuDraDriverApplyConfiguration constructs a declarative configuration of the GoogleTpuDraDriver type for use with
 // apply.
 func GoogleTpuDraDriver() *GoogleTpuDraDriverApplyConfiguration {
 	return &GoogleTpuDraDriverApplyConfiguration{}

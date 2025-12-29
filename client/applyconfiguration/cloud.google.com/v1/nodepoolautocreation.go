@@ -18,7 +18,7 @@
 
 package v1
 
-// NodePoolAutoCreationApplyConfiguration represents an declarative configuration of the NodePoolAutoCreation type for use
+// NodePoolAutoCreationApplyConfiguration represents a declarative configuration of the NodePoolAutoCreation type for use
 // with apply.
 type NodePoolAutoCreationApplyConfiguration struct {
 	Enabled               *bool `json:"enabled,omitempty"`
@@ -26,7 +26,7 @@ type NodePoolAutoCreationApplyConfiguration struct {
 	DynamicBootDiskSize   *bool `json:"dynamicBootDiskSize,omitempty"`
 }
 
-// NodePoolAutoCreationApplyConfiguration constructs an declarative configuration of the NodePoolAutoCreation type for use with
+// NodePoolAutoCreationApplyConfiguration constructs a declarative configuration of the NodePoolAutoCreation type for use with
 // apply.
 func NodePoolAutoCreation() *NodePoolAutoCreationApplyConfiguration {
 	return &NodePoolAutoCreationApplyConfiguration{}

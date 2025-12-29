@@ -18,14 +18,14 @@
 
 package v1
 
-// PriorityDefaultsApplyConfiguration represents an declarative configuration of the PriorityDefaults type for use
+// PriorityDefaultsApplyConfiguration represents a declarative configuration of the PriorityDefaults type for use
 // with apply.
 type PriorityDefaultsApplyConfiguration struct {
 	NodeSystemConfig *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
 	Location         *LocationApplyConfiguration         `json:"location,omitempty"`
 }
 
-// PriorityDefaultsApplyConfiguration constructs an declarative configuration of the PriorityDefaults type for use with
+// PriorityDefaultsApplyConfiguration constructs a declarative configuration of the PriorityDefaults type for use with
 // apply.
 func PriorityDefaults() *PriorityDefaultsApplyConfiguration {
 	return &PriorityDefaultsApplyConfiguration{}

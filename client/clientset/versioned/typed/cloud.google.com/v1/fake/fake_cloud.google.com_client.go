@@ -29,7 +29,7 @@ type FakeCloudV1 struct {
 }
 
 func (c *FakeCloudV1) ComputeClasses() v1.ComputeClassInterface {
-	return &FakeComputeClasses{c}
+	return newFakeComputeClasses(c)
 }
 
 // RESTClient returns a RESTClient that is used to communicate

@@ -18,7 +18,7 @@
 
 package v1
 
-// GPUApplyConfiguration represents an declarative configuration of the GPU type for use
+// GPUApplyConfiguration represents a declarative configuration of the GPU type for use
 // with apply.
 type GPUApplyConfiguration struct {
 	Type          *string                       `json:"type,omitempty"`
@@ -28,7 +28,7 @@ type GPUApplyConfiguration struct {
 	GpuSharing    *GpuSharingApplyConfiguration `json:"gpuSharing,omitempty"`
 }
 
-// GPUApplyConfiguration constructs an declarative configuration of the GPU type for use with
+// GPUApplyConfiguration constructs a declarative configuration of the GPU type for use with
 // apply.
 func GPU() *GPUApplyConfiguration {
 	return &GPUApplyConfiguration{}

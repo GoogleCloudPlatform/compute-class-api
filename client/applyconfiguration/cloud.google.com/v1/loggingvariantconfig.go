@@ -18,13 +18,13 @@
 
 package v1
 
-// LoggingVariantConfigApplyConfiguration represents an declarative configuration of the LoggingVariantConfig type for use
+// LoggingVariantConfigApplyConfiguration represents a declarative configuration of the LoggingVariantConfig type for use
 // with apply.
 type LoggingVariantConfigApplyConfiguration struct {
 	Variant *string `json:"variant,omitempty"`
 }
 
-// LoggingVariantConfigApplyConfiguration constructs an declarative configuration of the LoggingVariantConfig type for use with
+// LoggingVariantConfigApplyConfiguration constructs a declarative configuration of the LoggingVariantConfig type for use with
 // apply.
 func LoggingVariantConfig() *LoggingVariantConfigApplyConfiguration {
 	return &LoggingVariantConfigApplyConfiguration{}

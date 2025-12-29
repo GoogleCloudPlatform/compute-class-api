@@ -19,20 +19,20 @@
 package v1
 
 import (
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ScalingEventsHistoryApplyConfiguration represents an declarative configuration of the ScalingEventsHistory type for use
+// ScalingEventsHistoryApplyConfiguration represents a declarative configuration of the ScalingEventsHistory type for use
 // with apply.
 type ScalingEventsHistoryApplyConfiguration struct {
-	ConsolidatedNodesCount *int     `json:"consolidatedNodesCount,omitempty"`
-	ProvisionedNodesCount  *int     `json:"provisionedNodesCount,omitempty"`
-	MigratedNodesCount     *int     `json:"migratedNodesCount,omitempty"`
-	MeasuredAt             *v1.Time `json:"measuredAt,omitempty"`
-	MeasuredSince          *v1.Time `json:"measuredSince,omitempty"`
+	ConsolidatedNodesCount *int         `json:"consolidatedNodesCount,omitempty"`
+	ProvisionedNodesCount  *int         `json:"provisionedNodesCount,omitempty"`
+	MigratedNodesCount     *int         `json:"migratedNodesCount,omitempty"`
+	MeasuredAt             *metav1.Time `json:"measuredAt,omitempty"`
+	MeasuredSince          *metav1.Time `json:"measuredSince,omitempty"`
 }
 
-// ScalingEventsHistoryApplyConfiguration constructs an declarative configuration of the ScalingEventsHistory type for use with
+// ScalingEventsHistoryApplyConfiguration constructs a declarative configuration of the ScalingEventsHistory type for use with
 // apply.
 func ScalingEventsHistory() *ScalingEventsHistoryApplyConfiguration {
 	return &ScalingEventsHistoryApplyConfiguration{}
@@ -65,7 +65,7 @@ func (b *ScalingEventsHistoryApplyConfiguration) WithMigratedNodesCount(value in
 // WithMeasuredAt sets the MeasuredAt field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the MeasuredAt field is set to the value of the last call.
-func (b *ScalingEventsHistoryApplyConfiguration) WithMeasuredAt(value v1.Time) *ScalingEventsHistoryApplyConfiguration {
+func (b *ScalingEventsHistoryApplyConfiguration) WithMeasuredAt(value metav1.Time) *ScalingEventsHistoryApplyConfiguration {
 	b.MeasuredAt = &value
 	return b
 }
@@ -73,7 +73,7 @@ func (b *ScalingEventsHistoryApplyConfiguration) WithMeasuredAt(value v1.Time) *
 // WithMeasuredSince sets the MeasuredSince field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the MeasuredSince field is set to the value of the last call.
-func (b *ScalingEventsHistoryApplyConfiguration) WithMeasuredSince(value v1.Time) *ScalingEventsHistoryApplyConfiguration {
+func (b *ScalingEventsHistoryApplyConfiguration) WithMeasuredSince(value metav1.Time) *ScalingEventsHistoryApplyConfiguration {
 	b.MeasuredSince = &value
 	return b
 }

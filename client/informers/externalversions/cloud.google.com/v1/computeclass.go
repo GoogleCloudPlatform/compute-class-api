@@ -19,13 +19,13 @@
 package v1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	apicloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	versioned "github.com/googlecloudplatform/compute-class-api/client/clientset/versioned"
 	internalinterfaces "github.com/googlecloudplatform/compute-class-api/client/informers/externalversions/internalinterfaces"
-	v1 "github.com/googlecloudplatform/compute-class-api/client/listers/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/listers/cloud.google.com/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -36,7 +36,7 @@ import (
 // ComputeClasses.
 type ComputeClassInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1.ComputeClassLister
+	Lister() cloudgooglecomv1.ComputeClassLister
 }
 
 type computeClassInformer struct {
@@ -61,16 +61,28 @@ func NewFilteredComputeClassInformer(client versioned.Interface, resyncPeriod ti
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.CloudV1().ComputeClasses().List(context.TODO(), options)
+				return client.CloudV1().ComputeClasses().List(context.Background(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.CloudV1().ComputeClasses().Watch(context.TODO(), options)
+				return client.CloudV1().ComputeClasses().Watch(context.Background(), options)
+			},
+			ListWithContextFunc: func(ctx context.Context, options metav1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&options)
+				}
+				return client.CloudV1().ComputeClasses().List(ctx, options)
+			},
+			WatchFuncWithContext: func(ctx context.Context, options metav1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&options)
+				}
+				return client.CloudV1().ComputeClasses().Watch(ctx, options)
 			},
 		},
-		&cloudgooglecomv1.ComputeClass{},
+		&apicloudgooglecomv1.ComputeClass{},
 		resyncPeriod,
 		indexers,
 	)
@@ -81,9 +93,9 @@ func (f *computeClassInformer) defaultInformer(client versioned.Interface, resyn
 }
 
 func (f *computeClassInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&cloudgooglecomv1.ComputeClass{}, f.defaultInformer)
+	return f.factory.InformerFor(&apicloudgooglecomv1.ComputeClass{}, f.defaultInformer)
 }
 
-func (f *computeClassInformer) Lister() v1.ComputeClassLister {
-	return v1.NewComputeClassLister(f.Informer().GetIndexer())
+func (f *computeClassInformer) Lister() cloudgooglecomv1.ComputeClassLister {
+	return cloudgooglecomv1.NewComputeClassLister(f.Informer().GetIndexer())
 }

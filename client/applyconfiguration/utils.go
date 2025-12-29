@@ -21,7 +21,10 @@ package applyconfiguration
 import (
 	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/applyconfiguration/cloud.google.com/v1"
+	internal "github.com/googlecloudplatform/compute-class-api/client/applyconfiguration/internal"
+	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
+	managedfields "k8s.io/apimachinery/pkg/util/managedfields"
 )
 
 // ForKind returns an apply configuration type for the given GroupVersionKind, or nil if no
@@ -134,4 +137,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 
 	}
 	return nil
+}
+
+func NewTypeConverter(scheme *runtime.Scheme) managedfields.TypeConverter {
+	return managedfields.NewSchemeTypeConverter(scheme, internal.Parser())
 }

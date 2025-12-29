@@ -18,7 +18,7 @@
 
 package v1
 
-// EvictionMinimumReclaimApplyConfiguration represents an declarative configuration of the EvictionMinimumReclaim type for use
+// EvictionMinimumReclaimApplyConfiguration represents a declarative configuration of the EvictionMinimumReclaim type for use
 // with apply.
 type EvictionMinimumReclaimApplyConfiguration struct {
 	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
@@ -29,7 +29,7 @@ type EvictionMinimumReclaimApplyConfiguration struct {
 	PidAvailable      *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionMinimumReclaimApplyConfiguration constructs an declarative configuration of the EvictionMinimumReclaim type for use with
+// EvictionMinimumReclaimApplyConfiguration constructs a declarative configuration of the EvictionMinimumReclaim type for use with
 // apply.
 func EvictionMinimumReclaim() *EvictionMinimumReclaimApplyConfiguration {
 	return &EvictionMinimumReclaimApplyConfiguration{}

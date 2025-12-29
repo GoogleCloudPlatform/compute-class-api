@@ -18,14 +18,14 @@
 
 package v1
 
-// ActiveMigrationApplyConfiguration represents an declarative configuration of the ActiveMigration type for use
+// ActiveMigrationApplyConfiguration represents a declarative configuration of the ActiveMigration type for use
 // with apply.
 type ActiveMigrationApplyConfiguration struct {
 	OptimizeRulePriority          *bool `json:"optimizeRulePriority,omitempty"`
 	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty"`
 }
 
-// ActiveMigrationApplyConfiguration constructs an declarative configuration of the ActiveMigration type for use with
+// ActiveMigrationApplyConfiguration constructs a declarative configuration of the ActiveMigration type for use with
 // apply.
 func ActiveMigration() *ActiveMigrationApplyConfiguration {
 	return &ActiveMigrationApplyConfiguration{}

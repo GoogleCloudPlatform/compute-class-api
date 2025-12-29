@@ -18,13 +18,13 @@
 
 package v1
 
-// NvidiaGpuDraDriverApplyConfiguration represents an declarative configuration of the NvidiaGpuDraDriver type for use
+// NvidiaGpuDraDriverApplyConfiguration represents a declarative configuration of the NvidiaGpuDraDriver type for use
 // with apply.
 type NvidiaGpuDraDriverApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// NvidiaGpuDraDriverApplyConfiguration constructs an declarative configuration of the NvidiaGpuDraDriver type for use with
+// NvidiaGpuDraDriverApplyConfiguration constructs a declarative configuration of the NvidiaGpuDraDriver type for use with
 // apply.
 func NvidiaGpuDraDriver() *NvidiaGpuDraDriverApplyConfiguration {
 	return &NvidiaGpuDraDriverApplyConfiguration{}
