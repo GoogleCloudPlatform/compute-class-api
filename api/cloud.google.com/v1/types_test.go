@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/google/cel-go/cel"
 )
 
 // Embedding the file is needed because the test is also executed inside google3 (this repo is copied by copybara)
@@ -110,4 +112,224 @@ func TestProtobufOrderIsIncreasing(t *testing.T) {
 		// We've processed this struct, no need to inspect its children nodes.
 		return false
 	})
+}
+
+func TestGpuTopologyValidationRule(t *testing.T) {
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse types.go: %v", err)
+	}
+
+	var rule string
+	targetRule := "gpu.topology"
+	for _, decl := range node.Decls {
+		gd, ok := decl.(*ast.GenDecl)
+		if !ok || gd.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range gd.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name != "ComputeClassSpec" {
+				continue
+			}
+			for _, comment := range gd.Doc.List {
+				text := comment.Text
+				if strings.Contains(text, "+kubebuilder:validation:XValidation:rule") && strings.Contains(text, targetRule) {
+					idx := strings.Index(text, "rule=")
+					if idx == -1 {
+						continue
+					}
+					rest := text[idx+len("rule="):]
+					quotedRule, err := strconv.QuotedPrefix(rest)
+					if err != nil {
+						t.Logf("Failed to parse quoted rule from comment: %v", err)
+						continue
+					}
+					rule, err = strconv.Unquote(quotedRule)
+					if err != nil {
+						t.Logf("Failed to unquote rule: %v", err)
+						continue
+					}
+					break
+				}
+			}
+
+		}
+	}
+
+	if rule == "" {
+		t.Fatalf("Could not find validation rule with %q in types.go", targetRule)
+	}
+
+	env, err := cel.NewEnv(
+		cel.Variable("self", cel.MapType(cel.StringType, cel.DynType)),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create CEL environment: %v", err)
+	}
+
+	ast, issues := env.Compile(rule)
+	if issues != nil && issues.Err() != nil {
+		t.Fatalf("Failed to compile CEL rule: %v", issues.Err())
+	}
+
+	program, err := env.Program(ast)
+	if err != nil {
+		t.Fatalf("Failed to create CEL program: %v", err)
+	}
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid:_no_gpu_topology",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_gpu_topology_with_a4x_with_placement",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4x",
+						"gpu": map[string]interface{}{
+							"topology": "1x72",
+						},
+						"placement": map[string]interface{}{
+							"policyName": "workloadPolicy",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_gpu_topology_with_a4x_without_placement",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4x",
+						"gpu": map[string]interface{}{
+							"topology": "1x72",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid:_gpu_topology_with_nvidia-gb200_with_placement",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"gpu": map[string]interface{}{
+							"type":     "nvidia-gb200",
+							"topology": "1x72",
+						},
+						"placement": map[string]interface{}{
+							"policyName": "workloadPolicy",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_gpu_topology_with_nvidia-gb200_without_policy",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"gpu": map[string]interface{}{
+							"type":     "nvidia-gb200",
+							"topology": "1x72",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid:_nvidia-gb200_with_policy_without_topology",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4x",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-gb200",
+						},
+						"placement": map[string]interface{}{
+							"policyName": "workloadPolicy",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_gpu_topology_with_c3",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+						"gpu": map[string]interface{}{
+							"topology": "1x72",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_gpu_topology_with_other_gpu_type",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"gpu": map[string]interface{}{
+							"type":     "nvidia-h100-80gb",
+							"topology": "1x72",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid:_gpu_without_topology",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": tc.input,
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+
+			if out.Value() != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			}
+		})
+	}
 }
