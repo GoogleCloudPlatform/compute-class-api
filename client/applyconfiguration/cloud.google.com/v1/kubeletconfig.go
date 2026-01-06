@@ -21,25 +21,27 @@ package v1
 // KubeletConfigApplyConfiguration represents a declarative configuration of the KubeletConfig type for use
 // with apply.
 type KubeletConfigApplyConfiguration struct {
-	CpuCfsQuota                      *bool                                      `json:"cpuCfsQuota,omitempty"`
-	CpuCfsQuotaPeriod                *string                                    `json:"cpuCfsQuotaPeriod,omitempty"`
-	CpuManagerPolicy                 *string                                    `json:"cpuManagerPolicy,omitempty"`
-	PodPidsLimit                     *int64                                     `json:"podPidsLimit,omitempty"`
-	ImageGcLowThresholdPercent       *int64                                     `json:"imageGcLowThresholdPercent,omitempty"`
-	ImageGcHighThresholdPercent      *int64                                     `json:"imageGcHighThresholdPercent,omitempty"`
-	ImageMinimumGcAge                *string                                    `json:"imageMinimumGcAge,omitempty"`
-	ImageMaximumGcAge                *string                                    `json:"imageMaximumGcAge,omitempty"`
-	ContainerLogMaxSize              *string                                    `json:"containerLogMaxSize,omitempty"`
-	ContainerLogMaxFiles             *int64                                     `json:"containerLogMaxFiles,omitempty"`
-	AllowedUnsafeSysctls             []string                                   `json:"allowedUnsafeSysctls,omitempty"`
-	MaxParallelImagePulls            *int64                                     `json:"maxParallelImagePulls,omitempty"`
-	SingleProcessOOMKill             *bool                                      `json:"singleProcessOOMKill,omitempty"`
-	EvictionSoft                     *EvictionSoftApplyConfiguration            `json:"evictionSoft,omitempty"`
-	EvictionSoftGracePeriod          *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
-	EvictionMinimumReclaim           *EvictionMinimumReclaimApplyConfiguration  `json:"evictionMinimumReclaim,omitempty"`
-	EvictionMaxPodGracePeriodSeconds *int64                                     `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
-	TopologyManager                  *TopologyManagerApplyConfiguration         `json:"topologyManager,omitempty"`
-	MemoryManager                    *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
+	CpuCfsQuota                            *bool                                      `json:"cpuCfsQuota,omitempty"`
+	CpuCfsQuotaPeriod                      *string                                    `json:"cpuCfsQuotaPeriod,omitempty"`
+	CpuManagerPolicy                       *string                                    `json:"cpuManagerPolicy,omitempty"`
+	PodPidsLimit                           *int64                                     `json:"podPidsLimit,omitempty"`
+	ImageGcLowThresholdPercent             *int64                                     `json:"imageGcLowThresholdPercent,omitempty"`
+	ImageGcHighThresholdPercent            *int64                                     `json:"imageGcHighThresholdPercent,omitempty"`
+	ImageMinimumGcAge                      *string                                    `json:"imageMinimumGcAge,omitempty"`
+	ImageMaximumGcAge                      *string                                    `json:"imageMaximumGcAge,omitempty"`
+	ContainerLogMaxSize                    *string                                    `json:"containerLogMaxSize,omitempty"`
+	ContainerLogMaxFiles                   *int64                                     `json:"containerLogMaxFiles,omitempty"`
+	AllowedUnsafeSysctls                   []string                                   `json:"allowedUnsafeSysctls,omitempty"`
+	MaxParallelImagePulls                  *int64                                     `json:"maxParallelImagePulls,omitempty"`
+	SingleProcessOOMKill                   *bool                                      `json:"singleProcessOOMKill,omitempty"`
+	EvictionSoft                           *EvictionSoftApplyConfiguration            `json:"evictionSoft,omitempty"`
+	EvictionSoftGracePeriod                *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
+	EvictionMinimumReclaim                 *EvictionMinimumReclaimApplyConfiguration  `json:"evictionMinimumReclaim,omitempty"`
+	EvictionMaxPodGracePeriodSeconds       *int64                                     `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
+	TopologyManager                        *TopologyManagerApplyConfiguration         `json:"topologyManager,omitempty"`
+	MemoryManager                          *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
+	ShutdownGracePeriodSeconds             *int32                                     `json:"shutdownGracePeriodSeconds,omitempty"`
+	ShutdownGracePeriodCriticalPodsSeconds *int32                                     `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
@@ -199,5 +201,21 @@ func (b *KubeletConfigApplyConfiguration) WithTopologyManager(value *TopologyMan
 // If called multiple times, the MemoryManager field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithMemoryManager(value *MemoryManagerApplyConfiguration) *KubeletConfigApplyConfiguration {
 	b.MemoryManager = value
+	return b
+}
+
+// WithShutdownGracePeriodSeconds sets the ShutdownGracePeriodSeconds field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ShutdownGracePeriodSeconds field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithShutdownGracePeriodSeconds(value int32) *KubeletConfigApplyConfiguration {
+	b.ShutdownGracePeriodSeconds = &value
+	return b
+}
+
+// WithShutdownGracePeriodCriticalPodsSeconds sets the ShutdownGracePeriodCriticalPodsSeconds field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ShutdownGracePeriodCriticalPodsSeconds field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithShutdownGracePeriodCriticalPodsSeconds(value int32) *KubeletConfigApplyConfiguration {
+	b.ShutdownGracePeriodCriticalPodsSeconds = &value
 	return b
 }

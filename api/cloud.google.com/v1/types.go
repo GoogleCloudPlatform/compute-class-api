@@ -965,6 +965,7 @@ type EvictionMinimumReclaim struct {
 //
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>self.imageGcLowThresholdPercent : true", message="ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent"
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&!has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>80 : true", message="ImageGcHighThresholdPercent must be higher than 80 which is default value of imageGcLowThresholdPercent"
+// +kubebuilder:validation:XValidation:rule="!has(self.shutdownGracePeriodCriticalPodsSeconds) || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds <= self.shutdownGracePeriodSeconds)", message="ShutdownGracePeriodCriticalPodsSeconds must be less than or equal to ShutdownGracePeriodSeconds and requires ShutdownGracePeriodSeconds to be set"
 type KubeletConfig struct {
 	// This setting enforces the Pod's CPU limit. Setting this value to false means that the CPU limits for Pods are ignored.
 	// Ignoring CPU limits might be desirable in certain scenarios where Pods are sensitive to CPU limits.
@@ -1089,6 +1090,21 @@ type KubeletConfig struct {
 	//
 	// +kubebuilder:validation:Optional
 	MemoryManager *MemoryManager `json:"memoryManager,omitempty" protobuf:"bytes,19,opt,name=memoryManager"`
+	// ShutdownGracePeriodSeconds is the maximum allowed grace period
+	// (in seconds) that the node should delay the shutdown during a graceful shutdown.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=120
+	// +kubebuilder:validation:Optional
+	ShutdownGracePeriodSeconds *int32 `json:"shutdownGracePeriodSeconds,omitempty" protobuf:"bytes,20,opt,name=shutdownGracePeriodSeconds"`
+	// ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
+	// (in seconds) that is used to terminate critical pods during a node shutdown.
+	// This value should be <= ShutdownGracePeriodSeconds, and is only valid if ShutdownGracePeriodSeconds is set.
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=120
+	// +kubebuilder:validation:Optional
+	ShutdownGracePeriodCriticalPodsSeconds *int32 `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty" protobuf:"bytes,21,opt,name=shutdownGracePeriodCriticalPodsSeconds"`
 }
 
 // SysctlsConfig defines sysctls config for a node.

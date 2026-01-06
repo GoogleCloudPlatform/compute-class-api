@@ -836,6 +836,23 @@ spec:
                               maximum: 4194304
                               minimum: 1024
                               type: integer
+                            shutdownGracePeriodCriticalPodsSeconds:
+                              description: |-
+                                ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
+                                (in seconds) that is used to terminate critical pods during a node shutdown.
+                                This value should be <= ShutdownGracePeriodSeconds, and is only valid if ShutdownGracePeriodSeconds is set.
+                              format: int32
+                              maximum: 120
+                              minimum: 0
+                              type: integer
+                            shutdownGracePeriodSeconds:
+                              description: |-
+                                ShutdownGracePeriodSeconds is the maximum allowed grace period
+                                (in seconds) that the node should delay the shutdown during a graceful shutdown.
+                              format: int32
+                              maximum: 120
+                              minimum: 0
+                              type: integer
                             singleProcessOOMKill:
                               description: |-
                                 This setting sets whether to enable single process OOM killer.
@@ -881,6 +898,12 @@ spec:
                               80 which is default value of imageGcLowThresholdPercent
                             rule: 'has(self.imageGcHighThresholdPercent)&&!has(self.imageGcLowThresholdPercent)
                               ? self.imageGcHighThresholdPercent>80 : true'
+                          - message: ShutdownGracePeriodCriticalPodsSeconds must be
+                              less than or equal to ShutdownGracePeriodSeconds and
+                              requires ShutdownGracePeriodSeconds to be set
+                            rule: '!has(self.shutdownGracePeriodCriticalPodsSeconds)
+                              || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds
+                              <= self.shutdownGracePeriodSeconds)'
                         linuxNodeConfig:
                           description: LinuxNodeConfig defines linux node config for
                             a node.
@@ -1976,6 +1999,23 @@ spec:
                             maximum: 4194304
                             minimum: 1024
                             type: integer
+                          shutdownGracePeriodCriticalPodsSeconds:
+                            description: |-
+                              ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
+                              (in seconds) that is used to terminate critical pods during a node shutdown.
+                              This value should be <= ShutdownGracePeriodSeconds, and is only valid if ShutdownGracePeriodSeconds is set.
+                            format: int32
+                            maximum: 120
+                            minimum: 0
+                            type: integer
+                          shutdownGracePeriodSeconds:
+                            description: |-
+                              ShutdownGracePeriodSeconds is the maximum allowed grace period
+                              (in seconds) that the node should delay the shutdown during a graceful shutdown.
+                            format: int32
+                            maximum: 120
+                            minimum: 0
+                            type: integer
                           singleProcessOOMKill:
                             description: |-
                               This setting sets whether to enable single process OOM killer.
@@ -2020,6 +2060,12 @@ spec:
                             80 which is default value of imageGcLowThresholdPercent
                           rule: 'has(self.imageGcHighThresholdPercent)&&!has(self.imageGcLowThresholdPercent)
                             ? self.imageGcHighThresholdPercent>80 : true'
+                        - message: ShutdownGracePeriodCriticalPodsSeconds must be
+                            less than or equal to ShutdownGracePeriodSeconds and requires
+                            ShutdownGracePeriodSeconds to be set
+                          rule: '!has(self.shutdownGracePeriodCriticalPodsSeconds)
+                            || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds
+                            <= self.shutdownGracePeriodSeconds)'
                       linuxNodeConfig:
                         description: LinuxNodeConfig defines linux node config for
                           a node.
@@ -2653,6 +2699,12 @@ spec:
             - message: Rank must be set for all priorities or for none of them
               rule: self.priorities.all(p, has(p.rank)) || self.priorities.all(p,
                 !has(p.rank))
+            - message: GPU Topology is supported only for A4X machine family or nvidia-gb200
+                GPU type together with placement (workload) policy
+              rule: 'self.priorities.all(p, (has(p.gpu) && has(p.gpu.topology)) ?
+                (((has(p.machineFamily) && p.machineFamily == ''a4x'') || (has(p.gpu.type)
+                && p.gpu.type == ''nvidia-gb200'')) && has(p.placement) && has(p.placement.policyName))
+                : true)'
           status:
             description: Status of the ComputeClass.
             properties:

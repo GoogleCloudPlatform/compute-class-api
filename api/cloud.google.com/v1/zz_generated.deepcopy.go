@@ -641,6 +641,16 @@ func (in *KubeletConfig) DeepCopyInto(out *KubeletConfig) {
 		*out = new(MemoryManager)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.ShutdownGracePeriodSeconds != nil {
+		in, out := &in.ShutdownGracePeriodSeconds, &out.ShutdownGracePeriodSeconds
+		*out = new(int32)
+		**out = **in
+	}
+	if in.ShutdownGracePeriodCriticalPodsSeconds != nil {
+		in, out := &in.ShutdownGracePeriodCriticalPodsSeconds, &out.ShutdownGracePeriodCriticalPodsSeconds
+		*out = new(int32)
+		**out = **in
+	}
 	return
 }
 
