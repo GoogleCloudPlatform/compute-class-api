@@ -115,69 +115,8 @@ func TestProtobufOrderIsIncreasing(t *testing.T) {
 }
 
 func TestGpuTopologyValidationRule(t *testing.T) {
-	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
-	if err != nil {
-		t.Fatalf("Failed to parse types.go: %v", err)
-	}
-
-	var rule string
-	targetRule := "gpu.topology"
-	for _, decl := range node.Decls {
-		gd, ok := decl.(*ast.GenDecl)
-		if !ok || gd.Tok != token.TYPE {
-			continue
-		}
-		for _, spec := range gd.Specs {
-			typeSpec, ok := spec.(*ast.TypeSpec)
-			if !ok || typeSpec.Name.Name != "ComputeClassSpec" {
-				continue
-			}
-			for _, comment := range gd.Doc.List {
-				text := comment.Text
-				if strings.Contains(text, "+kubebuilder:validation:XValidation:rule") && strings.Contains(text, targetRule) {
-					idx := strings.Index(text, "rule=")
-					if idx == -1 {
-						continue
-					}
-					rest := text[idx+len("rule="):]
-					quotedRule, err := strconv.QuotedPrefix(rest)
-					if err != nil {
-						t.Logf("Failed to parse quoted rule from comment: %v", err)
-						continue
-					}
-					rule, err = strconv.Unquote(quotedRule)
-					if err != nil {
-						t.Logf("Failed to unquote rule: %v", err)
-						continue
-					}
-					break
-				}
-			}
-
-		}
-	}
-
-	if rule == "" {
-		t.Fatalf("Could not find validation rule with %q in types.go", targetRule)
-	}
-
-	env, err := cel.NewEnv(
-		cel.Variable("self", cel.MapType(cel.StringType, cel.DynType)),
-	)
-	if err != nil {
-		t.Fatalf("Failed to create CEL environment: %v", err)
-	}
-
-	ast, issues := env.Compile(rule)
-	if issues != nil && issues.Err() != nil {
-		t.Fatalf("Failed to compile CEL rule: %v", issues.Err())
-	}
-
-	program, err := env.Program(ast)
-	if err != nil {
-		t.Fatalf("Failed to create CEL program: %v", err)
-	}
+	rule := getTypeValidationRule(t, "ComputeClassSpec", "gpu.topology")
+	program := createCELProgram(t, rule)
 
 	tests := []struct {
 		name      string
@@ -332,4 +271,318 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLocationZoneTypes_WithLocationZones(t *testing.T) {
+	rule := getTypeValidationRule(t, "Location", "!(has(self.zones) && has(self.zoneTypes))")
+	program := createCELProgram(t, rule)
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "only_zones",
+			input: map[string]interface{}{
+				"zones": []string{"us-central1-a"},
+			},
+			wantValid: true,
+		},
+		{
+			name: "only_zoneTypes",
+			input: map[string]interface{}{
+				"zoneTypes": []string{"STANDARD"},
+			},
+			wantValid: true,
+		},
+		{
+			name:      "neither",
+			input:     map[string]interface{}{},
+			wantValid: true,
+		},
+		{
+			name: "both_set",
+			input: map[string]interface{}{
+				"zones":     []string{"us-central1-a"},
+				"zoneTypes": []string{"STANDARD"},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": tc.input,
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+
+			if out.Value() != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestLocationZoneTypes_WithSpecificReservationZones(t *testing.T) {
+	rule := getTypeValidationRule(t, "Priority", "reservations.specific")
+	program := createCELProgram(t, rule)
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "only_zoneTypes",
+			input: map[string]interface{}{
+				"location": map[string]interface{}{
+					"zoneTypes": []string{"AI"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "only_reservation_zones",
+			input: map[string]interface{}{
+				"reservations": map[string]interface{}{
+					"specific": []interface{}{
+						map[string]interface{}{
+							"name":  "res1",
+							"zones": []string{"us-central1-b"},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name:      "neither",
+			input:     map[string]interface{}{},
+			wantValid: true,
+		},
+		{
+			name: "zoneTypes_and_resv_no_zones",
+			input: map[string]interface{}{
+				"location": map[string]interface{}{
+					"zoneTypes": []string{"AI"},
+				},
+				"reservations": map[string]interface{}{
+					"specific": []interface{}{
+						map[string]interface{}{
+							"name": "res1",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "both_set",
+			input: map[string]interface{}{
+				"location": map[string]interface{}{
+					"zoneTypes": []string{"AI"},
+				},
+				"reservations": map[string]interface{}{
+					"specific": []interface{}{
+						map[string]interface{}{
+							"name":  "res1",
+							"zones": []string{"us-central1-b"},
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": tc.input,
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+
+			if out.Value() != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestLocationZoneTypes_FieldRules(t *testing.T) {
+	rule := getFieldValidationRule(t, "Location", "ZoneTypes", "'AI' in self")
+	program := createCELProgram(t, rule)
+
+	tests := []struct {
+		name      string
+		input     []string
+		wantValid bool
+	}{
+		{
+			name:      "only_standard_zoneType",
+			input:     []string{"STANDARD"},
+			wantValid: true,
+		}, {
+			name:      "standard_and_ai_zoneType",
+			input:     []string{"STANDARD", "AI"},
+			wantValid: true,
+		}, {
+			name:      "only_ai_zoneType",
+			input:     []string{"AI"},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": tc.input,
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+
+			if out.Value() != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			}
+		})
+	}
+}
+
+func getTypeValidationRule(t *testing.T, structName, ruleSubString string) string {
+	t.Helper()
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse types.go: %v", err)
+	}
+
+	for _, decl := range node.Decls {
+		gd, ok := decl.(*ast.GenDecl)
+		if !ok || gd.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range gd.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name != structName {
+				continue
+			}
+			if typeSpec.Doc == nil && gd.Doc == nil {
+				continue
+			}
+			comments := []*ast.CommentGroup{typeSpec.Doc, gd.Doc}
+			for _, cg := range comments {
+				if cg == nil {
+					continue
+				}
+				for _, comment := range cg.List {
+					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
+					if rule != nil {
+						return *rule
+					}
+				}
+			}
+		}
+	}
+	t.Fatalf("Could not find validation rule with %q at struct %s in types.go", ruleSubString, structName)
+	return ""
+}
+
+func getFieldValidationRule(t *testing.T, structName, fieldName, ruleSubString string) string {
+	t.Helper()
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse types.go: %v", err)
+	}
+
+	for _, decl := range node.Decls {
+		gd, ok := decl.(*ast.GenDecl)
+		if !ok || gd.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range gd.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name != structName {
+				continue
+			}
+
+			structType, ok := typeSpec.Type.(*ast.StructType)
+			if !ok {
+				continue
+			}
+
+			for _, field := range structType.Fields.List {
+				if len(field.Names) == 0 {
+					continue // skip embedded fields
+				}
+				if field.Names[0].Name != fieldName {
+					continue
+				}
+				if field.Doc == nil {
+					continue
+				}
+				for _, comment := range field.Doc.List {
+					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
+					if rule != nil {
+						return *rule
+					}
+				}
+
+			}
+		}
+	}
+	t.Fatalf("Could not find field validation rule with %q on field %s.%s", ruleSubString, structName, fieldName)
+	return ""
+}
+
+func extractRuleFromComment(t *testing.T, commentText string, ruleSubString string) *string {
+	if !strings.Contains(commentText, "+kubebuilder:validation:XValidation:rule") || !strings.Contains(commentText, ruleSubString) {
+		return nil
+	}
+	idx := strings.Index(commentText, "rule=")
+	if idx == -1 {
+		return nil
+	}
+	rest := commentText[idx+len("rule="):]
+	quotedRule, err := strconv.QuotedPrefix(rest)
+	if err != nil {
+		t.Logf("Failed to parse quoted rule from comment: %v", err)
+		return nil
+	}
+	var rule string
+	rule, err = strconv.Unquote(quotedRule)
+	if err != nil {
+		t.Logf("Failed to unquote rule: %v", err)
+		return nil
+	}
+	return &rule
+}
+
+func createCELProgram(t *testing.T, rule string) cel.Program {
+	t.Helper()
+	env, err := cel.NewEnv(
+		cel.Variable("self", cel.MapType(cel.StringType, cel.DynType)),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create CEL environment: %v", err)
+	}
+
+	ast, issues := env.Compile(rule)
+	if issues != nil && issues.Err() != nil {
+		t.Fatalf("Failed to compile CEL rule: %v", issues.Err())
+	}
+
+	program, err := env.Program(ast)
+	if err != nil {
+		t.Fatalf("Failed to create CEL program: %v", err)
+	}
+
+	return program
 }

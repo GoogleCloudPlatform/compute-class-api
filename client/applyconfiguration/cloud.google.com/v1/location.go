@@ -18,11 +18,16 @@
 
 package v1
 
+import (
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+)
+
 // LocationApplyConfiguration represents a declarative configuration of the Location type for use
 // with apply.
 type LocationApplyConfiguration struct {
-	Zones          []string `json:"zones,omitempty"`
-	LocationPolicy *string  `json:"locationPolicy,omitempty"`
+	Zones          []string                    `json:"zones,omitempty"`
+	LocationPolicy *string                     `json:"locationPolicy,omitempty"`
+	ZoneTypes      []cloudgooglecomv1.ZoneType `json:"zoneTypes,omitempty"`
 }
 
 // LocationApplyConfiguration constructs a declarative configuration of the Location type for use with
@@ -46,5 +51,15 @@ func (b *LocationApplyConfiguration) WithZones(values ...string) *LocationApplyC
 // If called multiple times, the LocationPolicy field is set to the value of the last call.
 func (b *LocationApplyConfiguration) WithLocationPolicy(value string) *LocationApplyConfiguration {
 	b.LocationPolicy = &value
+	return b
+}
+
+// WithZoneTypes adds the given value to the ZoneTypes field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the ZoneTypes field.
+func (b *LocationApplyConfiguration) WithZoneTypes(values ...cloudgooglecomv1.ZoneType) *LocationApplyConfiguration {
+	for i := range values {
+		b.ZoneTypes = append(b.ZoneTypes, values[i])
+	}
 	return b
 }

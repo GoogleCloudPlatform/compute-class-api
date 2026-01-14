@@ -569,6 +569,7 @@ type Reservations struct {
 // +kubebuilder:validation:XValidation:rule="!has(self.podFamily) || (size(dyn(self)) == 1 + (has(self.spot) ? 1 : 0) + (has(self.identifier) ? 1 : 0))", message="Spot selection is the only configurable priority setting when using podFamily"
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
 // +kubebuilder:validation:XValidation:rule="(has(self.spot) && self.spot) || !has(self.nodeSystemConfig) || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
+// +kubebuilder:validation:XValidation:rule="!(has(self.location) && has(self.location.zoneTypes) && has(self.reservations) && has(self.reservations.specific) && self.reservations.specific.exists(r, has(r.zones)))",message="Location ZoneTypes and specific reservation Zones cannot be set together"
 type Priority struct {
 	// Machine family describes preferred instance family for a node. If none is specified,
 	// the default autoprovisioning machine family is used.
@@ -1466,7 +1467,13 @@ type HugepagesConfig struct {
 	HugepageSize2m *int64 `json:"hugepage_size2m,omitempty" protobuf:"bytes,2,opt,name=hugepage_size2m"`
 }
 
+// ZoneType is an enumeration of supported zone types.
+//
+// +kubebuilder:validation:Enum=STANDARD;AI
+type ZoneType string
+
 // Location describes CCC zonal preferences config.
+// +kubebuilder:validation:XValidation:rule="!(has(self.zones) && has(self.zoneTypes))", message="Zones and ZoneTypes cannot be set together."
 type Location struct {
 	// Zones lists zones considered for node autoprovisioning.
 	//
@@ -1483,6 +1490,15 @@ type Location struct {
 	// +optional
 	// +kubebuilder:validation:Enum=ANY;BALANCED
 	LocationPolicy *string `json:"locationPolicy,omitempty" protobuf:"bytes,2,opt,name=locationPolicy"`
+
+	// ZoneTypes specifies sets of zones used for provisioning.
+	// STANDARD zone type designates the core Google Cloud zones within a region.
+	// AI zone type designates specialized zones optimized for AI.
+	// +optional
+	// +kubebuilder:validation:UniqueItems:true
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:XValidation:rule="!(self.size() == 1 && 'AI' in self)", message="ZoneTypes cannot have a single AI value."
+	ZoneTypes []ZoneType `json:"zoneTypes,omitempty" protobuf:"bytes,3,opt,name=zoneTypes"`
 }
 
 // PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.

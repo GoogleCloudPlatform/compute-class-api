@@ -491,6 +491,23 @@ spec:
                           - ANY
                           - BALANCED
                           type: string
+                        zoneTypes:
+                          description: |-
+                            ZoneTypes specifies sets of zones used for provisioning.
+                            STANDARD zone type designates the core Google Cloud zones within a region.
+                            AI zone type designates specialized zones optimized for AI.
+                          items:
+                            description: ZoneType is an enumeration of supported zone
+                              types.
+                            enum:
+                            - STANDARD
+                            - AI
+                            type: string
+                          minItems: 1
+                          type: array
+                          x-kubernetes-validations:
+                          - message: ZoneTypes cannot have a single AI value.
+                            rule: '!(self.size() == 1 && ''AI'' in self)'
                         zones:
                           description: Zones lists zones considered for node autoprovisioning.
                           items:
@@ -498,6 +515,9 @@ spec:
                           minItems: 1
                           type: array
                       type: object
+                      x-kubernetes-validations:
+                      - message: Zones and ZoneTypes cannot be set together.
+                        rule: '!(has(self.zones) && has(self.zoneTypes))'
                     machineFamily:
                       description: |-
                         Machine family describes preferred instance family for a node. If none is specified,
@@ -1703,6 +1723,11 @@ spec:
                   - message: shutdownGracePeriodSeconds is only supported for Spot
                     rule: (has(self.spot) && self.spot) || !has(self.nodeSystemConfig)
                       || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
+                  - message: Location ZoneTypes and specific reservation Zones cannot
+                      be set together
+                    rule: '!(has(self.location) && has(self.location.zoneTypes) &&
+                      has(self.reservations) && has(self.reservations.specific) &&
+                      self.reservations.specific.exists(r, has(r.zones)))'
                 maxItems: 1000
                 minItems: 0
                 type: array
@@ -1725,6 +1750,23 @@ spec:
                         - ANY
                         - BALANCED
                         type: string
+                      zoneTypes:
+                        description: |-
+                          ZoneTypes specifies sets of zones used for provisioning.
+                          STANDARD zone type designates the core Google Cloud zones within a region.
+                          AI zone type designates specialized zones optimized for AI.
+                        items:
+                          description: ZoneType is an enumeration of supported zone
+                            types.
+                          enum:
+                          - STANDARD
+                          - AI
+                          type: string
+                        minItems: 1
+                        type: array
+                        x-kubernetes-validations:
+                        - message: ZoneTypes cannot have a single AI value.
+                          rule: '!(self.size() == 1 && ''AI'' in self)'
                       zones:
                         description: Zones lists zones considered for node autoprovisioning.
                         items:
@@ -1732,6 +1774,9 @@ spec:
                         minItems: 1
                         type: array
                     type: object
+                    x-kubernetes-validations:
+                    - message: Zones and ZoneTypes cannot be set together.
+                      rule: '!(has(self.zones) && has(self.zoneTypes))'
                   nodeSystemConfig:
                     description: NodeSystemConfig defines node system config for a
                       node.

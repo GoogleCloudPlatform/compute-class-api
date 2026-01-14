@@ -712,6 +712,11 @@ func (in *Location) DeepCopyInto(out *Location) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.ZoneTypes != nil {
+		in, out := &in.ZoneTypes, &out.ZoneTypes
+		*out = make([]ZoneType, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
