@@ -87,6 +87,7 @@ type ComputeClassList struct {
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType) && self.priorities.exists(priority, has(priority.gpu))) ? (has(self.priorityDefaults) && has(self.priorityDefaults.location) && has(self.priorityDefaults.location.zones)) || self.priorities.all(priority, has(priority.location) && has(priority.location.zones)) : true", message="When using confidential GPUs you must specify location.zones"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, has(p.rank)) || self.priorities.all(p, !has(p.rank))", message="Rank must be set for all priorities or for none of them"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.gpu) && has(p.gpu.topology)) ? (((has(p.machineFamily) && p.machineFamily == 'a4x') || (has(p.gpu.type) && p.gpu.type == 'nvidia-gb200')) && has(p.placement) && has(p.placement.policyName)) : true)", message="GPU Topology is supported only for A4X machine family or nvidia-gb200 GPU type together with placement (workload) policy"
+// +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.spot) && p.spot)) || !has(self.priorityDefaults) || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
 type ComputeClassSpec struct {
 	// Priorities is a description of user preferences to be
 	// used by a given ComputeClass.
@@ -567,6 +568,7 @@ type Reservations struct {
 // +kubebuilder:validation:XValidation:rule="!(has(self.flexStart) && has(self.spot) && self.spot == true && self.flexStart.enabled == true)", message="Flex Start provisioning model is incompatible with Spot"
 // +kubebuilder:validation:XValidation:rule="!has(self.podFamily) || (size(dyn(self)) == 1 + (has(self.spot) ? 1 : 0) + (has(self.identifier) ? 1 : 0))", message="Spot selection is the only configurable priority setting when using podFamily"
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
+// +kubebuilder:validation:XValidation:rule="(has(self.spot) && self.spot) || !has(self.nodeSystemConfig) || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
 type Priority struct {
 	// Machine family describes preferred instance family for a node. If none is specified,
 	// the default autoprovisioning machine family is used.
@@ -1100,8 +1102,7 @@ type KubeletConfig struct {
 	// ShutdownGracePeriodSeconds is the maximum allowed grace period
 	// (in seconds) that the node should delay the shutdown during a graceful shutdown.
 	//
-	// +kubebuilder:validation:Minimum=0
-	// +kubebuilder:validation:Maximum=120
+	// +kubebuilder:validation:Enum=0;30;120
 	// +kubebuilder:validation:Optional
 	ShutdownGracePeriodSeconds *int32 `json:"shutdownGracePeriodSeconds,omitempty" protobuf:"bytes,20,opt,name=shutdownGracePeriodSeconds"`
 	// ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period

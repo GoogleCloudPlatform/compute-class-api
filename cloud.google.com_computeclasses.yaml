@@ -848,9 +848,11 @@ spec:
                               description: |-
                                 ShutdownGracePeriodSeconds is the maximum allowed grace period
                                 (in seconds) that the node should delay the shutdown during a graceful shutdown.
+                              enum:
+                              - 0
+                              - 30
+                              - 120
                               format: int32
-                              maximum: 120
-                              minimum: 0
                               type: integer
                             singleProcessOOMKill:
                               description: |-
@@ -1698,6 +1700,9 @@ spec:
                       Start and for multi-host TPUs
                     rule: '!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu)
                       || (has(self.flexStart) && self.flexStart.enabled)'
+                  - message: shutdownGracePeriodSeconds is only supported for Spot
+                    rule: (has(self.spot) && self.spot) || !has(self.nodeSystemConfig)
+                      || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
                 maxItems: 1000
                 minItems: 0
                 type: array
@@ -2011,9 +2016,11 @@ spec:
                             description: |-
                               ShutdownGracePeriodSeconds is the maximum allowed grace period
                               (in seconds) that the node should delay the shutdown during a graceful shutdown.
+                            enum:
+                            - 0
+                            - 30
+                            - 120
                             format: int32
-                            maximum: 120
-                            minimum: 0
                             type: integer
                           singleProcessOOMKill:
                             description: |-
@@ -2704,6 +2711,10 @@ spec:
                 (((has(p.machineFamily) && p.machineFamily == ''a4x'') || (has(p.gpu.type)
                 && p.gpu.type == ''nvidia-gb200'')) && has(p.placement) && has(p.placement.policyName))
                 : true)'
+            - message: shutdownGracePeriodSeconds is only supported for Spot
+              rule: self.priorities.all(p, (has(p.spot) && p.spot)) || !has(self.priorityDefaults)
+                || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig)
+                || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
           status:
             description: Status of the ComputeClass.
             properties:
