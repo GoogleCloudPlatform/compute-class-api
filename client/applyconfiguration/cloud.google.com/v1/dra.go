@@ -21,8 +21,7 @@ package v1
 // DraApplyConfiguration represents a declarative configuration of the Dra type for use
 // with apply.
 type DraApplyConfiguration struct {
-	Gpu *NvidiaGpuDraDriverApplyConfiguration `json:"gpu,omitempty"`
-	Tpu *GoogleTpuDraDriverApplyConfiguration `json:"tpu,omitempty"`
+	Networking *NetworkingDraApplyConfiguration `json:"networking,omitempty"`
 }
 
 // DraApplyConfiguration constructs a declarative configuration of the Dra type for use with
@@ -31,18 +30,10 @@ func Dra() *DraApplyConfiguration {
 	return &DraApplyConfiguration{}
 }
 
-// WithGpu sets the Gpu field in the declarative configuration to the given value
+// WithNetworking sets the Networking field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Gpu field is set to the value of the last call.
-func (b *DraApplyConfiguration) WithGpu(value *NvidiaGpuDraDriverApplyConfiguration) *DraApplyConfiguration {
-	b.Gpu = value
-	return b
-}
-
-// WithTpu sets the Tpu field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Tpu field is set to the value of the last call.
-func (b *DraApplyConfiguration) WithTpu(value *GoogleTpuDraDriverApplyConfiguration) *DraApplyConfiguration {
-	b.Tpu = value
+// If called multiple times, the Networking field is set to the value of the last call.
+func (b *DraApplyConfiguration) WithNetworking(value *NetworkingDraApplyConfiguration) *DraApplyConfiguration {
+	b.Networking = value
 	return b
 }

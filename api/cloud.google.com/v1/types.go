@@ -154,33 +154,35 @@ type ComputeClassSpec struct {
 	Description string `json:"description,omitempty" protobuf:"bytes,10,opt,name=description"`
 }
 
+type NetworkingDra struct {
+	// +optional
+	// +kubebuilder:default=false
+	Enabled bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
+}
+
 // Dra represents a set of settings related to dynamic resource allocation
 type Dra struct {
-	// Gpu defines settings configuring integration with NVIDIA GPU DRA driver
-	// (https://github.com/NVIDIA/k8s-dra-driver-gpu)
-	//
-	// +optional
-	Gpu NvidiaGpuDraDriver `json:"gpu,omitempty" protobuf:"bytes,1,opt,name=gpu"`
-	// TPU defines settings configuring integration with Google TPU DRA driver
-	//
-	// +optional
-	Tpu GoogleTpuDraDriver `json:"tpu,omitempty" protobuf:"bytes,2,opt,name=tpu"`
+	Networking NetworkingDra `json:"networking,omitempty" protobuf:"bytes,1,opt,name=networking"`
 }
 
-// NvidiaGpuDraDriver describes whether and how NVIDIA GPU DRA driver should be functioning
-type NvidiaGpuDraDriver struct {
-	// Enabled indicates whether GPU DRA driver is enabled for a given ComputeClass
-	//
-	// +optional
-	Enabled *bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
-}
+// TpuDriverMode is an enumeration of supported Google TPU driver modes.
+type TpuDriverMode string
 
-// GoogleTpuDraDriver describes whether and how Google TPU DRA driver should be functioning
-type GoogleTpuDraDriver struct {
-	// Enabled indicates whether TPU DRA driver is enabled for a given ComputeClass
+const (
+	// TpuDriverModeDevicePlugin enables managed device plugin mode for Google TPU driver.
+	TpuDriverModeDevicePlugin TpuDriverMode = "DevicePlugin"
+	// TpuDriverModeDynamicResourceAllocation enables managed DRA mode for Google TPU driver.
+	TpuDriverModeDynamicResourceAllocation TpuDriverMode = "DynamicResourceAllocation"
+)
+
+// GoogleTpu describes how Google TPU should be functioning on the node
+type GoogleTpu struct {
+	// DriverMode determines the behaviour of the Google TPU driver.
 	//
+	// +kubebuilder:validation:Enum=DevicePlugin;DynamicResourceAllocation
+	// +kubebuilder:default=DevicePlugin
 	// +optional
-	Enabled *bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`
+	DriverMode TpuDriverMode `json:"driverMode,omitempty" protobuf:"bytes,1,opt,name=driverMode"`
 }
 
 // AutoscalingPolicy defines autoscaling related settings.
@@ -372,6 +374,11 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	NodeVersion string `json:"nodeVersion,omitempty" protobuf:"string,15,opt,name=nodeVersion"`
+
+	// Tpu defines node pool configuration for Google TPU.
+	//
+	// +optional
+	Tpu GoogleTpu `json:"tpu,omitempty" protobuf:"bytes,16,opt,name=tpu"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.

@@ -187,23 +187,10 @@ spec:
                       Dra describes settings related to dynamic resource allocation
                       and its integration with autoprovisioning
                     properties:
-                      gpu:
-                        description: |-
-                          Gpu defines settings configuring integration with NVIDIA GPU DRA driver
-                          (https://github.com/NVIDIA/k8s-dra-driver-gpu)
+                      networking:
                         properties:
                           enabled:
-                            description: Enabled indicates whether GPU DRA driver
-                              is enabled for a given ComputeClass
-                            type: boolean
-                        type: object
-                      tpu:
-                        description: TPU defines settings configuring integration
-                          with Google TPU DRA driver
-                        properties:
-                          enabled:
-                            description: Enabled indicates whether TPU DRA driver
-                              is enabled for a given ComputeClass
+                            default: false
                             type: boolean
                         type: object
                     type: object
@@ -336,6 +323,18 @@ spec:
                       type: object
                     maxItems: 100
                     type: array
+                  tpu:
+                    description: Tpu defines node pool configuration for Google TPU.
+                    properties:
+                      driverMode:
+                        default: DevicePlugin
+                        description: DriverMode determines the behaviour of the Google
+                          TPU driver.
+                        enum:
+                        - DevicePlugin
+                        - DynamicResourceAllocation
+                        type: string
+                    type: object
                   workloadType:
                     description: |-
                       WorkloadType defines Collection or Goodput SLO for the workload. Currently

@@ -36,6 +36,7 @@ type NodePoolConfigApplyConfiguration struct {
 	Dra                  *DraApplyConfiguration                   `json:"dra,omitempty"`
 	IPType               *string                                  `json:"ipType,omitempty"`
 	NodeVersion          *string                                  `json:"nodeVersion,omitempty"`
+	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -177,5 +178,13 @@ func (b *NodePoolConfigApplyConfiguration) WithIPType(value string) *NodePoolCon
 // If called multiple times, the NodeVersion field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithNodeVersion(value string) *NodePoolConfigApplyConfiguration {
 	b.NodeVersion = &value
+	return b
+}
+
+// WithTpu sets the Tpu field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Tpu field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithTpu(value *GoogleTpuApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.Tpu = value
 	return b
 }

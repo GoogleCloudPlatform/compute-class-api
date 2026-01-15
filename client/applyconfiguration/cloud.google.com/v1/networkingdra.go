@@ -18,22 +18,22 @@
 
 package v1
 
-// NvidiaGpuDraDriverApplyConfiguration represents a declarative configuration of the NvidiaGpuDraDriver type for use
+// NetworkingDraApplyConfiguration represents a declarative configuration of the NetworkingDra type for use
 // with apply.
-type NvidiaGpuDraDriverApplyConfiguration struct {
+type NetworkingDraApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// NvidiaGpuDraDriverApplyConfiguration constructs a declarative configuration of the NvidiaGpuDraDriver type for use with
+// NetworkingDraApplyConfiguration constructs a declarative configuration of the NetworkingDra type for use with
 // apply.
-func NvidiaGpuDraDriver() *NvidiaGpuDraDriverApplyConfiguration {
-	return &NvidiaGpuDraDriverApplyConfiguration{}
+func NetworkingDra() *NetworkingDraApplyConfiguration {
+	return &NetworkingDraApplyConfiguration{}
 }
 
 // WithEnabled sets the Enabled field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Enabled field is set to the value of the last call.
-func (b *NvidiaGpuDraDriverApplyConfiguration) WithEnabled(value bool) *NvidiaGpuDraDriverApplyConfiguration {
+func (b *NetworkingDraApplyConfiguration) WithEnabled(value bool) *NetworkingDraApplyConfiguration {
 	b.Enabled = &value
 	return b
 }
