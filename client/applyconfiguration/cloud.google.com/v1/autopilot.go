@@ -18,13 +18,13 @@
 
 package v1
 
-// AutopilotApplyConfiguration represents a declarative configuration of the Autopilot type for use
+// AutopilotApplyConfiguration represents an declarative configuration of the Autopilot type for use
 // with apply.
 type AutopilotApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// AutopilotApplyConfiguration constructs a declarative configuration of the Autopilot type for use with
+// AutopilotApplyConfiguration constructs an declarative configuration of the Autopilot type for use with
 // apply.
 func Autopilot() *AutopilotApplyConfiguration {
 	return &AutopilotApplyConfiguration{}

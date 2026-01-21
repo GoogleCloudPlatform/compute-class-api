@@ -18,7 +18,7 @@
 
 package v1
 
-// SwapConfigApplyConfiguration represents a declarative configuration of the SwapConfig type for use
+// SwapConfigApplyConfiguration represents an declarative configuration of the SwapConfig type for use
 // with apply.
 type SwapConfigApplyConfiguration struct {
 	Enabled                  *bool                                                 `json:"enabled,omitempty"`
@@ -28,7 +28,7 @@ type SwapConfigApplyConfiguration struct {
 	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfileApplyConfiguration `json:"dedicatedLocalSsdProfile,omitempty"`
 }
 
-// SwapConfigApplyConfiguration constructs a declarative configuration of the SwapConfig type for use with
+// SwapConfigApplyConfiguration constructs an declarative configuration of the SwapConfig type for use with
 // apply.
 func SwapConfig() *SwapConfigApplyConfiguration {
 	return &SwapConfigApplyConfiguration{}

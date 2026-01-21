@@ -18,7 +18,7 @@
 
 package v1
 
-// GpuSharingApplyConfiguration represents a declarative configuration of the GpuSharing type for use
+// GpuSharingApplyConfiguration represents an declarative configuration of the GpuSharing type for use
 // with apply.
 type GpuSharingApplyConfiguration struct {
 	SharingStrategy        *string `json:"sharingStrategy,omitempty"`
@@ -26,7 +26,7 @@ type GpuSharingApplyConfiguration struct {
 	GpuPartitionSize       *string `json:"gpuPartitionSize,omitempty"`
 }
 
-// GpuSharingApplyConfiguration constructs a declarative configuration of the GpuSharing type for use with
+// GpuSharingApplyConfiguration constructs an declarative configuration of the GpuSharing type for use with
 // apply.
 func GpuSharing() *GpuSharingApplyConfiguration {
 	return &GpuSharingApplyConfiguration{}

@@ -19,33 +19,160 @@
 package fake
 
 import (
+	"context"
+	json "encoding/json"
+	"fmt"
+
 	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/applyconfiguration/cloud.google.com/v1"
-	typedcloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/clientset/versioned/typed/cloud.google.com/v1"
-	gentype "k8s.io/client-go/gentype"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	types "k8s.io/apimachinery/pkg/types"
+	watch "k8s.io/apimachinery/pkg/watch"
+	testing "k8s.io/client-go/testing"
 )
 
-// fakeComputeClasses implements ComputeClassInterface
-type fakeComputeClasses struct {
-	*gentype.FakeClientWithListAndApply[*v1.ComputeClass, *v1.ComputeClassList, *cloudgooglecomv1.ComputeClassApplyConfiguration]
+// FakeComputeClasses implements ComputeClassInterface
+type FakeComputeClasses struct {
 	Fake *FakeCloudV1
 }
 
-func newFakeComputeClasses(fake *FakeCloudV1) typedcloudgooglecomv1.ComputeClassInterface {
-	return &fakeComputeClasses{
-		gentype.NewFakeClientWithListAndApply[*v1.ComputeClass, *v1.ComputeClassList, *cloudgooglecomv1.ComputeClassApplyConfiguration](
-			fake.Fake,
-			"",
-			v1.SchemeGroupVersion.WithResource("computeclasses"),
-			v1.SchemeGroupVersion.WithKind("ComputeClass"),
-			func() *v1.ComputeClass { return &v1.ComputeClass{} },
-			func() *v1.ComputeClassList { return &v1.ComputeClassList{} },
-			func(dst, src *v1.ComputeClassList) { dst.ListMeta = src.ListMeta },
-			func(list *v1.ComputeClassList) []*v1.ComputeClass { return gentype.ToPointerSlice(list.Items) },
-			func(list *v1.ComputeClassList, items []*v1.ComputeClass) {
-				list.Items = gentype.FromPointerSlice(items)
-			},
-		),
-		fake,
+var computeclassesResource = v1.SchemeGroupVersion.WithResource("computeclasses")
+
+var computeclassesKind = v1.SchemeGroupVersion.WithKind("ComputeClass")
+
+// Get takes name of the computeClass, and returns the corresponding computeClass object, and an error if there is any.
+func (c *FakeComputeClasses) Get(ctx context.Context, name string, options metav1.GetOptions) (result *v1.ComputeClass, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootGetAction(computeclassesResource, name), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
 	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// List takes label and field selectors, and returns the list of ComputeClasses that match those selectors.
+func (c *FakeComputeClasses) List(ctx context.Context, opts metav1.ListOptions) (result *v1.ComputeClassList, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootListAction(computeclassesResource, computeclassesKind, opts), &v1.ComputeClassList{})
+	if obj == nil {
+		return nil, err
+	}
+
+	label, _, _ := testing.ExtractFromListOptions(opts)
+	if label == nil {
+		label = labels.Everything()
+	}
+	list := &v1.ComputeClassList{ListMeta: obj.(*v1.ComputeClassList).ListMeta}
+	for _, item := range obj.(*v1.ComputeClassList).Items {
+		if label.Matches(labels.Set(item.Labels)) {
+			list.Items = append(list.Items, item)
+		}
+	}
+	return list, err
+}
+
+// Watch returns a watch.Interface that watches the requested computeClasses.
+func (c *FakeComputeClasses) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+	return c.Fake.
+		InvokesWatch(testing.NewRootWatchAction(computeclassesResource, opts))
+}
+
+// Create takes the representation of a computeClass and creates it.  Returns the server's representation of the computeClass, and an error, if there is any.
+func (c *FakeComputeClasses) Create(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.CreateOptions) (result *v1.ComputeClass, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootCreateAction(computeclassesResource, computeClass), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// Update takes the representation of a computeClass and updates it. Returns the server's representation of the computeClass, and an error, if there is any.
+func (c *FakeComputeClasses) Update(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (result *v1.ComputeClass, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootUpdateAction(computeclassesResource, computeClass), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeComputeClasses) UpdateStatus(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (*v1.ComputeClass, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootUpdateSubresourceAction(computeclassesResource, "status", computeClass), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// Delete takes name of the computeClass and deletes it. Returns an error if one occurs.
+func (c *FakeComputeClasses) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+	_, err := c.Fake.
+		Invokes(testing.NewRootDeleteActionWithOptions(computeclassesResource, name, opts), &v1.ComputeClass{})
+	return err
+}
+
+// DeleteCollection deletes a collection of objects.
+func (c *FakeComputeClasses) DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error {
+	action := testing.NewRootDeleteCollectionAction(computeclassesResource, listOpts)
+
+	_, err := c.Fake.Invokes(action, &v1.ComputeClassList{})
+	return err
+}
+
+// Patch applies the patch and returns the patched computeClass.
+func (c *FakeComputeClasses) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *v1.ComputeClass, err error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewRootPatchSubresourceAction(computeclassesResource, name, pt, data, subresources...), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// Apply takes the given apply declarative configuration, applies it and returns the applied computeClass.
+func (c *FakeComputeClasses) Apply(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error) {
+	if computeClass == nil {
+		return nil, fmt.Errorf("computeClass provided to Apply must not be nil")
+	}
+	data, err := json.Marshal(computeClass)
+	if err != nil {
+		return nil, err
+	}
+	name := computeClass.Name
+	if name == nil {
+		return nil, fmt.Errorf("computeClass.Name must be provided to Apply")
+	}
+	obj, err := c.Fake.
+		Invokes(testing.NewRootPatchSubresourceAction(computeclassesResource, *name, types.ApplyPatchType, data), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *FakeComputeClasses) ApplyStatus(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error) {
+	if computeClass == nil {
+		return nil, fmt.Errorf("computeClass provided to Apply must not be nil")
+	}
+	data, err := json.Marshal(computeClass)
+	if err != nil {
+		return nil, err
+	}
+	name := computeClass.Name
+	if name == nil {
+		return nil, fmt.Errorf("computeClass.Name must be provided to Apply")
+	}
+	obj, err := c.Fake.
+		Invokes(testing.NewRootPatchSubresourceAction(computeclassesResource, *name, types.ApplyPatchType, data, "status"), &v1.ComputeClass{})
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1.ComputeClass), err
 }

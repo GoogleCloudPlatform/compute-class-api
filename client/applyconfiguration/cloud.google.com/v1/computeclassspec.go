@@ -18,7 +18,7 @@
 
 package v1
 
-// ComputeClassSpecApplyConfiguration represents a declarative configuration of the ComputeClassSpec type for use
+// ComputeClassSpecApplyConfiguration represents an declarative configuration of the ComputeClassSpec type for use
 // with apply.
 type ComputeClassSpecApplyConfiguration struct {
 	Priorities           []PriorityApplyConfiguration            `json:"priorities,omitempty"`
@@ -33,7 +33,7 @@ type ComputeClassSpecApplyConfiguration struct {
 	Description          *string                                 `json:"description,omitempty"`
 }
 
-// ComputeClassSpecApplyConfiguration constructs a declarative configuration of the ComputeClassSpec type for use with
+// ComputeClassSpecApplyConfiguration constructs an declarative configuration of the ComputeClassSpec type for use with
 // apply.
 func ComputeClassSpec() *ComputeClassSpecApplyConfiguration {
 	return &ComputeClassSpecApplyConfiguration{}

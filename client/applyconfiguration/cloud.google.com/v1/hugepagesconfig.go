@@ -18,14 +18,14 @@
 
 package v1
 
-// HugepagesConfigApplyConfiguration represents a declarative configuration of the HugepagesConfig type for use
+// HugepagesConfigApplyConfiguration represents an declarative configuration of the HugepagesConfig type for use
 // with apply.
 type HugepagesConfigApplyConfiguration struct {
 	HugepageSize1g *int64 `json:"hugepage_size1g,omitempty"`
 	HugepageSize2m *int64 `json:"hugepage_size2m,omitempty"`
 }
 
-// HugepagesConfigApplyConfiguration constructs a declarative configuration of the HugepagesConfig type for use with
+// HugepagesConfigApplyConfiguration constructs an declarative configuration of the HugepagesConfig type for use with
 // apply.
 func HugepagesConfig() *HugepagesConfigApplyConfiguration {
 	return &HugepagesConfigApplyConfiguration{}

@@ -19,10 +19,10 @@
 package internal
 
 import (
-	fmt "fmt"
-	sync "sync"
+	"fmt"
+	"sync"
 
-	typed "sigs.k8s.io/structured-merge-diff/v6/typed"
+	typed "sigs.k8s.io/structured-merge-diff/v4/typed"
 )
 
 func Parser() *typed.Parser {

@@ -19,15 +19,18 @@
 package v1
 
 import (
-	context "context"
+	"context"
+	json "encoding/json"
+	"fmt"
+	"time"
 
-	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
-	applyconfigurationcloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/applyconfiguration/cloud.google.com/v1"
+	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/applyconfiguration/cloud.google.com/v1"
 	scheme "github.com/googlecloudplatform/compute-class-api/client/clientset/versioned/scheme"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
-	gentype "k8s.io/client-go/gentype"
+	rest "k8s.io/client-go/rest"
 )
 
 // ComputeClassesGetter has a method to return a ComputeClassInterface.
@@ -38,37 +41,203 @@ type ComputeClassesGetter interface {
 
 // ComputeClassInterface has methods to work with ComputeClass resources.
 type ComputeClassInterface interface {
-	Create(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClass, opts metav1.CreateOptions) (*cloudgooglecomv1.ComputeClass, error)
-	Update(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClass, opts metav1.UpdateOptions) (*cloudgooglecomv1.ComputeClass, error)
-	// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
-	UpdateStatus(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClass, opts metav1.UpdateOptions) (*cloudgooglecomv1.ComputeClass, error)
+	Create(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.CreateOptions) (*v1.ComputeClass, error)
+	Update(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (*v1.ComputeClass, error)
+	UpdateStatus(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (*v1.ComputeClass, error)
 	Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error
-	Get(ctx context.Context, name string, opts metav1.GetOptions) (*cloudgooglecomv1.ComputeClass, error)
-	List(ctx context.Context, opts metav1.ListOptions) (*cloudgooglecomv1.ComputeClassList, error)
+	Get(ctx context.Context, name string, opts metav1.GetOptions) (*v1.ComputeClass, error)
+	List(ctx context.Context, opts metav1.ListOptions) (*v1.ComputeClassList, error)
 	Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error)
-	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *cloudgooglecomv1.ComputeClass, err error)
-	Apply(ctx context.Context, computeClass *applyconfigurationcloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *cloudgooglecomv1.ComputeClass, err error)
-	// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
-	ApplyStatus(ctx context.Context, computeClass *applyconfigurationcloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *cloudgooglecomv1.ComputeClass, err error)
+	Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *v1.ComputeClass, err error)
+	Apply(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error)
+	ApplyStatus(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error)
 	ComputeClassExpansion
 }
 
 // computeClasses implements ComputeClassInterface
 type computeClasses struct {
-	*gentype.ClientWithListAndApply[*cloudgooglecomv1.ComputeClass, *cloudgooglecomv1.ComputeClassList, *applyconfigurationcloudgooglecomv1.ComputeClassApplyConfiguration]
+	client rest.Interface
 }
 
 // newComputeClasses returns a ComputeClasses
 func newComputeClasses(c *CloudV1Client) *computeClasses {
 	return &computeClasses{
-		gentype.NewClientWithListAndApply[*cloudgooglecomv1.ComputeClass, *cloudgooglecomv1.ComputeClassList, *applyconfigurationcloudgooglecomv1.ComputeClassApplyConfiguration](
-			"computeclasses",
-			c.RESTClient(),
-			scheme.ParameterCodec,
-			"",
-			func() *cloudgooglecomv1.ComputeClass { return &cloudgooglecomv1.ComputeClass{} },
-			func() *cloudgooglecomv1.ComputeClassList { return &cloudgooglecomv1.ComputeClassList{} },
-		),
+		client: c.RESTClient(),
 	}
+}
+
+// Get takes name of the computeClass, and returns the corresponding computeClass object, and an error if there is any.
+func (c *computeClasses) Get(ctx context.Context, name string, options metav1.GetOptions) (result *v1.ComputeClass, err error) {
+	result = &v1.ComputeClass{}
+	err = c.client.Get().
+		Resource("computeclasses").
+		Name(name).
+		VersionedParams(&options, scheme.ParameterCodec).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// List takes label and field selectors, and returns the list of ComputeClasses that match those selectors.
+func (c *computeClasses) List(ctx context.Context, opts metav1.ListOptions) (result *v1.ComputeClassList, err error) {
+	var timeout time.Duration
+	if opts.TimeoutSeconds != nil {
+		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
+	}
+	result = &v1.ComputeClassList{}
+	err = c.client.Get().
+		Resource("computeclasses").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Timeout(timeout).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// Watch returns a watch.Interface that watches the requested computeClasses.
+func (c *computeClasses) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+	var timeout time.Duration
+	if opts.TimeoutSeconds != nil {
+		timeout = time.Duration(*opts.TimeoutSeconds) * time.Second
+	}
+	opts.Watch = true
+	return c.client.Get().
+		Resource("computeclasses").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Timeout(timeout).
+		Watch(ctx)
+}
+
+// Create takes the representation of a computeClass and creates it.  Returns the server's representation of the computeClass, and an error, if there is any.
+func (c *computeClasses) Create(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.CreateOptions) (result *v1.ComputeClass, err error) {
+	result = &v1.ComputeClass{}
+	err = c.client.Post().
+		Resource("computeclasses").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(computeClass).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// Update takes the representation of a computeClass and updates it. Returns the server's representation of the computeClass, and an error, if there is any.
+func (c *computeClasses) Update(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (result *v1.ComputeClass, err error) {
+	result = &v1.ComputeClass{}
+	err = c.client.Put().
+		Resource("computeclasses").
+		Name(computeClass.Name).
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(computeClass).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *computeClasses) UpdateStatus(ctx context.Context, computeClass *v1.ComputeClass, opts metav1.UpdateOptions) (result *v1.ComputeClass, err error) {
+	result = &v1.ComputeClass{}
+	err = c.client.Put().
+		Resource("computeclasses").
+		Name(computeClass.Name).
+		SubResource("status").
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(computeClass).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// Delete takes name of the computeClass and deletes it. Returns an error if one occurs.
+func (c *computeClasses) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+	return c.client.Delete().
+		Resource("computeclasses").
+		Name(name).
+		Body(&opts).
+		Do(ctx).
+		Error()
+}
+
+// DeleteCollection deletes a collection of objects.
+func (c *computeClasses) DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error {
+	var timeout time.Duration
+	if listOpts.TimeoutSeconds != nil {
+		timeout = time.Duration(*listOpts.TimeoutSeconds) * time.Second
+	}
+	return c.client.Delete().
+		Resource("computeclasses").
+		VersionedParams(&listOpts, scheme.ParameterCodec).
+		Timeout(timeout).
+		Body(&opts).
+		Do(ctx).
+		Error()
+}
+
+// Patch applies the patch and returns the patched computeClass.
+func (c *computeClasses) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (result *v1.ComputeClass, err error) {
+	result = &v1.ComputeClass{}
+	err = c.client.Patch(pt).
+		Resource("computeclasses").
+		Name(name).
+		SubResource(subresources...).
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// Apply takes the given apply declarative configuration, applies it and returns the applied computeClass.
+func (c *computeClasses) Apply(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error) {
+	if computeClass == nil {
+		return nil, fmt.Errorf("computeClass provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(computeClass)
+	if err != nil {
+		return nil, err
+	}
+	name := computeClass.Name
+	if name == nil {
+		return nil, fmt.Errorf("computeClass.Name must be provided to Apply")
+	}
+	result = &v1.ComputeClass{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Resource("computeclasses").
+		Name(*name).
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// ApplyStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating ApplyStatus().
+func (c *computeClasses) ApplyStatus(ctx context.Context, computeClass *cloudgooglecomv1.ComputeClassApplyConfiguration, opts metav1.ApplyOptions) (result *v1.ComputeClass, err error) {
+	if computeClass == nil {
+		return nil, fmt.Errorf("computeClass provided to Apply must not be nil")
+	}
+	patchOpts := opts.ToPatchOptions()
+	data, err := json.Marshal(computeClass)
+	if err != nil {
+		return nil, err
+	}
+
+	name := computeClass.Name
+	if name == nil {
+		return nil, fmt.Errorf("computeClass.Name must be provided to Apply")
+	}
+
+	result = &v1.ComputeClass{}
+	err = c.client.Patch(types.ApplyPatchType).
+		Resource("computeclasses").
+		Name(*name).
+		SubResource("status").
+		VersionedParams(&patchOpts, scheme.ParameterCodec).
+		Body(data).
+		Do(ctx).
+		Into(result)
+	return
 }

@@ -18,7 +18,7 @@
 
 package v1
 
-// SecondaryBootDiskApplyConfiguration represents a declarative configuration of the SecondaryBootDisk type for use
+// SecondaryBootDiskApplyConfiguration represents an declarative configuration of the SecondaryBootDisk type for use
 // with apply.
 type SecondaryBootDiskApplyConfiguration struct {
 	DiskImageName *string `json:"diskImageName,omitempty"`
@@ -26,7 +26,7 @@ type SecondaryBootDiskApplyConfiguration struct {
 	Mode          *string `json:"mode,omitempty"`
 }
 
-// SecondaryBootDiskApplyConfiguration constructs a declarative configuration of the SecondaryBootDisk type for use with
+// SecondaryBootDiskApplyConfiguration constructs an declarative configuration of the SecondaryBootDisk type for use with
 // apply.
 func SecondaryBootDisk() *SecondaryBootDiskApplyConfiguration {
 	return &SecondaryBootDiskApplyConfiguration{}

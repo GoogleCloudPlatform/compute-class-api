@@ -18,7 +18,7 @@
 
 package v1
 
-// TPUApplyConfiguration represents a declarative configuration of the TPU type for use
+// TPUApplyConfiguration represents an declarative configuration of the TPU type for use
 // with apply.
 type TPUApplyConfiguration struct {
 	Type     *string `json:"type,omitempty"`
@@ -26,7 +26,7 @@ type TPUApplyConfiguration struct {
 	Topology *string `json:"topology,omitempty"`
 }
 
-// TPUApplyConfiguration constructs a declarative configuration of the TPU type for use with
+// TPUApplyConfiguration constructs an declarative configuration of the TPU type for use with
 // apply.
 func TPU() *TPUApplyConfiguration {
 	return &TPUApplyConfiguration{}

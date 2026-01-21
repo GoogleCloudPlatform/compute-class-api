@@ -18,7 +18,7 @@
 
 package v1
 
-// AutoscalingPolicyApplyConfiguration represents a declarative configuration of the AutoscalingPolicy type for use
+// AutoscalingPolicyApplyConfiguration represents an declarative configuration of the AutoscalingPolicy type for use
 // with apply.
 type AutoscalingPolicyApplyConfiguration struct {
 	ConsolidationDelayMinutes *int `json:"consolidationDelayMinutes,omitempty"`
@@ -26,7 +26,7 @@ type AutoscalingPolicyApplyConfiguration struct {
 	GPUConsolidationThreshold *int `json:"gpuConsolidationThreshold,omitempty"`
 }
 
-// AutoscalingPolicyApplyConfiguration constructs a declarative configuration of the AutoscalingPolicy type for use with
+// AutoscalingPolicyApplyConfiguration constructs an declarative configuration of the AutoscalingPolicy type for use with
 // apply.
 func AutoscalingPolicy() *AutoscalingPolicyApplyConfiguration {
 	return &AutoscalingPolicyApplyConfiguration{}

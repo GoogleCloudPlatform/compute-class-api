@@ -18,7 +18,7 @@
 
 package v1
 
-// SysctlsConfigApplyConfiguration represents a declarative configuration of the SysctlsConfig type for use
+// SysctlsConfigApplyConfiguration represents an declarative configuration of the SysctlsConfig type for use
 // with apply.
 type SysctlsConfigApplyConfiguration struct {
 	Net_core_netdev_max_backlog                        *int64  `json:"net.core.netdev_max_backlog,omitempty"`
@@ -77,7 +77,7 @@ type SysctlsConfigApplyConfiguration struct {
 	Vm_dirty_bytes                                     *int64  `json:"vm.dirty_bytes,omitempty"`
 }
 
-// SysctlsConfigApplyConfiguration constructs a declarative configuration of the SysctlsConfig type for use with
+// SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
 // apply.
 func SysctlsConfig() *SysctlsConfigApplyConfiguration {
 	return &SysctlsConfigApplyConfiguration{}

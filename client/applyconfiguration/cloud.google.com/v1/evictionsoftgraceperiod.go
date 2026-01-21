@@ -18,7 +18,7 @@
 
 package v1
 
-// EvictionSoftGracePeriodApplyConfiguration represents a declarative configuration of the EvictionSoftGracePeriod type for use
+// EvictionSoftGracePeriodApplyConfiguration represents an declarative configuration of the EvictionSoftGracePeriod type for use
 // with apply.
 type EvictionSoftGracePeriodApplyConfiguration struct {
 	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
@@ -29,7 +29,7 @@ type EvictionSoftGracePeriodApplyConfiguration struct {
 	PidAvailable      *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionSoftGracePeriodApplyConfiguration constructs a declarative configuration of the EvictionSoftGracePeriod type for use with
+// EvictionSoftGracePeriodApplyConfiguration constructs an declarative configuration of the EvictionSoftGracePeriod type for use with
 // apply.
 func EvictionSoftGracePeriod() *EvictionSoftGracePeriodApplyConfiguration {
 	return &EvictionSoftGracePeriodApplyConfiguration{}

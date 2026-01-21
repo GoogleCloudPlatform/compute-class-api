@@ -19,7 +19,7 @@
 package externalversions
 
 import (
-	fmt "fmt"
+	"fmt"
 
 	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

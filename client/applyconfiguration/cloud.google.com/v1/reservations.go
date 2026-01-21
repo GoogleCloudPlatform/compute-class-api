@@ -22,14 +22,14 @@ import (
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// ReservationsApplyConfiguration represents a declarative configuration of the Reservations type for use
+// ReservationsApplyConfiguration represents an declarative configuration of the Reservations type for use
 // with apply.
 type ReservationsApplyConfiguration struct {
 	Specific []SpecificReservationApplyConfiguration `json:"specific,omitempty"`
 	Affinity *cloudgooglecomv1.ReservationAffinity   `json:"affinity,omitempty"`
 }
 
-// ReservationsApplyConfiguration constructs a declarative configuration of the Reservations type for use with
+// ReservationsApplyConfiguration constructs an declarative configuration of the Reservations type for use with
 // apply.
 func Reservations() *ReservationsApplyConfiguration {
 	return &ReservationsApplyConfiguration{}

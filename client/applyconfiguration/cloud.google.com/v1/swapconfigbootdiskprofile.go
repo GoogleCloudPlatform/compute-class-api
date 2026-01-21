@@ -18,14 +18,14 @@
 
 package v1
 
-// SwapConfigBootDiskProfileApplyConfiguration represents a declarative configuration of the SwapConfigBootDiskProfile type for use
+// SwapConfigBootDiskProfileApplyConfiguration represents an declarative configuration of the SwapConfigBootDiskProfile type for use
 // with apply.
 type SwapConfigBootDiskProfileApplyConfiguration struct {
 	SwapSizeGib     *int64 `json:"swapSizeGib,omitempty"`
 	SwapSizePercent *int32 `json:"swapSizePercent,omitempty"`
 }
 
-// SwapConfigBootDiskProfileApplyConfiguration constructs a declarative configuration of the SwapConfigBootDiskProfile type for use with
+// SwapConfigBootDiskProfileApplyConfiguration constructs an declarative configuration of the SwapConfigBootDiskProfile type for use with
 // apply.
 func SwapConfigBootDiskProfile() *SwapConfigBootDiskProfileApplyConfiguration {
 	return &SwapConfigBootDiskProfileApplyConfiguration{}

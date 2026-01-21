@@ -18,7 +18,7 @@
 
 package v1
 
-// EvictionSoftApplyConfiguration represents a declarative configuration of the EvictionSoft type for use
+// EvictionSoftApplyConfiguration represents an declarative configuration of the EvictionSoft type for use
 // with apply.
 type EvictionSoftApplyConfiguration struct {
 	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
@@ -29,7 +29,7 @@ type EvictionSoftApplyConfiguration struct {
 	PidAvailable      *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionSoftApplyConfiguration constructs a declarative configuration of the EvictionSoft type for use with
+// EvictionSoftApplyConfiguration constructs an declarative configuration of the EvictionSoft type for use with
 // apply.
 func EvictionSoft() *EvictionSoftApplyConfiguration {
 	return &EvictionSoftApplyConfiguration{}

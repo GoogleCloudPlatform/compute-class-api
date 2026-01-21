@@ -18,13 +18,13 @@
 
 package v1
 
-// DraApplyConfiguration represents a declarative configuration of the Dra type for use
+// DraApplyConfiguration represents an declarative configuration of the Dra type for use
 // with apply.
 type DraApplyConfiguration struct {
 	Networking *NetworkingDraApplyConfiguration `json:"networking,omitempty"`
 }
 
-// DraApplyConfiguration constructs a declarative configuration of the Dra type for use with
+// DraApplyConfiguration constructs an declarative configuration of the Dra type for use with
 // apply.
 func Dra() *DraApplyConfiguration {
 	return &DraApplyConfiguration{}

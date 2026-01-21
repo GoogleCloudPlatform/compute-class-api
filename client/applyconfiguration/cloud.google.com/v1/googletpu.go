@@ -19,16 +19,16 @@
 package v1
 
 import (
-	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// GoogleTpuApplyConfiguration represents a declarative configuration of the GoogleTpu type for use
+// GoogleTpuApplyConfiguration represents an declarative configuration of the GoogleTpu type for use
 // with apply.
 type GoogleTpuApplyConfiguration struct {
-	DriverMode *cloudgooglecomv1.TpuDriverMode `json:"driverMode,omitempty"`
+	DriverMode *v1.TpuDriverMode `json:"driverMode,omitempty"`
 }
 
-// GoogleTpuApplyConfiguration constructs a declarative configuration of the GoogleTpu type for use with
+// GoogleTpuApplyConfiguration constructs an declarative configuration of the GoogleTpu type for use with
 // apply.
 func GoogleTpu() *GoogleTpuApplyConfiguration {
 	return &GoogleTpuApplyConfiguration{}
@@ -37,7 +37,7 @@ func GoogleTpu() *GoogleTpuApplyConfiguration {
 // WithDriverMode sets the DriverMode field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the DriverMode field is set to the value of the last call.
-func (b *GoogleTpuApplyConfiguration) WithDriverMode(value cloudgooglecomv1.TpuDriverMode) *GoogleTpuApplyConfiguration {
+func (b *GoogleTpuApplyConfiguration) WithDriverMode(value v1.TpuDriverMode) *GoogleTpuApplyConfiguration {
 	b.DriverMode = &value
 	return b
 }

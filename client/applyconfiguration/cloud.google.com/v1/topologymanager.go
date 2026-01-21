@@ -18,14 +18,14 @@
 
 package v1
 
-// TopologyManagerApplyConfiguration represents a declarative configuration of the TopologyManager type for use
+// TopologyManagerApplyConfiguration represents an declarative configuration of the TopologyManager type for use
 // with apply.
 type TopologyManagerApplyConfiguration struct {
 	Policy *string `json:"policy,omitempty"`
 	Scope  *string `json:"scope,omitempty"`
 }
 
-// TopologyManagerApplyConfiguration constructs a declarative configuration of the TopologyManager type for use with
+// TopologyManagerApplyConfiguration constructs an declarative configuration of the TopologyManager type for use with
 // apply.
 func TopologyManager() *TopologyManagerApplyConfiguration {
 	return &TopologyManagerApplyConfiguration{}

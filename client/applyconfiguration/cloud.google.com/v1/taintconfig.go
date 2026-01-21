@@ -18,7 +18,7 @@
 
 package v1
 
-// TaintConfigApplyConfiguration represents a declarative configuration of the TaintConfig type for use
+// TaintConfigApplyConfiguration represents an declarative configuration of the TaintConfig type for use
 // with apply.
 type TaintConfigApplyConfiguration struct {
 	Key    *string `json:"key,omitempty"`
@@ -26,7 +26,7 @@ type TaintConfigApplyConfiguration struct {
 	Effect *string `json:"effect,omitempty"`
 }
 
-// TaintConfigApplyConfiguration constructs a declarative configuration of the TaintConfig type for use with
+// TaintConfigApplyConfiguration constructs an declarative configuration of the TaintConfig type for use with
 // apply.
 func TaintConfig() *TaintConfigApplyConfiguration {
 	return &TaintConfigApplyConfiguration{}

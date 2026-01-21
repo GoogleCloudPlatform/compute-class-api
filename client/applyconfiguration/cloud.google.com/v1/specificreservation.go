@@ -18,7 +18,7 @@
 
 package v1
 
-// SpecificReservationApplyConfiguration represents a declarative configuration of the SpecificReservation type for use
+// SpecificReservationApplyConfiguration represents an declarative configuration of the SpecificReservation type for use
 // with apply.
 type SpecificReservationApplyConfiguration struct {
 	Name             *string                             `json:"name,omitempty"`
@@ -27,7 +27,7 @@ type SpecificReservationApplyConfiguration struct {
 	Zones            []string                            `json:"zones,omitempty"`
 }
 
-// SpecificReservationApplyConfiguration constructs a declarative configuration of the SpecificReservation type for use with
+// SpecificReservationApplyConfiguration constructs an declarative configuration of the SpecificReservation type for use with
 // apply.
 func SpecificReservation() *SpecificReservationApplyConfiguration {
 	return &SpecificReservationApplyConfiguration{}

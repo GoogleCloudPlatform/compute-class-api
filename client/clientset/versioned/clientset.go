@@ -19,8 +19,8 @@
 package versioned
 
 import (
-	fmt "fmt"
-	http "net/http"
+	"fmt"
+	"net/http"
 
 	cloudv1 "github.com/googlecloudplatform/compute-class-api/client/clientset/versioned/typed/cloud.google.com/v1"
 	discovery "k8s.io/client-go/discovery"

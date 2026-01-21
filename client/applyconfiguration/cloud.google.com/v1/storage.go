@@ -18,7 +18,7 @@
 
 package v1
 
-// StorageApplyConfiguration represents a declarative configuration of the Storage type for use
+// StorageApplyConfiguration represents an declarative configuration of the Storage type for use
 // with apply.
 type StorageApplyConfiguration struct {
 	BootDiskSize       *int                                  `json:"bootDiskSize,omitempty"`
@@ -28,7 +28,7 @@ type StorageApplyConfiguration struct {
 	SecondaryBootDisks []SecondaryBootDiskApplyConfiguration `json:"secondaryBootDisks,omitempty"`
 }
 
-// StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
+// StorageApplyConfiguration constructs an declarative configuration of the Storage type for use with
 // apply.
 func Storage() *StorageApplyConfiguration {
 	return &StorageApplyConfiguration{}

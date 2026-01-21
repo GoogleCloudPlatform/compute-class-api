@@ -18,14 +18,14 @@
 
 package v1
 
-// TagsApplyConfiguration represents a declarative configuration of the Tags type for use
+// TagsApplyConfiguration represents an declarative configuration of the Tags type for use
 // with apply.
 type TagsApplyConfiguration struct {
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 }
 
-// TagsApplyConfiguration constructs a declarative configuration of the Tags type for use with
+// TagsApplyConfiguration constructs an declarative configuration of the Tags type for use with
 // apply.
 func Tags() *TagsApplyConfiguration {
 	return &TagsApplyConfiguration{}

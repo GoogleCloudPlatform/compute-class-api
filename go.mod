@@ -6,7 +6,7 @@ require (
 	github.com/google/cel-go v0.26.0
 	k8s.io/apimachinery v0.34.0
 	k8s.io/client-go v0.34.0
-	sigs.k8s.io/structured-merge-diff/v6 v6.3.0
+	sigs.k8s.io/structured-merge-diff/v4 v4.7.0
 )
 
 require (
@@ -60,7 +60,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.34.0 // indirect
 	k8s.io/apiextensions-apiserver v0.34.0 // indirect
-	k8s.io/code-generator v0.34.0 // indirect
+	k8s.io/code-generator v0.34.0 // indirect; forced by controller-gen, but main code-generator usage is still pinned in gen-client.sh to v0.30.3
 	k8s.io/gengo/v2 v2.0.0-20250922181213-ec3ebc5fd46b // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 // indirect
@@ -68,10 +68,8 @@ require (
 	sigs.k8s.io/controller-tools v0.19.0 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
+	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-tool (
-	k8s.io/code-generator
-	sigs.k8s.io/controller-tools/cmd/controller-gen
-)
+tool sigs.k8s.io/controller-tools/cmd/controller-gen

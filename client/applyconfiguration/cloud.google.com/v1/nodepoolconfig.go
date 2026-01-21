@@ -18,7 +18,7 @@
 
 package v1
 
-// NodePoolConfigApplyConfiguration represents a declarative configuration of the NodePoolConfig type for use
+// NodePoolConfigApplyConfiguration represents an declarative configuration of the NodePoolConfig type for use
 // with apply.
 type NodePoolConfigApplyConfiguration struct {
 	ServiceAccount       *string                                  `json:"serviceAccount,omitempty"`
@@ -39,7 +39,7 @@ type NodePoolConfigApplyConfiguration struct {
 	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
 }
 
-// NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
+// NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
 // apply.
 func NodePoolConfig() *NodePoolConfigApplyConfiguration {
 	return &NodePoolConfigApplyConfiguration{}

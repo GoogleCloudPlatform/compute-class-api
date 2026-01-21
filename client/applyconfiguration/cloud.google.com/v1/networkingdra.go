@@ -18,13 +18,13 @@
 
 package v1
 
-// NetworkingDraApplyConfiguration represents a declarative configuration of the NetworkingDra type for use
+// NetworkingDraApplyConfiguration represents an declarative configuration of the NetworkingDra type for use
 // with apply.
 type NetworkingDraApplyConfiguration struct {
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// NetworkingDraApplyConfiguration constructs a declarative configuration of the NetworkingDra type for use with
+// NetworkingDraApplyConfiguration constructs an declarative configuration of the NetworkingDra type for use with
 // apply.
 func NetworkingDra() *NetworkingDraApplyConfiguration {
 	return &NetworkingDraApplyConfiguration{}
