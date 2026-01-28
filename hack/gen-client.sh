@@ -67,10 +67,10 @@ echo "INFO: Cleaning client directory..."
 rm -rf "${CLIENT_PATH}"
 
 echo "INFO: Generating helpers..."
-kube::codegen::gen_helpers "${API_PATH}" --boilerplate "${BOILERPLATE_FILE}"
+GOTOOLCHAIN=go1.24.0 kube::codegen::gen_helpers "${API_PATH}" --boilerplate "${BOILERPLATE_FILE}"
 
 echo "INFO: Generating clients..."
-kube::codegen::gen_client "${API_PATH}" \
+GOTOOLCHAIN=go1.24.0 kube::codegen::gen_client "${API_PATH}" \
     --output-dir "${CLIENT_PATH}" \
     --output-pkg "${OUTPUT_CLIENT_PKG}" \
     --with-applyconfig \
@@ -78,7 +78,7 @@ kube::codegen::gen_client "${API_PATH}" \
     --boilerplate "${BOILERPLATE_FILE}"
 
 echo "INFO: Generating CRD manifest..."
-go tool controller-gen \
+GOTOOLCHAIN=go1.24.0 go tool controller-gen \
   crd:generateEmbeddedObjectMeta=true \
   paths="${API_PATH}/..." \
   output:crd:dir="${ROOT}"
