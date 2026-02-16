@@ -1713,10 +1713,6 @@ spec:
                   - message: Flex Start provisioning model is incompatible with Spot
                     rule: '!(has(self.flexStart) && has(self.spot) && self.spot ==
                       true && self.flexStart.enabled == true)'
-                  - message: Spot selection is the only configurable priority setting
-                      when using podFamily
-                    rule: '!has(self.podFamily) || (size(dyn(self)) == 1 + (has(self.spot)
-                      ? 1 : 0) + (has(self.identifier) ? 1 : 0))'
                   - message: capacityCheckWaitTimeSeconds is only supported for Flex
                       Start and for multi-host TPUs
                     rule: '!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu)
@@ -2700,18 +2696,6 @@ spec:
                 enabled
               rule: 'self.priorities.exists(priority, has(priority.podFamily)) ? (has(self.autopilot)
                 && self.autopilot.enabled) : true'
-            - message: Pod family cannot be used with nodePoolConfig
-              rule: 'self.priorities.exists(priority, has(priority.podFamily)) ? !(has(self.nodePoolConfig))
-                : true'
-            - message: Pod family cannot be used with priorityDefaults
-              rule: 'self.priorities.exists(priority, has(priority.podFamily)) ? !(has(self.priorityDefaults))
-                : true'
-            - message: Pod family cannot be used with ScaleUpAnyway
-              rule: 'self.priorities.exists(priority, has(priority.podFamily)) ? (self.whenUnsatisfiable
-                != "ScaleUpAnyway") : true'
-            - message: Pod family priorities cannot be mixed with non-pod family priorities
-              rule: 'self.priorities.exists(priority, has(priority.podFamily)) ? self.priorities.all(priority,
-                has(priority.podFamily)) : true'
             - message: If using NodePoolConfig.ConfidentialNodeType, each priority
                 must specify either MachineFamily or MachineType.
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType))
