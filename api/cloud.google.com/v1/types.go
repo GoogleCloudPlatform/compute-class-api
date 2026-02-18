@@ -564,6 +564,7 @@ type Reservations struct {
 // +kubebuilder:validation:XValidation:rule="!(has(self.flexStart) && has(self.spot) && self.spot == true && self.flexStart.enabled == true)", message="Flex Start provisioning model is incompatible with Spot"
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
 // +kubebuilder:validation:XValidation:rule="(has(self.spot) && self.spot) || !has(self.nodeSystemConfig) || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
+// +kubebuilder:validation:XValidation:rule="!(has(self.gpuDirect) && self.gpuDirect == 'rdma') || has(self.acceleratorNetworkProfile)", message="acceleratorNetworkProfile must be specified when gpuDirect is 'rdma'"
 type Priority struct {
 	// Machine family describes preferred instance family for a node. If none is specified,
 	// the default autoprovisioning machine family is used.
@@ -703,6 +704,13 @@ type Priority struct {
 	// +kubebuilder:validation:XValidation:rule="self == 'auto' || self.startsWith('auto-')",message="acceleratorNetworkProfile must be 'auto' or start with 'auto-'"
 	// +optional
 	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty" protobuf:"bytes,24,opt,name=acceleratorNetworkProfile"`
+
+	// GpuDirect defines the gpu direct strategy.
+	// Possible values:
+	// "rdma"
+	// +kubebuilder:validation:XValidation:rule="self == 'rdma'",message="gpuDirect must be 'rdma'"
+	// +optional
+	GpuDirect string `json:"gpuDirect,omitempty" protobuf:"bytes,25,name=gpuDirect"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP

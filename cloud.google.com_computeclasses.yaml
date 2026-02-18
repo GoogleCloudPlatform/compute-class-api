@@ -472,6 +472,15 @@ spec:
                             for a node.
                           type: string
                       type: object
+                    gpuDirect:
+                      description: |-
+                        GpuDirect defines the gpu direct strategy.
+                        Possible values:
+                        "rdma"
+                      type: string
+                      x-kubernetes-validations:
+                      - message: gpuDirect must be 'rdma'
+                        rule: self == 'rdma'
                     identifier:
                       description: Identifier is a string used to identify compute
                         classes' priorities. It is set automatically to the index
@@ -1720,6 +1729,10 @@ spec:
                   - message: shutdownGracePeriodSeconds is only supported for Spot
                     rule: (has(self.spot) && self.spot) || !has(self.nodeSystemConfig)
                       || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
+                  - message: acceleratorNetworkProfile must be specified when gpuDirect
+                      is 'rdma'
+                    rule: '!(has(self.gpuDirect) && self.gpuDirect == ''rdma'') ||
+                      has(self.acceleratorNetworkProfile)'
                 maxItems: 1000
                 minItems: 0
                 type: array
