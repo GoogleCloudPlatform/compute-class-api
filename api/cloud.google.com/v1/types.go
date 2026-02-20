@@ -1605,10 +1605,10 @@ type ResourceInfo struct {
 	// CurrentCount represents the current count of a given resource.
 	CurrentCount *int `json:"currentCount,omitempty" protobuf:"bytes,4,opt,name=currentCount"`
 
-	// CurrentUtilization represents the percentage of utilization for the resource `Name` at the `MeasuredAt` timestamp.
+	// CurrentUtilizationPercentage represents the percentage of utilization for the resource `Name` at the `MeasuredAt` timestamp.
 	// +kubebuilder:validation:Minimum=0
 	// +kubebuilder:validation:Maximum=100
-	CurrentUtilization *int `json:"currentUtilization,omitempty" protobuf:"bytes,5,opt,name=currentUtilization"`
+	CurrentUtilizationPercentage *int `json:"currentUtilizationPercentage,omitempty" protobuf:"bytes,5,opt,name=currentUtilizationPercentage"`
 
 	// MeasuredAt represents the timestamp at which the resource information was measured.
 	MeasuredAt *metav1.Time `json:"measuredAt,omitempty" protobuf:"bytes,6,opt,name=measuredAt"`

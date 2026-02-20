@@ -26,12 +26,12 @@ import (
 // ResourceInfoApplyConfiguration represents an declarative configuration of the ResourceInfo type for use
 // with apply.
 type ResourceInfoApplyConfiguration struct {
-	Name               *v1.ResourceName `json:"name,omitempty"`
-	Unit               *v1.ResourceUnit `json:"unit,omitempty"`
-	TargetCount        *int             `json:"targetCount,omitempty"`
-	CurrentCount       *int             `json:"currentCount,omitempty"`
-	CurrentUtilization *int             `json:"currentUtilization,omitempty"`
-	MeasuredAt         *metav1.Time     `json:"measuredAt,omitempty"`
+	Name                         *v1.ResourceName `json:"name,omitempty"`
+	Unit                         *v1.ResourceUnit `json:"unit,omitempty"`
+	TargetCount                  *int             `json:"targetCount,omitempty"`
+	CurrentCount                 *int             `json:"currentCount,omitempty"`
+	CurrentUtilizationPercentage *int             `json:"currentUtilizationPercentage,omitempty"`
+	MeasuredAt                   *metav1.Time     `json:"measuredAt,omitempty"`
 }
 
 // ResourceInfoApplyConfiguration constructs an declarative configuration of the ResourceInfo type for use with
@@ -72,11 +72,11 @@ func (b *ResourceInfoApplyConfiguration) WithCurrentCount(value int) *ResourceIn
 	return b
 }
 
-// WithCurrentUtilization sets the CurrentUtilization field in the declarative configuration to the given value
+// WithCurrentUtilizationPercentage sets the CurrentUtilizationPercentage field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the CurrentUtilization field is set to the value of the last call.
-func (b *ResourceInfoApplyConfiguration) WithCurrentUtilization(value int) *ResourceInfoApplyConfiguration {
-	b.CurrentUtilization = &value
+// If called multiple times, the CurrentUtilizationPercentage field is set to the value of the last call.
+func (b *ResourceInfoApplyConfiguration) WithCurrentUtilizationPercentage(value int) *ResourceInfoApplyConfiguration {
+	b.CurrentUtilizationPercentage = &value
 	return b
 }
 

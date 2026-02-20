@@ -2894,10 +2894,10 @@ spec:
                             description: CurrentCount represents the current count
                               of a given resource.
                             type: integer
-                          currentUtilization:
-                            description: CurrentUtilization represents the percentage
-                              of utilization for the resource `Name` at the `MeasuredAt`
-                              timestamp.
+                          currentUtilizationPercentage:
+                            description: CurrentUtilizationPercentage represents the
+                              percentage of utilization for the resource `Name` at
+                              the `MeasuredAt` timestamp.
                             maximum: 100
                             minimum: 0
                             type: integer
@@ -2974,9 +2974,10 @@ spec:
                       description: CurrentCount represents the current count of a
                         given resource.
                       type: integer
-                    currentUtilization:
-                      description: CurrentUtilization represents the percentage of
-                        utilization for the resource `Name` at the `MeasuredAt` timestamp.
+                    currentUtilizationPercentage:
+                      description: CurrentUtilizationPercentage represents the percentage
+                        of utilization for the resource `Name` at the `MeasuredAt`
+                        timestamp.
                       maximum: 100
                       minimum: 0
                       type: integer

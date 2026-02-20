@@ -1246,8 +1246,8 @@ func (in *ResourceInfo) DeepCopyInto(out *ResourceInfo) {
 		*out = new(int)
 		**out = **in
 	}
-	if in.CurrentUtilization != nil {
-		in, out := &in.CurrentUtilization, &out.CurrentUtilization
+	if in.CurrentUtilizationPercentage != nil {
+		in, out := &in.CurrentUtilizationPercentage, &out.CurrentUtilizationPercentage
 		*out = new(int)
 		**out = **in
 	}
