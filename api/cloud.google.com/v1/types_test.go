@@ -327,46 +327,6 @@ func TestLocationZoneTypes_WithLocationZones(t *testing.T) {
 	}
 }
 
-func TestLocationZoneTypes_FieldRules(t *testing.T) {
-	rule := getFieldValidationRule(t, "Location", "ZoneTypes", "'AI' in self")
-	program := createCELProgram(t, rule)
-
-	tests := []struct {
-		name      string
-		input     []string
-		wantValid bool
-	}{
-		{
-			name:      "only_standard_zoneType",
-			input:     []string{"STANDARD"},
-			wantValid: true,
-		}, {
-			name:      "standard_and_ai_zoneType",
-			input:     []string{"STANDARD", "AI"},
-			wantValid: true,
-		}, {
-			name:      "only_ai_zoneType",
-			input:     []string{"AI"},
-			wantValid: false,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			out, _, err := program.Eval(map[string]interface{}{
-				"self": tc.input,
-			})
-			if err != nil {
-				t.Fatalf("CEL evaluation failed: %v", err)
-			}
-
-			if out.Value() != tc.wantValid {
-				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
-			}
-		})
-	}
-}
-
 func getTypeValidationRule(t *testing.T, structName, ruleSubString string) string {
 	t.Helper()
 	fset := token.NewFileSet()

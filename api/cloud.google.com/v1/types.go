@@ -1471,7 +1471,7 @@ type HugepagesConfig struct {
 
 // ZoneType is an enumeration of supported zone types.
 //
-// +kubebuilder:validation:Enum=STANDARD;AI
+// +kubebuilder:validation:Enum=STANDARD;AI;CLUSTER_DEFAULT
 type ZoneType string
 
 // Location describes CCC zonal preferences config.
@@ -1496,11 +1496,12 @@ type Location struct {
 	// ZoneTypes specifies sets of zones used for provisioning.
 	// STANDARD zone type designates the core Google Cloud zones within a region.
 	// AI zone type designates specialized zones optimized for AI.
+	// CLUSTER_DEFAULT zone type designate zones specified in the cluster's autoprovisioningLocations or cluster’s locations if autoprovisioningLocations is empty.
+	//
 	// +optional
 	// +kubebuilder:validation:UniqueItems:true
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:MaxItems=2
-	// +kubebuilder:validation:XValidation:rule="!(self.size() == 1 && 'AI' in self)", message="ZoneTypes cannot have a single AI value."
+	// +kubebuilder:validation:MaxItems=3
 	ZoneTypes []ZoneType `json:"zoneTypes,omitempty" protobuf:"bytes,3,opt,name=zoneTypes"`
 }
 

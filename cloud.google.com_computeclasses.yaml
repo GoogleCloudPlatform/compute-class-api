@@ -505,19 +505,18 @@ spec:
                             ZoneTypes specifies sets of zones used for provisioning.
                             STANDARD zone type designates the core Google Cloud zones within a region.
                             AI zone type designates specialized zones optimized for AI.
+                            CLUSTER_DEFAULT zone type designate zones specified in the cluster's autoprovisioningLocations or cluster’s locations if autoprovisioningLocations is empty.
                           items:
                             description: ZoneType is an enumeration of supported zone
                               types.
                             enum:
                             - STANDARD
                             - AI
+                            - CLUSTER_DEFAULT
                             type: string
-                          maxItems: 2
+                          maxItems: 3
                           minItems: 1
                           type: array
-                          x-kubernetes-validations:
-                          - message: ZoneTypes cannot have a single AI value.
-                            rule: '!(self.size() == 1 && ''AI'' in self)'
                         zones:
                           description: Zones lists zones considered for node autoprovisioning.
                           items:
@@ -1760,19 +1759,18 @@ spec:
                           ZoneTypes specifies sets of zones used for provisioning.
                           STANDARD zone type designates the core Google Cloud zones within a region.
                           AI zone type designates specialized zones optimized for AI.
+                          CLUSTER_DEFAULT zone type designate zones specified in the cluster's autoprovisioningLocations or cluster’s locations if autoprovisioningLocations is empty.
                         items:
                           description: ZoneType is an enumeration of supported zone
                             types.
                           enum:
                           - STANDARD
                           - AI
+                          - CLUSTER_DEFAULT
                           type: string
-                        maxItems: 2
+                        maxItems: 3
                         minItems: 1
                         type: array
-                        x-kubernetes-validations:
-                        - message: ZoneTypes cannot have a single AI value.
-                          rule: '!(self.size() == 1 && ''AI'' in self)'
                       zones:
                         description: Zones lists zones considered for node autoprovisioning.
                         items:
