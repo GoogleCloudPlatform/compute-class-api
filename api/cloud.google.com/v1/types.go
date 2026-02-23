@@ -1560,9 +1560,11 @@ type ComputeClassStatus struct {
 	Conditions []metav1.Condition `json:"conditions" protobuf:"bytes,1,rep,name=conditions"`
 
 	// PriorityStatuses represent the statuses of Priorities within a given ComputeClass.
+	// +optional
 	PriorityStatuses []PriorityStatus `json:"priorityStatuses" protobuf:"bytes,2,rep,name=priorityStatuses"`
 
 	// ResourceInfo represents the current information about resource allocation and usage within the Compute Class.
+	// +optional
 	ResourceInfo []ResourceInfo `json:"resourceInfo" protobuf:"bytes,3,rep,name=resourceInfo"`
 }
 
@@ -1574,12 +1576,15 @@ type PriorityStatus struct {
 	Identifier string `json:"identifier,omitempty" protobuf:"bytes,1,opt,name=identifier"`
 
 	// Conditions represent the observations of a priority current state.
+	// +optional
 	Conditions []metav1.Condition `json:"conditions" protobuf:"bytes,2,rep,name=conditions"`
 
 	// ResourceInfo represents the current information about resource allocation and usage within the priority.
+	// +optional
 	ResourceInfo []ResourceInfo `json:"resourceInfo" protobuf:"bytes,3,rep,name=resourceInfo"`
 
 	// ScalingEventsHistory represents the aggregated information about scaling events.
+	// +optional
 	ScalingEventsHistory *ScalingEventsHistory `json:"scalingEventsHistory,omitempty" protobuf:"bytes,4,opt,name=scalingEventsHistory"`
 }
 

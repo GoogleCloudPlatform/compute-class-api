@@ -2959,9 +2959,6 @@ spec:
                             in this priority were added.
                           type: integer
                       type: object
-                  required:
-                  - conditions
-                  - resourceInfo
                   type: object
                 type: array
               resourceInfo:
@@ -3010,9 +3007,6 @@ spec:
                       type: string
                   type: object
                 type: array
-            required:
-            - priorityStatuses
-            - resourceInfo
             type: object
         required:
         - spec
