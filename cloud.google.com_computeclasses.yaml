@@ -1718,6 +1718,8 @@ spec:
                     rule: '!(has(self.machineFamily) && self.machineFamily == ''ek'')'
                   - message: MachineType cannot start with 'ek' prefix
                     rule: '!(has(self.machineType) && self.machineType.startsWith(''ek''))'
+                  - message: MachineType cannot start with 'e4a' prefix
+                    rule: '!(has(self.machineType) && self.machineType.startsWith(''e4a''))'
                   - message: Flex Start provisioning model is incompatible with Spot
                     rule: '!(has(self.flexStart) && has(self.spot) && self.spot ==
                       true && self.flexStart.enabled == true)'
