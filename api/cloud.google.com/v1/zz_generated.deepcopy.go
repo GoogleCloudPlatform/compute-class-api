@@ -1821,6 +1821,11 @@ func (in *SysctlsConfig) DeepCopyInto(out *SysctlsConfig) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.Kernel_core_pattern != nil {
+		in, out := &in.Kernel_core_pattern, &out.Kernel_core_pattern
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

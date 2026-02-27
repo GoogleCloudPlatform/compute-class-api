@@ -1473,6 +1473,13 @@ type SysctlsConfig struct {
 	// +kubebuilder:validation:Maximum=68719476736
 	// +kubebuilder:validation:Optional
 	Vm_dirty_bytes *int64 `json:"vm.dirty_bytes,omitempty" protobuf:"bytes,54,opt,name=vm.dirty_bytes"`
+	// Defines the core dump pattern for the kernel.
+	// Only absolute paths are supported. Piping and relative paths are not allowed.
+	//
+	// +kubebuilder:validation:MaxLength=128
+	// +kubebuilder:validation:Pattern="^/[a-zA-Z0-9/._%-]+$"
+	// +kubebuilder:validation:Optional
+	Kernel_core_pattern *string `json:"kernel.core_pattern,omitempty" protobuf:"bytes,55,opt,name=kernel.core_pattern"`
 }
 
 // HugepagesConfig defines hugepages config for a node.

@@ -1089,6 +1089,13 @@ spec:
                                   maximum: 2147483584
                                   minimum: 1048576
                                   type: integer
+                                kernel.core_pattern:
+                                  description: |-
+                                    Defines the core dump pattern for the kernel.
+                                    Only absolute paths are supported. Piping and relative paths are not allowed.
+                                  maxLength: 128
+                                  pattern: ^/[a-zA-Z0-9/._%-]+$
+                                  type: string
                                 kernel.dmesg_restrict:
                                   description: Indicates whether unprivileged users
                                     are prevented from using dmesg(8) to view messages
@@ -2292,6 +2299,13 @@ spec:
                                 maximum: 2147483584
                                 minimum: 1048576
                                 type: integer
+                              kernel.core_pattern:
+                                description: |-
+                                  Defines the core dump pattern for the kernel.
+                                  Only absolute paths are supported. Piping and relative paths are not allowed.
+                                maxLength: 128
+                                pattern: ^/[a-zA-Z0-9/._%-]+$
+                                type: string
                               kernel.dmesg_restrict:
                                 description: Indicates whether unprivileged users
                                   are prevented from using dmesg(8) to view messages

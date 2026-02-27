@@ -75,6 +75,7 @@ type SysctlsConfigApplyConfiguration struct {
 	Kernel_sysrq                                       *int64  `json:"kernel.sysrq,omitempty"`
 	Vm_dirty_background_bytes                          *int64  `json:"vm.dirty_background_bytes,omitempty"`
 	Vm_dirty_bytes                                     *int64  `json:"vm.dirty_bytes,omitempty"`
+	Kernel_core_pattern                                *string `json:"kernel.core_pattern,omitempty"`
 }
 
 // SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
@@ -512,5 +513,13 @@ func (b *SysctlsConfigApplyConfiguration) WithVm_dirty_background_bytes(value in
 // If called multiple times, the Vm_dirty_bytes field is set to the value of the last call.
 func (b *SysctlsConfigApplyConfiguration) WithVm_dirty_bytes(value int64) *SysctlsConfigApplyConfiguration {
 	b.Vm_dirty_bytes = &value
+	return b
+}
+
+// WithKernel_core_pattern sets the Kernel_core_pattern field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_core_pattern field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_core_pattern(value string) *SysctlsConfigApplyConfiguration {
+	b.Kernel_core_pattern = &value
 	return b
 }
