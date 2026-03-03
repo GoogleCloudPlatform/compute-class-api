@@ -1117,6 +1117,25 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:Maximum=120
 	// +kubebuilder:validation:Optional
 	ShutdownGracePeriodCriticalPodsSeconds *int32 `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty" protobuf:"bytes,21,opt,name=shutdownGracePeriodCriticalPodsSeconds"`
+
+	// CrashLoopBackOff contains the configuration to modify node level parameters
+	// for container restart behavior.
+	//
+	// +kubebuilder:validation:Optional
+	CrashLoopBackOff *CrashLoopBackOff `json:"crashLoopBackOff,omitempty" protobuf:"bytes,22,opt,name=crashLoopBackOff"`
+}
+
+// CrashLoopBackOff contains the configuration to modify node level parameters
+// for container restart behavior.
+type CrashLoopBackOff struct {
+	// MaxContainerRestartPeriod is the maximum duration the backoff delay can
+	// accrue to for container restarts. If not set, defaults to the internal
+	// crashloopbackoff maximum.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +optional
+	MaxContainerRestartPeriod *string `json:"maxContainerRestartPeriod,omitempty" protobuf:"bytes,1,opt,name=maxContainerRestartPeriod"`
 }
 
 // SysctlsConfig defines sysctls config for a node.

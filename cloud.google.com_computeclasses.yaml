@@ -649,6 +649,21 @@ spec:
                               - none
                               - static
                               type: string
+                            crashLoopBackOff:
+                              description: |-
+                                CrashLoopBackOff contains the configuration to modify node level parameters
+                                for container restart behavior.
+                              properties:
+                                maxContainerRestartPeriod:
+                                  description: |-
+                                    MaxContainerRestartPeriod is the maximum duration the backoff delay can
+                                    accrue to for container restarts. If not set, defaults to the internal
+                                    crashloopbackoff maximum.
+                                    The value must be a duration string. Eg. "30s", "1m30s".
+                                    The value must be positive and less than '5m'.
+                                  pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                  type: string
+                              type: object
                             evictionMaxPodGracePeriodSeconds:
                               description: |-
                                 EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
@@ -1840,6 +1855,21 @@ spec:
                             - none
                             - static
                             type: string
+                          crashLoopBackOff:
+                            description: |-
+                              CrashLoopBackOff contains the configuration to modify node level parameters
+                              for container restart behavior.
+                            properties:
+                              maxContainerRestartPeriod:
+                                description: |-
+                                  MaxContainerRestartPeriod is the maximum duration the backoff delay can
+                                  accrue to for container restarts. If not set, defaults to the internal
+                                  crashloopbackoff maximum.
+                                  The value must be a duration string. Eg. "30s", "1m30s".
+                                  The value must be positive and less than '5m'.
+                                pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                type: string
+                            type: object
                           evictionMaxPodGracePeriodSeconds:
                             description: |-
                               EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period

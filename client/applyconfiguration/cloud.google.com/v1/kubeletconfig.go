@@ -42,6 +42,7 @@ type KubeletConfigApplyConfiguration struct {
 	MemoryManager                          *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
 	ShutdownGracePeriodSeconds             *int32                                     `json:"shutdownGracePeriodSeconds,omitempty"`
 	ShutdownGracePeriodCriticalPodsSeconds *int32                                     `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty"`
+	CrashLoopBackOff                       *CrashLoopBackOffApplyConfiguration        `json:"crashLoopBackOff,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs an declarative configuration of the KubeletConfig type for use with
@@ -217,5 +218,13 @@ func (b *KubeletConfigApplyConfiguration) WithShutdownGracePeriodSeconds(value i
 // If called multiple times, the ShutdownGracePeriodCriticalPodsSeconds field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithShutdownGracePeriodCriticalPodsSeconds(value int32) *KubeletConfigApplyConfiguration {
 	b.ShutdownGracePeriodCriticalPodsSeconds = &value
+	return b
+}
+
+// WithCrashLoopBackOff sets the CrashLoopBackOff field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CrashLoopBackOff field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithCrashLoopBackOff(value *CrashLoopBackOffApplyConfiguration) *KubeletConfigApplyConfiguration {
+	b.CrashLoopBackOff = value
 	return b
 }

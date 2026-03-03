@@ -41,6 +41,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
+		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Dra"):
 		return &cloudgooglecomv1.DraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
