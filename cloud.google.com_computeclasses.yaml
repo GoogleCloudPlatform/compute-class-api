@@ -147,6 +147,21 @@ spec:
                     description: Enabled indicates whether NodePoolAutoCreation is
                       enabled for a given ComputeClass.
                     type: boolean
+                  shieldedInstanceConfig:
+                    description: ShieldedInstanceConfig defines the shielded instance
+                      configuration for auto-created node pools.
+                    properties:
+                      enableIntegrityMonitoring:
+                        default: false
+                        description: EnableIntegrityMonitoring defines whether integrity
+                          monitoring is enabled.
+                        type: boolean
+                      enableSecureBoot:
+                        default: false
+                        description: EnableSecureBoot defines whether secure boot
+                          is enabled.
+                        type: boolean
+                    type: object
                 required:
                 - enabled
                 type: object

@@ -225,6 +225,18 @@ type ActiveMigration struct {
 	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty" protobuf:"bytes,2,name=ensureAllDaemonSetPodsRunning"`
 }
 
+// ShieldedInstanceConfig defines the shielded instance configuration for auto-created node pools.
+type ShieldedInstanceConfig struct {
+	// EnableSecureBoot defines whether secure boot is enabled.
+	// +optional
+	// +kubebuilder:default=false
+	EnableSecureBoot *bool `json:"enableSecureBoot,omitempty" protobuf:"bytes,1,opt,name=enableSecureBoot"`
+	// EnableIntegrityMonitoring defines whether integrity monitoring is enabled.
+	// +optional
+	// +kubebuilder:default=false
+	EnableIntegrityMonitoring *bool `json:"enableIntegrityMonitoring,omitempty" protobuf:"bytes,2,opt,name=enableIntegrityMonitoring"`
+}
+
 // NodePoolAutoCreation defines node-pool autoprovisioning related settings.
 type NodePoolAutoCreation struct {
 	// Enabled indicates whether NodePoolAutoCreation is enabled for a given ComputeClass.
@@ -248,6 +260,10 @@ type NodePoolAutoCreation struct {
 	//
 	// +optional
 	DynamicBootDiskSize *bool `json:"dynamicBootDiskSize,omitempty" protobuf:"bytes,3,opt,name=dynamicBootDiskSize"`
+
+	// ShieldedInstanceConfig defines the shielded instance configuration for auto-created node pools.
+	// +optional
+	ShieldedInstanceConfig *ShieldedInstanceConfig `json:"shieldedInstanceConfig,omitempty" protobuf:"bytes,4,opt,name=shieldedInstanceConfig"`
 }
 
 // Autopilot defines describes the autopilot settings for a given ComputeClass.

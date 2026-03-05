@@ -109,6 +109,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ScalingEventsHistoryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SecondaryBootDisk"):
 		return &cloudgooglecomv1.SecondaryBootDiskApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ShieldedInstanceConfig"):
+		return &cloudgooglecomv1.ShieldedInstanceConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SpecificReservation"):
 		return &cloudgooglecomv1.SpecificReservationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Storage"):
