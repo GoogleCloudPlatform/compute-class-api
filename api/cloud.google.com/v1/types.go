@@ -1496,6 +1496,36 @@ type SysctlsConfig struct {
 	// +kubebuilder:validation:Pattern="^/[a-zA-Z0-9/._%-]+$"
 	// +kubebuilder:validation:Optional
 	Kernel_core_pattern *string `json:"kernel.core_pattern,omitempty" protobuf:"bytes,55,opt,name=kernel.core_pattern"`
+	// Controls the maximum number of keys that a nonroot user may own.
+	//
+	// +kubebuilder:validation:Minimum=200
+	// +kubebuilder:validation:Maximum=1048576
+	// +kubebuilder:validation:Optional
+	Kernel_keys_maxkeys *int64 `json:"kernel.keys.maxkeys,omitempty" protobuf:"bytes,56,opt,name=kernel.keys.maxkeys"`
+	// Represents the maximum number of bytes that a nonroot user can hold in the payload section of all their keys.
+	//
+	// +kubebuilder:validation:Minimum=20000
+	// +kubebuilder:validation:Maximum=2097152
+	// +kubebuilder:validation:Optional
+	Kernel_keys_maxbytes *int64 `json:"kernel.keys.maxbytes,omitempty" protobuf:"bytes,57,opt,name=kernel.keys.maxbytes"`
+	// Tells the garbage collector the minimum number of network entries that can sit in cache (floor).
+	//
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:validation:Maximum=262144
+	// +kubebuilder:validation:Optional
+	Net_ipv4_neigh_default_gc_thresh1 *int64 `json:"net.ipv4.neigh.default.gc_thresh1,omitempty" protobuf:"bytes,58,opt,name=net.ipv4.neigh.default.gc_thresh1"`
+	// Acts as a soft limit to the number of network device entries stored in cache (soft ceiling).
+	//
+	// +kubebuilder:validation:Minimum=512
+	// +kubebuilder:validation:Maximum=524288
+	// +kubebuilder:validation:Optional
+	Net_ipv4_neigh_default_gc_thresh2 *int64 `json:"net.ipv4.neigh.default.gc_thresh2,omitempty" protobuf:"bytes,59,opt,name=net.ipv4.neigh.default.gc_thresh2"`
+	// Sets a hard ceiling (absolute maximum) for the network neighbor cache.
+	//
+	// +kubebuilder:validation:Minimum=1024
+	// +kubebuilder:validation:Maximum=1048576
+	// +kubebuilder:validation:Optional
+	Net_ipv4_neigh_default_gc_thresh3 *int64 `json:"net.ipv4.neigh.default.gc_thresh3,omitempty" protobuf:"bytes,60,opt,name=net.ipv4.neigh.default.gc_thresh3"`
 }
 
 // HugepagesConfig defines hugepages config for a node.

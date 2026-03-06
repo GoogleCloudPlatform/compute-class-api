@@ -76,6 +76,11 @@ type SysctlsConfigApplyConfiguration struct {
 	Vm_dirty_background_bytes                          *int64  `json:"vm.dirty_background_bytes,omitempty"`
 	Vm_dirty_bytes                                     *int64  `json:"vm.dirty_bytes,omitempty"`
 	Kernel_core_pattern                                *string `json:"kernel.core_pattern,omitempty"`
+	Kernel_keys_maxkeys                                *int64  `json:"kernel.keys.maxkeys,omitempty"`
+	Kernel_keys_maxbytes                               *int64  `json:"kernel.keys.maxbytes,omitempty"`
+	Net_ipv4_neigh_default_gc_thresh1                  *int64  `json:"net.ipv4.neigh.default.gc_thresh1,omitempty"`
+	Net_ipv4_neigh_default_gc_thresh2                  *int64  `json:"net.ipv4.neigh.default.gc_thresh2,omitempty"`
+	Net_ipv4_neigh_default_gc_thresh3                  *int64  `json:"net.ipv4.neigh.default.gc_thresh3,omitempty"`
 }
 
 // SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
@@ -521,5 +526,45 @@ func (b *SysctlsConfigApplyConfiguration) WithVm_dirty_bytes(value int64) *Sysct
 // If called multiple times, the Kernel_core_pattern field is set to the value of the last call.
 func (b *SysctlsConfigApplyConfiguration) WithKernel_core_pattern(value string) *SysctlsConfigApplyConfiguration {
 	b.Kernel_core_pattern = &value
+	return b
+}
+
+// WithKernel_keys_maxkeys sets the Kernel_keys_maxkeys field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_keys_maxkeys field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_keys_maxkeys(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_keys_maxkeys = &value
+	return b
+}
+
+// WithKernel_keys_maxbytes sets the Kernel_keys_maxbytes field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Kernel_keys_maxbytes field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithKernel_keys_maxbytes(value int64) *SysctlsConfigApplyConfiguration {
+	b.Kernel_keys_maxbytes = &value
+	return b
+}
+
+// WithNet_ipv4_neigh_default_gc_thresh1 sets the Net_ipv4_neigh_default_gc_thresh1 field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_neigh_default_gc_thresh1 field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_neigh_default_gc_thresh1(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_neigh_default_gc_thresh1 = &value
+	return b
+}
+
+// WithNet_ipv4_neigh_default_gc_thresh2 sets the Net_ipv4_neigh_default_gc_thresh2 field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_neigh_default_gc_thresh2 field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_neigh_default_gc_thresh2(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_neigh_default_gc_thresh2 = &value
+	return b
+}
+
+// WithNet_ipv4_neigh_default_gc_thresh3 sets the Net_ipv4_neigh_default_gc_thresh3 field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv4_neigh_default_gc_thresh3 field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_neigh_default_gc_thresh3(value int64) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv4_neigh_default_gc_thresh3 = &value
 	return b
 }

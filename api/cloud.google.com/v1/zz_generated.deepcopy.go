@@ -1857,6 +1857,31 @@ func (in *SysctlsConfig) DeepCopyInto(out *SysctlsConfig) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.Kernel_keys_maxkeys != nil {
+		in, out := &in.Kernel_keys_maxkeys, &out.Kernel_keys_maxkeys
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Kernel_keys_maxbytes != nil {
+		in, out := &in.Kernel_keys_maxbytes, &out.Kernel_keys_maxbytes
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_neigh_default_gc_thresh1 != nil {
+		in, out := &in.Net_ipv4_neigh_default_gc_thresh1, &out.Net_ipv4_neigh_default_gc_thresh1
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_neigh_default_gc_thresh2 != nil {
+		in, out := &in.Net_ipv4_neigh_default_gc_thresh2, &out.Net_ipv4_neigh_default_gc_thresh2
+		*out = new(int64)
+		**out = **in
+	}
+	if in.Net_ipv4_neigh_default_gc_thresh3 != nil {
+		in, out := &in.Net_ipv4_neigh_default_gc_thresh3, &out.Net_ipv4_neigh_default_gc_thresh3
+		*out = new(int64)
+		**out = **in
+	}
 	return
 }
 

@@ -1116,6 +1116,21 @@ spec:
                                     are prevented from using dmesg(8) to view messages
                                     from the kernel’s log buffer.
                                   type: boolean
+                                kernel.keys.maxbytes:
+                                  description: Represents the maximum number of bytes
+                                    that a nonroot user can hold in the payload section
+                                    of all their keys.
+                                  format: int64
+                                  maximum: 2097152
+                                  minimum: 20000
+                                  type: integer
+                                kernel.keys.maxkeys:
+                                  description: Controls the maximum number of keys
+                                    that a nonroot user may own.
+                                  format: int64
+                                  maximum: 1048576
+                                  minimum: 200
+                                  type: integer
                                 kernel.kptr_restrict:
                                   description: Indicates whether restrictions are
                                     placed on exposing kernel addresses via /proc
@@ -1256,6 +1271,29 @@ spec:
                                   format: int64
                                   maximum: 2147483647
                                   minimum: 4608
+                                  type: integer
+                                net.ipv4.neigh.default.gc_thresh1:
+                                  description: Tells the garbage collector the minimum
+                                    number of network entries that can sit in cache
+                                    (floor).
+                                  format: int64
+                                  maximum: 262144
+                                  minimum: 0
+                                  type: integer
+                                net.ipv4.neigh.default.gc_thresh2:
+                                  description: Acts as a soft limit to the number
+                                    of network device entries stored in cache (soft
+                                    ceiling).
+                                  format: int64
+                                  maximum: 524288
+                                  minimum: 512
+                                  type: integer
+                                net.ipv4.neigh.default.gc_thresh3:
+                                  description: Sets a hard ceiling (absolute maximum)
+                                    for the network neighbor cache.
+                                  format: int64
+                                  maximum: 1048576
+                                  minimum: 1024
                                   type: integer
                                 net.ipv4.tcp_congestion_control:
                                   description: Set the congestion control algorithm
@@ -2326,6 +2364,21 @@ spec:
                                   are prevented from using dmesg(8) to view messages
                                   from the kernel’s log buffer.
                                 type: boolean
+                              kernel.keys.maxbytes:
+                                description: Represents the maximum number of bytes
+                                  that a nonroot user can hold in the payload section
+                                  of all their keys.
+                                format: int64
+                                maximum: 2097152
+                                minimum: 20000
+                                type: integer
+                              kernel.keys.maxkeys:
+                                description: Controls the maximum number of keys that
+                                  a nonroot user may own.
+                                format: int64
+                                maximum: 1048576
+                                minimum: 200
+                                type: integer
                               kernel.kptr_restrict:
                                 description: Indicates whether restrictions are placed
                                   on exposing kernel addresses via /proc and other
@@ -2466,6 +2519,28 @@ spec:
                                 format: int64
                                 maximum: 2147483647
                                 minimum: 4608
+                                type: integer
+                              net.ipv4.neigh.default.gc_thresh1:
+                                description: Tells the garbage collector the minimum
+                                  number of network entries that can sit in cache
+                                  (floor).
+                                format: int64
+                                maximum: 262144
+                                minimum: 0
+                                type: integer
+                              net.ipv4.neigh.default.gc_thresh2:
+                                description: Acts as a soft limit to the number of
+                                  network device entries stored in cache (soft ceiling).
+                                format: int64
+                                maximum: 524288
+                                minimum: 512
+                                type: integer
+                              net.ipv4.neigh.default.gc_thresh3:
+                                description: Sets a hard ceiling (absolute maximum)
+                                  for the network neighbor cache.
+                                format: int64
+                                maximum: 1048576
+                                minimum: 1024
                                 type: integer
                               net.ipv4.tcp_congestion_control:
                                 description: Set the congestion control algorithm
