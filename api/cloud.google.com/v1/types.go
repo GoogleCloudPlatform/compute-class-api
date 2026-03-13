@@ -1548,7 +1548,6 @@ type HugepagesConfig struct {
 type ZoneType string
 
 // Location describes CCC zonal preferences config.
-// +kubebuilder:validation:XValidation:rule="!(has(self.zones) && has(self.zoneTypes))", message="Zones and ZoneTypes cannot be set together."
 type Location struct {
 	// Zones lists zones considered for node autoprovisioning.
 	//

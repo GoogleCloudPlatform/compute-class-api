@@ -539,9 +539,6 @@ spec:
                           minItems: 1
                           type: array
                       type: object
-                      x-kubernetes-validations:
-                      - message: Zones and ZoneTypes cannot be set together.
-                        rule: '!(has(self.zones) && has(self.zoneTypes))'
                     machineFamily:
                       description: |-
                         Machine family describes preferred instance family for a node. If none is specified,
@@ -1855,9 +1852,6 @@ spec:
                         minItems: 1
                         type: array
                     type: object
-                    x-kubernetes-validations:
-                    - message: Zones and ZoneTypes cannot be set together.
-                      rule: '!(has(self.zones) && has(self.zoneTypes))'
                   nodeSystemConfig:
                     description: NodeSystemConfig defines node system config for a
                       node.

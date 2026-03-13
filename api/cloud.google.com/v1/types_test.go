@@ -273,60 +273,6 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 	}
 }
 
-func TestLocationZoneTypes_WithLocationZones(t *testing.T) {
-	rule := getTypeValidationRule(t, "Location", "!(has(self.zones) && has(self.zoneTypes))")
-	program := createCELProgram(t, rule)
-
-	tests := []struct {
-		name      string
-		input     map[string]interface{}
-		wantValid bool
-	}{
-		{
-			name: "only_zones",
-			input: map[string]interface{}{
-				"zones": []string{"us-central1-a"},
-			},
-			wantValid: true,
-		},
-		{
-			name: "only_zoneTypes",
-			input: map[string]interface{}{
-				"zoneTypes": []string{"STANDARD"},
-			},
-			wantValid: true,
-		},
-		{
-			name:      "neither",
-			input:     map[string]interface{}{},
-			wantValid: true,
-		},
-		{
-			name: "both_set",
-			input: map[string]interface{}{
-				"zones":     []string{"us-central1-a"},
-				"zoneTypes": []string{"STANDARD"},
-			},
-			wantValid: false,
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			out, _, err := program.Eval(map[string]interface{}{
-				"self": tc.input,
-			})
-			if err != nil {
-				t.Fatalf("CEL evaluation failed: %v", err)
-			}
-
-			if out.Value() != tc.wantValid {
-				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
-			}
-		})
-	}
-}
-
 func getTypeValidationRule(t *testing.T, structName, ruleSubString string) string {
 	t.Helper()
 	fset := token.NewFileSet()
@@ -363,54 +309,6 @@ func getTypeValidationRule(t *testing.T, structName, ruleSubString string) strin
 		}
 	}
 	t.Fatalf("Could not find validation rule with %q at struct %s in types.go", ruleSubString, structName)
-	return ""
-}
-
-func getFieldValidationRule(t *testing.T, structName, fieldName, ruleSubString string) string {
-	t.Helper()
-	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
-	if err != nil {
-		t.Fatalf("Failed to parse types.go: %v", err)
-	}
-
-	for _, decl := range node.Decls {
-		gd, ok := decl.(*ast.GenDecl)
-		if !ok || gd.Tok != token.TYPE {
-			continue
-		}
-		for _, spec := range gd.Specs {
-			typeSpec, ok := spec.(*ast.TypeSpec)
-			if !ok || typeSpec.Name.Name != structName {
-				continue
-			}
-
-			structType, ok := typeSpec.Type.(*ast.StructType)
-			if !ok {
-				continue
-			}
-
-			for _, field := range structType.Fields.List {
-				if len(field.Names) == 0 {
-					continue // skip embedded fields
-				}
-				if field.Names[0].Name != fieldName {
-					continue
-				}
-				if field.Doc == nil {
-					continue
-				}
-				for _, comment := range field.Doc.List {
-					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
-					if rule != nil {
-						return *rule
-					}
-				}
-
-			}
-		}
-	}
-	t.Fatalf("Could not find field validation rule with %q on field %s.%s", ruleSubString, structName, fieldName)
 	return ""
 }
 
