@@ -1576,11 +1576,11 @@ spec:
                       - general-purpose
                       - general-purpose-arm
                       type: string
-                    rank:
+                    priorityScore:
                       description: |-
                         A higher value is treated as a higher priority.
-                        Priorities with the same rank value are treated equally.
-                        Not more than 3 priorities can have the same rank.
+                        Priorities with the same priorityScore value are treated equally.
+                        Not more than 3 priorities can have the same priorityScore.
                       maximum: 1000
                       minimum: 1
                       type: integer
@@ -2869,9 +2869,10 @@ spec:
                 && has(self.priorityDefaults.location) && has(self.priorityDefaults.location.zones))
                 || self.priorities.all(priority, has(priority.location) && has(priority.location.zones))
                 : true'
-            - message: Rank must be set for all priorities or for none of them
-              rule: self.priorities.all(p, has(p.rank)) || self.priorities.all(p,
-                !has(p.rank))
+            - message: PriorityScore must be set for all priorities or for none of
+                them
+              rule: self.priorities.all(p, has(p.priorityScore)) || self.priorities.all(p,
+                !has(p.priorityScore))
             - message: GPU Topology is supported only for A4X machine family or nvidia-gb200
                 GPU type together with placement (workload) policy
               rule: 'self.priorities.all(p, (has(p.gpu) && has(p.gpu.topology)) ?

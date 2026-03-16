@@ -81,7 +81,7 @@ type ComputeClassList struct {
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType) && self.nodePoolConfig.confidentialNodeType == \"SEV_SNP\") ? self.priorities.all(priority, ((has(priority.machineFamily) && priority.machineFamily in ['n2d']) || (has(priority.machineType) && priority.machineType.split('-')[0] in ['n2d']))) : true", message="ConfidentialNodeType SEV_SNP only supports N2D"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType) && self.nodePoolConfig.confidentialNodeType == \"TDX\") ? self.priorities.all(priority, ((has(priority.machineFamily) && priority.machineFamily in ['c3', 'a3']) || (has(priority.machineType) && (priority.machineType.startsWith('c3-standard-') || priority.machineType == 'a3-highgpu-1g')) || (has(priority.gpu) && has(priority.gpu.type) && priority.gpu.type == 'nvidia-h100-80gb'))) : true", message="ConfidentialNodeType TDX only supports C3 standard and A3 highgpu 1"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType) && self.priorities.exists(priority, has(priority.gpu))) ? (has(self.priorityDefaults) && has(self.priorityDefaults.location) && has(self.priorityDefaults.location.zones)) || self.priorities.all(priority, has(priority.location) && has(priority.location.zones)) : true", message="When using confidential GPUs you must specify location.zones"
-// +kubebuilder:validation:XValidation:rule="self.priorities.all(p, has(p.rank)) || self.priorities.all(p, !has(p.rank))", message="Rank must be set for all priorities or for none of them"
+// +kubebuilder:validation:XValidation:rule="self.priorities.all(p, has(p.priorityScore)) || self.priorities.all(p, !has(p.priorityScore))", message="PriorityScore must be set for all priorities or for none of them"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.gpu) && has(p.gpu.topology)) ? (((has(p.machineFamily) && p.machineFamily == 'a4x') || (has(p.gpu.type) && p.gpu.type == 'nvidia-gb200')) && has(p.placement) && has(p.placement.policyName)) : true)", message="GPU Topology is supported only for A4X machine family or nvidia-gb200 GPU type together with placement (workload) policy"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.spot) && p.spot)) || !has(self.priorityDefaults) || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
 type ComputeClassSpec struct {
@@ -701,13 +701,13 @@ type Priority struct {
 	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
 
 	// A higher value is treated as a higher priority.
-	// Priorities with the same rank value are treated equally.
-	// Not more than 3 priorities can have the same rank.
+	// Priorities with the same priorityScore value are treated equally.
+	// Not more than 3 priorities can have the same priorityScore.
 	//
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=1000
-	Rank *int `json:"rank,omitempty" protobuf:"bytes,22,opt,name=rank"`
+	PriorityScore *int `json:"priorityScore,omitempty" protobuf:"bytes,22,opt,name=priorityScore"`
 
 	// Identifier is a string used to identify compute classes' priorities. It is set automatically to the index of a priority within the priority list.
 	//

@@ -1110,8 +1110,8 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		*out = make([]TaintConfig, len(*in))
 		copy(*out, *in)
 	}
-	if in.Rank != nil {
-		in, out := &in.Rank, &out.Rank
+	if in.PriorityScore != nil {
+		in, out := &in.PriorityScore, &out.PriorityScore
 		*out = new(int)
 		**out = **in
 	}
