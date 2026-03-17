@@ -37,6 +37,7 @@ type NodePoolConfigApplyConfiguration struct {
 	IPType               *string                                  `json:"ipType,omitempty"`
 	NodeVersion          *string                                  `json:"nodeVersion,omitempty"`
 	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
+	Sandbox              *SandboxApplyConfiguration               `json:"sandbox,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -186,5 +187,13 @@ func (b *NodePoolConfigApplyConfiguration) WithNodeVersion(value string) *NodePo
 // If called multiple times, the Tpu field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithTpu(value *GoogleTpuApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.Tpu = value
+	return b
+}
+
+// WithSandbox sets the Sandbox field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Sandbox field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithSandbox(value *SandboxApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.Sandbox = value
 	return b
 }

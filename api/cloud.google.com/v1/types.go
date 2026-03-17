@@ -392,6 +392,11 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	Tpu GoogleTpu `json:"tpu,omitempty" protobuf:"bytes,16,opt,name=tpu"`
+
+	// Sandbox contains sandbox configuration.
+	//
+	// +optional
+	Sandbox *Sandbox `json:"sandbox,omitempty" protobuf:"bytes,17,opt,name=sandbox"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.
@@ -416,6 +421,14 @@ type Gvnic struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:default=false
 	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
+}
+
+// Sandbox stores sandbox configuration for nodepools.
+type Sandbox struct {
+	// Type defines the sandbox type (e.g., gVisor) for all nodes managed by this class.
+	// +optional
+	// +kubebuilder:validation:Enum=gVisor
+	Type string `json:"type,omitempty" protobuf:"string,1,opt,name=type"`
 }
 
 // ImageStreaming stores container image streaming settings. It is equivalent to `GcfsConfig` in GKE.

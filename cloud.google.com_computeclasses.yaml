@@ -299,6 +299,16 @@ spec:
                       type: object
                     maxItems: 5
                     type: array
+                  sandbox:
+                    description: Sandbox contains sandbox configuration.
+                    properties:
+                      type:
+                        description: Type defines the sandbox type (e.g., gVisor)
+                          for all nodes managed by this class.
+                        enum:
+                        - gVisor
+                        type: string
+                    type: object
                   serviceAccount:
                     description: ServiceAccount used by the node pool.
                     type: string

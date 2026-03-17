@@ -105,6 +105,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ReservationSubBlockApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ResourceInfo"):
 		return &cloudgooglecomv1.ResourceInfoApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("Sandbox"):
+		return &cloudgooglecomv1.SandboxApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ScalingEventsHistory"):
 		return &cloudgooglecomv1.ScalingEventsHistoryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SecondaryBootDisk"):
