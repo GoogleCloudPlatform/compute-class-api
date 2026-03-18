@@ -66,6 +66,16 @@ type ComputeClassList struct {
 	Items []ComputeClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
+// MinimumCapacity defines the minimum capacity required for a given
+// compute class or priority. It allows managing statically sized infrastructure.
+type MinimumCapacity struct {
+	// TargetNodeCount defines a minimum number of nodes that should be present in the cluster.
+	// If the active node count falls below the defined threshold,
+	// Cluster Autoscaler will proactively provision capacity to satisfy the requirement.
+	// +optional
+	TargetNodeCount *int `json:"targetNodeCount,omitempty" protobuf:"bytes,1,opt,name=targetNodeCount"`
+}
+
 // ComputeClassSpec is a specification of provisioning priorities and
 // other autoscaling settings.
 //
@@ -149,6 +159,11 @@ type ComputeClassSpec struct {
 	// when this compute class should be used.
 	// +optional
 	Description string `json:"description,omitempty" protobuf:"bytes,10,opt,name=description"`
+
+	// MinimumCapacity defines declarative minimum node preprovisioning requirements
+	// for the entire ComputeClass.
+	// +optional
+	MinimumCapacity *MinimumCapacity `json:"minimumCapacity,omitempty" protobuf:"bytes,11,opt,name=minimumCapacity"`
 }
 
 type NetworkingDra struct {
@@ -741,6 +756,11 @@ type Priority struct {
 	// +kubebuilder:validation:XValidation:rule="self == 'rdma'",message="gpuDirect must be 'rdma'"
 	// +optional
 	GpuDirect string `json:"gpuDirect,omitempty" protobuf:"bytes,25,name=gpuDirect"`
+
+	// MinimumCapacity defines declarative minimum node preprovisioning requirements
+	// for this specific priority.
+	// +optional
+	MinimumCapacity *MinimumCapacity `json:"minimumCapacity,omitempty" protobuf:"bytes,26,opt,name=minimumCapacity"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP

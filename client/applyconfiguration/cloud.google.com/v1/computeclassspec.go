@@ -31,6 +31,7 @@ type ComputeClassSpecApplyConfiguration struct {
 	NodePoolGroup        *NodePoolGroupApplyConfiguration        `json:"nodePoolGroup,omitempty"`
 	PriorityDefaults     *PriorityDefaultsApplyConfiguration     `json:"priorityDefaults,omitempty"`
 	Description          *string                                 `json:"description,omitempty"`
+	MinimumCapacity      *MinimumCapacityApplyConfiguration      `json:"minimumCapacity,omitempty"`
 }
 
 // ComputeClassSpecApplyConfiguration constructs an declarative configuration of the ComputeClassSpec type for use with
@@ -121,5 +122,13 @@ func (b *ComputeClassSpecApplyConfiguration) WithPriorityDefaults(value *Priorit
 // If called multiple times, the Description field is set to the value of the last call.
 func (b *ComputeClassSpecApplyConfiguration) WithDescription(value string) *ComputeClassSpecApplyConfiguration {
 	b.Description = &value
+	return b
+}
+
+// WithMinimumCapacity sets the MinimumCapacity field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MinimumCapacity field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithMinimumCapacity(value *MinimumCapacityApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.MinimumCapacity = value
 	return b
 }

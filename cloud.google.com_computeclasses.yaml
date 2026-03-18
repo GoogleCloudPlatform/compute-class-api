@@ -121,6 +121,18 @@ spec:
                   Description is an arbitrary string that usually provides guidelines on
                   when this compute class should be used.
                 type: string
+              minimumCapacity:
+                description: |-
+                  MinimumCapacity defines declarative minimum node preprovisioning requirements
+                  for the entire ComputeClass.
+                properties:
+                  targetNodeCount:
+                    description: |-
+                      TargetNodeCount defines a minimum number of nodes that should be present in the cluster.
+                      If the active node count falls below the defined threshold,
+                      Cluster Autoscaler will proactively provision capacity to satisfy the requirement.
+                    type: integer
+                type: object
               nodePoolAutoCreation:
                 default:
                   enabled: false
@@ -603,6 +615,18 @@ spec:
                         a node.
                       minimum: 0
                       type: integer
+                    minimumCapacity:
+                      description: |-
+                        MinimumCapacity defines declarative minimum node preprovisioning requirements
+                        for this specific priority.
+                      properties:
+                        targetNodeCount:
+                          description: |-
+                            TargetNodeCount defines a minimum number of nodes that should be present in the cluster.
+                            If the active node count falls below the defined threshold,
+                            Cluster Autoscaler will proactively provision capacity to satisfy the requirement.
+                          type: integer
+                      type: object
                     nodeLabels:
                       additionalProperties:
                         type: string

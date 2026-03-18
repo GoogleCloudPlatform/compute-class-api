@@ -75,6 +75,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.LoggingVariantConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MemoryManager"):
 		return &cloudgooglecomv1.MemoryManagerApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("MinimumCapacity"):
+		return &cloudgooglecomv1.MinimumCapacityApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NetworkingDra"):
 		return &cloudgooglecomv1.NetworkingDraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodePoolAutoCreation"):

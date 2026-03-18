@@ -46,6 +46,7 @@ type PriorityApplyConfiguration struct {
 	Identifier                   *string                             `json:"identifier,omitempty"`
 	AcceleratorNetworkProfile    *string                             `json:"acceleratorNetworkProfile,omitempty"`
 	GpuDirect                    *string                             `json:"gpuDirect,omitempty"`
+	MinimumCapacity              *MinimumCapacityApplyConfiguration  `json:"minimumCapacity,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -264,5 +265,13 @@ func (b *PriorityApplyConfiguration) WithAcceleratorNetworkProfile(value string)
 // If called multiple times, the GpuDirect field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithGpuDirect(value string) *PriorityApplyConfiguration {
 	b.GpuDirect = &value
+	return b
+}
+
+// WithMinimumCapacity sets the MinimumCapacity field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MinimumCapacity field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMinimumCapacity(value *MinimumCapacityApplyConfiguration) *PriorityApplyConfiguration {
+	b.MinimumCapacity = value
 	return b
 }
