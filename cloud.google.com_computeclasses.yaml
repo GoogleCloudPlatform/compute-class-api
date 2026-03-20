@@ -518,11 +518,6 @@ spec:
                       x-kubernetes-validations:
                       - message: gpuDirect must be 'rdma'
                         rule: self == 'rdma'
-                    identifier:
-                      description: Identifier is a string used to identify compute
-                        classes' priorities. It is set automatically to the index
-                        of a priority within the priority list.
-                      type: string
                     location:
                       description: Location describes CCC zonal preferences config.
                       properties:

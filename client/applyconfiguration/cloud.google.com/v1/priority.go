@@ -43,7 +43,6 @@ type PriorityApplyConfiguration struct {
 	NodeLabels                   map[string]string                   `json:"nodeLabels,omitempty"`
 	Taints                       []TaintConfigApplyConfiguration     `json:"taints,omitempty"`
 	PriorityScore                *int                                `json:"priorityScore,omitempty"`
-	Identifier                   *string                             `json:"identifier,omitempty"`
 	AcceleratorNetworkProfile    *string                             `json:"acceleratorNetworkProfile,omitempty"`
 	GpuDirect                    *string                             `json:"gpuDirect,omitempty"`
 	MinimumCapacity              *MinimumCapacityApplyConfiguration  `json:"minimumCapacity,omitempty"`
@@ -241,14 +240,6 @@ func (b *PriorityApplyConfiguration) WithTaints(values ...*TaintConfigApplyConfi
 // If called multiple times, the PriorityScore field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithPriorityScore(value int) *PriorityApplyConfiguration {
 	b.PriorityScore = &value
-	return b
-}
-
-// WithIdentifier sets the Identifier field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Identifier field is set to the value of the last call.
-func (b *PriorityApplyConfiguration) WithIdentifier(value string) *PriorityApplyConfiguration {
-	b.Identifier = &value
 	return b
 }
 

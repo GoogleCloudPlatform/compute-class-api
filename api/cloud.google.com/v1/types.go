@@ -727,7 +727,6 @@ type Priority struct {
 	// +optional
 	// +kubebuilder:validation:MaxItems=100
 	Taints []TaintConfig `json:"taints,omitempty" protobuf:"bytes,21,opt,name=taints"`
-
 	// A higher value is treated as a higher priority.
 	// Priorities with the same priorityScore value are treated equally.
 	// Not more than 3 priorities can have the same priorityScore.
@@ -736,11 +735,6 @@ type Priority struct {
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=1000
 	PriorityScore *int `json:"priorityScore,omitempty" protobuf:"bytes,22,opt,name=priorityScore"`
-
-	// Identifier is a string used to identify compute classes' priorities. It is set automatically to the index of a priority within the priority list.
-	//
-	// +optional
-	Identifier string `json:"identifier,omitempty" protobuf:"bytes,23,opt,name=identifier"`
 
 	// AcceleratorNetworkProfile defines the type of automated accelerator network provisioning to use.
 	// Possible values:
