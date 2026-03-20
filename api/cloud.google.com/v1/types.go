@@ -600,7 +600,7 @@ type Reservations struct {
 // Priority is a specification of preferred machine characteristics.
 //
 // +kubebuilder:validation:MinProperties=1
-// +kubebuilder:validation:XValidation:rule="!has(self.nodepools) || (size(dyn(self)) == 1 + (has(self.identifier) ? 1 : 0))", message="Nodepool field cannot be set along with other fields"
+// +kubebuilder:validation:XValidation:rule="has(self.nodepools) ? (size(dyn(self)) == 1) : true", message="Nodepool field cannot be set along with other fields"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineFamily) && has(self.machineType))",message="MachineFamily and MachineType cannot be set together"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineType) && (has(self.minCores) || has(self.minMemoryGb)))",message="MachineType cannot be set together with MinCores/MinMemoryGb"
 // +kubebuilder:validation:XValidation:rule="!(has(self.machineFamily) && self.machineFamily == 'ek')", message="MachineFamily cannot be equal to 'ek'"

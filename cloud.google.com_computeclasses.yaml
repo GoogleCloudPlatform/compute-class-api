@@ -1809,8 +1809,7 @@ spec:
                   type: object
                   x-kubernetes-validations:
                   - message: Nodepool field cannot be set along with other fields
-                    rule: '!has(self.nodepools) || (size(dyn(self)) == 1 + (has(self.identifier)
-                      ? 1 : 0))'
+                    rule: 'has(self.nodepools) ? (size(dyn(self)) == 1) : true'
                   - message: MachineFamily and MachineType cannot be set together
                     rule: '!(has(self.machineFamily) && has(self.machineType))'
                   - message: MachineType cannot be set together with MinCores/MinMemoryGb
