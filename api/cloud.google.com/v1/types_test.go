@@ -273,6 +273,117 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 	}
 }
 
+func TestTDXValidationRule(t *testing.T) {
+	rule := getTypeValidationRule(t, "ComputeClassSpec", "TDX")
+	program := createCELProgram(t, rule)
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid:_tdx_with_c3_machine_family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_c4_machine_family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c4",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_c3_standard_machine_type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "c3-standard-4",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_c4_standard_machine_type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "c4-standard-4",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_tdx_with_unsupported_machine_family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n2",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_unsupported_machine_type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "n2-standard-4",
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": tc.input,
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+
+			if out.Value() != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			}
+		})
+	}
+}
+
 func getTypeValidationRule(t *testing.T, structName, ruleSubString string) string {
 	t.Helper()
 	fset := token.NewFileSet()
