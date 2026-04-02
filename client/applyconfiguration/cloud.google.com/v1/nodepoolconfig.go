@@ -38,6 +38,7 @@ type NodePoolConfigApplyConfiguration struct {
 	NodeVersion          *string                                  `json:"nodeVersion,omitempty"`
 	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
 	Sandbox              *SandboxApplyConfiguration               `json:"sandbox,omitempty"`
+	WorkloadMetadata     *string                                  `json:"workloadMetadata,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -195,5 +196,13 @@ func (b *NodePoolConfigApplyConfiguration) WithTpu(value *GoogleTpuApplyConfigur
 // If called multiple times, the Sandbox field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithSandbox(value *SandboxApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.Sandbox = value
+	return b
+}
+
+// WithWorkloadMetadata sets the WorkloadMetadata field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the WorkloadMetadata field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithWorkloadMetadata(value string) *NodePoolConfigApplyConfiguration {
+	b.WorkloadMetadata = &value
 	return b
 }

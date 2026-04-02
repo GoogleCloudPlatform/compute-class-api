@@ -412,6 +412,13 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	Sandbox *Sandbox `json:"sandbox,omitempty" protobuf:"bytes,17,opt,name=sandbox"`
+
+	// WorkloadMetadata specifies how node metadata is exposed to the workload.
+	// Possible values are "GCE_METADATA" or "GKE_METADATA".
+	//
+	// +optional
+	// +kubebuilder:validation:Enum=GCE_METADATA;GKE_METADATA
+	WorkloadMetadata *string `json:"workloadMetadata,omitempty" protobuf:"bytes,18,opt,name=workloadMetadata"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.

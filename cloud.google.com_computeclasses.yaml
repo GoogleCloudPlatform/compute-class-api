@@ -372,6 +372,14 @@ spec:
                         - DynamicResourceAllocation
                         type: string
                     type: object
+                  workloadMetadata:
+                    description: |-
+                      WorkloadMetadata specifies how node metadata is exposed to the workload.
+                      Possible values are "GCE_METADATA" or "GKE_METADATA".
+                    enum:
+                    - GCE_METADATA
+                    - GKE_METADATA
+                    type: string
                   workloadType:
                     description: |-
                       WorkloadType defines Collection or Goodput SLO for the workload. Currently

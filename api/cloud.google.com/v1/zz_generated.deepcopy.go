@@ -918,6 +918,11 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = new(Sandbox)
 		**out = **in
 	}
+	if in.WorkloadMetadata != nil {
+		in, out := &in.WorkloadMetadata, &out.WorkloadMetadata
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
