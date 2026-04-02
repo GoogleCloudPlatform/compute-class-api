@@ -447,9 +447,9 @@ type Gvnic struct {
 
 // Sandbox stores sandbox configuration for nodepools.
 type Sandbox struct {
-	// Type defines the sandbox type (e.g., gVisor) for all nodes managed by this class.
+	// Type defines the sandbox type (e.g., gvisor) for all nodes managed by this class.
 	// +optional
-	// +kubebuilder:validation:Enum=gVisor
+	// +kubebuilder:validation:Enum=gvisor
 	Type string `json:"type,omitempty" protobuf:"string,1,opt,name=type"`
 }
 

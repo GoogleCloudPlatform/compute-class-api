@@ -315,10 +315,10 @@ spec:
                     description: Sandbox contains sandbox configuration.
                     properties:
                       type:
-                        description: Type defines the sandbox type (e.g., gVisor)
+                        description: Type defines the sandbox type (e.g., gvisor)
                           for all nodes managed by this class.
                         enum:
-                        - gVisor
+                        - gvisor
                         type: string
                     type: object
                   serviceAccount:
