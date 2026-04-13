@@ -115,8 +115,11 @@ func TestProtobufOrderIsIncreasing(t *testing.T) {
 }
 
 func TestGpuTopologyValidationRule(t *testing.T) {
-	rule := getTypeValidationRule(t, "ComputeClassSpec", "gpu.topology")
-	program := createCELProgram(t, rule)
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "gpu.topology")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
 
 	tests := []struct {
 		name      string
@@ -259,23 +262,33 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out, _, err := program.Eval(map[string]interface{}{
-				"self": tc.input,
-			})
-			if err != nil {
-				t.Fatalf("CEL evaluation failed: %v", err)
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
 			}
 
-			if out.Value() != tc.wantValid {
-				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
 			}
 		})
 	}
 }
 
 func TestTDXValidationRule(t *testing.T) {
-	rule := getTypeValidationRule(t, "ComputeClassSpec", "TDX")
-	program := createCELProgram(t, rule)
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "TDX")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
 
 	tests := []struct {
 		name      string
@@ -339,6 +352,201 @@ func TestTDXValidationRule(t *testing.T) {
 			wantValid: true,
 		},
 		{
+			name: "valid:_tdx_with_a3_highgpu_1g_machine_type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "a3-highgpu-1g",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_a4_machine_family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_a4_highgpu_8g_machine_type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "a4-highgpu-8g",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_b200_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"gpu": map[string]interface{}{
+							"type": "nvidia-b200",
+						},
+						"machineFamily": "a4",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_a4_and_b200_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-b200",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_tdx_with_unsupported_machine_family_and_supported_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+				"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n2",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: false, // might evaluate to true due to the bug
+		},
+		{
+			name: "valid:_tdx_with_c3_and_h100_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_tdx_with_a3_and_b200_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a3",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-b200",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_a4_and_h100_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_a4_and_v100_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "a4",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-tesla-v100",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_c3_and_b200_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-b200",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_n2_and_h100_gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "TDX",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n2",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
 			name: "invalid:_tdx_with_unsupported_machine_family",
 			input: map[string]interface{}{
 				"nodePoolConfig": map[string]interface{}{
@@ -370,21 +578,28 @@ func TestTDXValidationRule(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			out, _, err := program.Eval(map[string]interface{}{
-				"self": tc.input,
-			})
-			if err != nil {
-				t.Fatalf("CEL evaluation failed: %v", err)
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
 			}
 
-			if out.Value() != tc.wantValid {
-				t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
 			}
 		})
 	}
 }
 
-func getTypeValidationRule(t *testing.T, structName, ruleSubString string) string {
+func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []string {
 	t.Helper()
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
@@ -392,6 +607,7 @@ func getTypeValidationRule(t *testing.T, structName, ruleSubString string) strin
 		t.Fatalf("Failed to parse types.go: %v", err)
 	}
 
+	var rules []string
 	for _, decl := range node.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok || gd.Tok != token.TYPE {
@@ -413,14 +629,16 @@ func getTypeValidationRule(t *testing.T, structName, ruleSubString string) strin
 				for _, comment := range cg.List {
 					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
 					if rule != nil {
-						return *rule
+						rules = append(rules, *rule)
 					}
 				}
 			}
 		}
 	}
-	t.Fatalf("Could not find validation rule with %q at struct %s in types.go", ruleSubString, structName)
-	return ""
+	if len(rules) == 0 {
+		t.Fatalf("Could not find validation rules with %q at struct %s in types.go", ruleSubString, structName)
+	}
+	return rules
 }
 
 func extractRuleFromComment(t *testing.T, commentText string, ruleSubString string) *string {

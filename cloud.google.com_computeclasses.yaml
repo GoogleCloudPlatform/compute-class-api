@@ -2890,15 +2890,47 @@ spec:
                 ((has(priority.machineFamily) && priority.machineFamily in [''n2d''])
                 || (has(priority.machineType) && priority.machineType.split(''-'')[0]
                 in [''n2d'']))) : true'
-            - message: ConfidentialNodeType TDX only supports C3 standard, C4 standard
-                and A3 highgpu 1
+            - message: ConfidentialNodeType TDX only supports C3 standard, C4 standard,
+                A3 and A4
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
-                ((has(priority.machineFamily) && priority.machineFamily in [''c3'',
-                ''c4'', ''a3'']) || (has(priority.machineType) && (priority.machineType.startsWith(''c3-standard-'')
+                (has(priority.machineFamily) && priority.machineFamily in [''c3'',
+                ''c4'', ''a3'', ''a4'']) || (has(priority.machineType) && (priority.machineType.startsWith(''c3-standard-'')
                 || priority.machineType.startsWith(''c4-standard-'') || priority.machineType
-                == ''a3-highgpu-1g'')) || (has(priority.gpu) && has(priority.gpu.type)
-                && priority.gpu.type == ''nvidia-h100-80gb''))) : true'
+                == ''a3-highgpu-1g'' || priority.machineType == ''a4-highgpu-8g'')))
+                : true'
+            - message: ConfidentialNodeType TDX on C3 only supports c3-standard- machine
+                type and nvidia-h100-80gb GPU type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
+                (has(priority.machineFamily) && priority.machineFamily == ''c3'' ||
+                has(priority.machineType) && priority.machineType.startsWith(''c3-standard-''))
+                ? (!has(priority.gpu) || has(priority.gpu) && (!has(priority.gpu.type)
+                || priority.gpu.type == ''nvidia-h100-80gb'')) : true) : true'
+            - message: ConfidentialNodeType TDX on C4 only supports c4-standard- machine
+                type and nvidia-h100-80gb GPU type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
+                (has(priority.machineFamily) && priority.machineFamily == ''c4'' ||
+                has(priority.machineType) && priority.machineType.startsWith(''c4-standard-''))
+                ? (!has(priority.gpu) || has(priority.gpu) && (!has(priority.gpu.type)
+                || priority.gpu.type == ''nvidia-h100-80gb'')) : true) : true'
+            - message: ConfidentialNodeType TDX on A3 only supports a3-highgpu-1g
+                machine type and nvidia-h100-80gb GPU type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
+                (has(priority.machineFamily) && priority.machineFamily == ''a3'' ||
+                has(priority.machineType) && priority.machineType == ''a3-highgpu-1g'')
+                ? (!has(priority.gpu) || has(priority.gpu) && (!has(priority.gpu.type)
+                || priority.gpu.type == ''nvidia-h100-80gb'')) : true) : true'
+            - message: ConfidentialNodeType TDX on A4 only supports a4-highgpu-8g
+                machine type and nvidia-b200 GPU type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
+                (has(priority.machineFamily) && priority.machineFamily == ''a4'' ||
+                has(priority.machineType) && priority.machineType == ''a4-highgpu-8g'')
+                ? (!has(priority.gpu) || has(priority.gpu) && (!has(priority.gpu.type)
+                || priority.gpu.type == ''nvidia-b200'')) : true) : true'
             - message: When using confidential GPUs you must specify location.zones
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.priorities.exists(priority, has(priority.gpu))) ? (has(self.priorityDefaults)
