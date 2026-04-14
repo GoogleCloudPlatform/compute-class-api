@@ -99,6 +99,7 @@ type MinimumCapacity struct {
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, has(p.priorityScore)) || self.priorities.all(p, !has(p.priorityScore))", message="PriorityScore must be set for all priorities or for none of them"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.gpu) && has(p.gpu.topology)) ? (((has(p.machineFamily) && p.machineFamily == 'a4x') || (has(p.gpu.type) && p.gpu.type == 'nvidia-gb200')) && has(p.placement) && has(p.placement.policyName)) : true)", message="GPU Topology is supported only for A4X machine family or nvidia-gb200 GPU type together with placement (workload) policy"
 // +kubebuilder:validation:XValidation:rule="self.priorities.all(p, (has(p.spot) && p.spot)) || !has(self.priorityDefaults) || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
+// +kubebuilder:validation:XValidation:rule="has(self.minimumCapacity) && has(self.minimumCapacity.targetNodeCount) ? self.priorities.all(p, has(p.machineType) || has(p.gpu) || has(p.tpu) || (has(p.reservations) && p.reservations.affinity == 'Specific')) : true",message="Spec-level MinimumCapacity requires all priorities to have machine specifications (machineType, gpu, tpu, or specific reservation)"
 type ComputeClassSpec struct {
 	// Priorities is a description of user preferences to be
 	// used by a given ComputeClass.
@@ -622,6 +623,7 @@ type Reservations struct {
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
 // +kubebuilder:validation:XValidation:rule="(has(self.spot) && self.spot) || !has(self.nodeSystemConfig) || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
 // +kubebuilder:validation:XValidation:rule="!(has(self.gpuDirect) && self.gpuDirect == 'rdma') || has(self.acceleratorNetworkProfile)", message="acceleratorNetworkProfile must be specified when gpuDirect is 'rdma'"
+// +kubebuilder:validation:XValidation:rule="has(self.minimumCapacity) && has(self.minimumCapacity.targetNodeCount) ? (has(self.machineType) || has(self.gpu) || has(self.tpu) || (has(self.reservations) && self.reservations.affinity == 'Specific')) : true",message="Priority-level MinimumCapacity requires a machineType, gpu, tpu, or specific reservation"
 type Priority struct {
 	// Machine family describes preferred instance family for a node. If none is specified,
 	// the default autoprovisioning machine family is used.

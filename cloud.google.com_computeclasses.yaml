@@ -1842,6 +1842,12 @@ spec:
                       is 'rdma'
                     rule: '!(has(self.gpuDirect) && self.gpuDirect == ''rdma'') ||
                       has(self.acceleratorNetworkProfile)'
+                  - message: Priority-level MinimumCapacity requires a machineType,
+                      gpu, tpu, or specific reservation
+                    rule: 'has(self.minimumCapacity) && has(self.minimumCapacity.targetNodeCount)
+                      ? (has(self.machineType) || has(self.gpu) || has(self.tpu) ||
+                      (has(self.reservations) && self.reservations.affinity == ''Specific''))
+                      : true'
                 maxItems: 1000
                 minItems: 0
                 type: array
@@ -2951,6 +2957,12 @@ spec:
               rule: self.priorities.all(p, (has(p.spot) && p.spot)) || !has(self.priorityDefaults)
                 || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig)
                 || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
+            - message: Spec-level MinimumCapacity requires all priorities to have
+                machine specifications (machineType, gpu, tpu, or specific reservation)
+              rule: 'has(self.minimumCapacity) && has(self.minimumCapacity.targetNodeCount)
+                ? self.priorities.all(p, has(p.machineType) || has(p.gpu) || has(p.tpu)
+                || (has(p.reservations) && p.reservations.affinity == ''Specific''))
+                : true'
           status:
             description: Status of the ComputeClass.
             properties:

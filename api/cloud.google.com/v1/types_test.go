@@ -685,3 +685,240 @@ func createCELProgram(t *testing.T, rule string) cel.Program {
 
 	return program
 }
+
+func TestMinimumCapacityValidationRule(t *testing.T) {
+	specRules := getTypeValidationRules(t, "ComputeClassSpec", "Spec-level MinimumCapacity")
+	priorityRules := getTypeValidationRules(t, "Priority", "Priority-level MinimumCapacity")
+
+	var specPrograms []cel.Program
+	for _, rule := range specRules {
+		specPrograms = append(specPrograms, createCELProgram(t, rule))
+	}
+
+	var priorityPrograms []cel.Program
+	for _, rule := range priorityRules {
+		priorityPrograms = append(priorityPrograms, createCELProgram(t, rule))
+	}
+
+	specTests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid:_no_spec_level_min_capacity",
+			input: map[string]interface{}{
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n1",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_spec_level_min_capacity_with_machineType",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "n1-standard-1",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_spec_level_min_capacity_with_gpu",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"gpu": map[string]interface{}{
+							"type": "nvidia-tesla-t4",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_spec_level_min_capacity_with_tpu",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"tpu": map[string]interface{}{
+							"type": "v3-8",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_spec_level_min_capacity_with_specific_reservation",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"reservations": map[string]interface{}{
+							"affinity": "Specific",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_spec_level_min_capacity_with_missing_machine_spec",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n1",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_spec_level_min_capacity_with_none_reservation",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"reservations": map[string]interface{}{
+							"affinity": "None",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	priorityTests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid:_no_priority_level_min_capacity",
+			input: map[string]interface{}{
+				"machineFamily": "n1",
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_priority_level_min_capacity_with_machineType",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"machineType": "n1-standard-1",
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_priority_level_min_capacity_with_gpu",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"gpu": map[string]interface{}{
+					"type": "nvidia-tesla-t4",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_priority_level_min_capacity_with_tpu",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"tpu": map[string]interface{}{
+					"type": "v3-8",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_priority_level_min_capacity_with_specific_reservation",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"reservations": map[string]interface{}{
+					"affinity": "Specific",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_priority_level_min_capacity_with_missing_machine_spec",
+			input: map[string]interface{}{
+				"minimumCapacity": map[string]interface{}{
+					"targetNodeCount": 1,
+				},
+				"machineFamily": "n1",
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range specTests {
+		t.Run("Spec/"+tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range specPrograms {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+
+	for _, tc := range priorityTests {
+		t.Run("Priority/"+tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range priorityPrograms {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
