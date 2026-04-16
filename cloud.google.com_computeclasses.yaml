@@ -1002,6 +1002,98 @@ spec:
                           description: LinuxNodeConfig defines linux node config for
                             a node.
                           properties:
+                            additionalEtcHosts:
+                              description: Additional entries to be added to /etc/hosts.
+                              items:
+                                description: EtcHostsEntry defines an entry in /etc/hosts.
+                                properties:
+                                  host:
+                                    description: The hostname of the host.
+                                    minLength: 1
+                                    type: string
+                                  ip:
+                                    description: The IPv4 or IPv6 address of the host.
+                                    minLength: 1
+                                    type: string
+                                required:
+                                - host
+                                - ip
+                                type: object
+                              type: array
+                            additionalEtcResolvConf:
+                              description: Additional entries to be added to /etc/resolv.conf.
+                              items:
+                                description: ResolvedConfEntry defines an entry in
+                                  resolved.conf.
+                                properties:
+                                  key:
+                                    description: The key of resolved.conf
+                                    minLength: 1
+                                    type: string
+                                  value:
+                                    description: The value of resolved.conf
+                                    items:
+                                      type: string
+                                    maxItems: 256
+                                    type: array
+                                required:
+                                - key
+                                type: object
+                              type: array
+                            additionalEtcSystemdResolvedConf:
+                              description: Additional entries to be added to /etc/systemd/resolved.conf.
+                              items:
+                                description: ResolvedConfEntry defines an entry in
+                                  resolved.conf.
+                                properties:
+                                  key:
+                                    description: The key of resolved.conf
+                                    minLength: 1
+                                    type: string
+                                  value:
+                                    description: The value of resolved.conf
+                                    items:
+                                      type: string
+                                    maxItems: 256
+                                    type: array
+                                required:
+                                - key
+                                type: object
+                              type: array
+                            customNodeInit:
+                              description: Support for running custom init code while
+                                bootstrapping nodes.
+                              properties:
+                                initScript:
+                                  description: The init script to be executed on the
+                                    node.
+                                  properties:
+                                    args:
+                                      description: Optional arguments to be passed
+                                        to the init script.
+                                      items:
+                                        maxLength: 512
+                                        minLength: 1
+                                        type: string
+                                      maxItems: 50
+                                      type: array
+                                    gcpSecretManagerSecretUri:
+                                      description: The resource name of the secret
+                                        manager secret hosting the init script.
+                                      maxLength: 256
+                                      type: string
+                                    gcsGeneration:
+                                      description: The generation of the init script
+                                        stored in GCS.
+                                      format: int64
+                                      type: integer
+                                    gcsUri:
+                                      description: The Cloud Storage URI for storing
+                                        the init script.
+                                      maxLength: 1024
+                                      type: string
+                                  type: object
+                              type: object
                             hugepageConfig:
                               description: HugepagesConfig defines hugepages config
                                 for a node.
@@ -1018,6 +1110,40 @@ spec:
                                   format: int64
                                   minimum: 1
                                   type: integer
+                              type: object
+                            kernelOverrides:
+                              description: Parameters that can be configured on the
+                                kernel.
+                              properties:
+                                kernelCommandlineOverrides:
+                                  description: Optional kernel command line arguments
+                                    overrides.
+                                  properties:
+                                    initOnAlloc:
+                                      description: Defines the change of init_on_alloc.
+                                      enum:
+                                      - INIT_ON_ALLOC_UNSPECIFIED
+                                      - INIT_ON_ALLOC_OFF
+                                      type: string
+                                    specRstackOverflow:
+                                      description: Defines the change of spec_rstack_overflow.
+                                      enum:
+                                      - SPEC_RSTACK_OVERFLOW_UNSPECIFIED
+                                      - SPEC_RSTACK_OVERFLOW_OFF
+                                      type: string
+                                  type: object
+                                lruGen:
+                                  description: LRU Gen (Multi-Gen LRU) options.
+                                  properties:
+                                    enabled:
+                                      description: Enable LRU Gen.
+                                      type: boolean
+                                    minTtlMs:
+                                      description: Prevent working set of N milliseconds
+                                        from getting evicted.
+                                      format: int32
+                                      type: integer
+                                  type: object
                               type: object
                             swapConfig:
                               description: SwapConfig specifies the swap memory configuration
@@ -1556,6 +1682,10 @@ spec:
                                   minimum: 10
                                   type: integer
                               type: object
+                            timeZone:
+                              description: Configures the timezone of the node.
+                              maxLength: 256
+                              type: string
                             transparentHugepageDefrag:
                               description: |-
                                 Defines the transparent hugepage defrag configuration on the node. Currently supported values:
@@ -2253,6 +2383,96 @@ spec:
                         description: LinuxNodeConfig defines linux node config for
                           a node.
                         properties:
+                          additionalEtcHosts:
+                            description: Additional entries to be added to /etc/hosts.
+                            items:
+                              description: EtcHostsEntry defines an entry in /etc/hosts.
+                              properties:
+                                host:
+                                  description: The hostname of the host.
+                                  minLength: 1
+                                  type: string
+                                ip:
+                                  description: The IPv4 or IPv6 address of the host.
+                                  minLength: 1
+                                  type: string
+                              required:
+                              - host
+                              - ip
+                              type: object
+                            type: array
+                          additionalEtcResolvConf:
+                            description: Additional entries to be added to /etc/resolv.conf.
+                            items:
+                              description: ResolvedConfEntry defines an entry in resolved.conf.
+                              properties:
+                                key:
+                                  description: The key of resolved.conf
+                                  minLength: 1
+                                  type: string
+                                value:
+                                  description: The value of resolved.conf
+                                  items:
+                                    type: string
+                                  maxItems: 256
+                                  type: array
+                              required:
+                              - key
+                              type: object
+                            type: array
+                          additionalEtcSystemdResolvedConf:
+                            description: Additional entries to be added to /etc/systemd/resolved.conf.
+                            items:
+                              description: ResolvedConfEntry defines an entry in resolved.conf.
+                              properties:
+                                key:
+                                  description: The key of resolved.conf
+                                  minLength: 1
+                                  type: string
+                                value:
+                                  description: The value of resolved.conf
+                                  items:
+                                    type: string
+                                  maxItems: 256
+                                  type: array
+                              required:
+                              - key
+                              type: object
+                            type: array
+                          customNodeInit:
+                            description: Support for running custom init code while
+                              bootstrapping nodes.
+                            properties:
+                              initScript:
+                                description: The init script to be executed on the
+                                  node.
+                                properties:
+                                  args:
+                                    description: Optional arguments to be passed to
+                                      the init script.
+                                    items:
+                                      maxLength: 512
+                                      minLength: 1
+                                      type: string
+                                    maxItems: 50
+                                    type: array
+                                  gcpSecretManagerSecretUri:
+                                    description: The resource name of the secret manager
+                                      secret hosting the init script.
+                                    maxLength: 256
+                                    type: string
+                                  gcsGeneration:
+                                    description: The generation of the init script
+                                      stored in GCS.
+                                    format: int64
+                                    type: integer
+                                  gcsUri:
+                                    description: The Cloud Storage URI for storing
+                                      the init script.
+                                    maxLength: 1024
+                                    type: string
+                                type: object
+                            type: object
                           hugepageConfig:
                             description: HugepagesConfig defines hugepages config
                               for a node.
@@ -2269,6 +2489,40 @@ spec:
                                 format: int64
                                 minimum: 1
                                 type: integer
+                            type: object
+                          kernelOverrides:
+                            description: Parameters that can be configured on the
+                              kernel.
+                            properties:
+                              kernelCommandlineOverrides:
+                                description: Optional kernel command line arguments
+                                  overrides.
+                                properties:
+                                  initOnAlloc:
+                                    description: Defines the change of init_on_alloc.
+                                    enum:
+                                    - INIT_ON_ALLOC_UNSPECIFIED
+                                    - INIT_ON_ALLOC_OFF
+                                    type: string
+                                  specRstackOverflow:
+                                    description: Defines the change of spec_rstack_overflow.
+                                    enum:
+                                    - SPEC_RSTACK_OVERFLOW_UNSPECIFIED
+                                    - SPEC_RSTACK_OVERFLOW_OFF
+                                    type: string
+                                type: object
+                              lruGen:
+                                description: LRU Gen (Multi-Gen LRU) options.
+                                properties:
+                                  enabled:
+                                    description: Enable LRU Gen.
+                                    type: boolean
+                                  minTtlMs:
+                                    description: Prevent working set of N milliseconds
+                                      from getting evicted.
+                                    format: int32
+                                    type: integer
+                                type: object
                             type: object
                           swapConfig:
                             description: SwapConfig specifies the swap memory configuration
@@ -2801,6 +3055,10 @@ spec:
                                 minimum: 10
                                 type: integer
                             type: object
+                          timeZone:
+                            description: Configures the timezone of the node.
+                            maxLength: 256
+                            type: string
                           transparentHugepageDefrag:
                             description: |-
                               Defines the transparent hugepage defrag configuration on the node. Currently supported values:

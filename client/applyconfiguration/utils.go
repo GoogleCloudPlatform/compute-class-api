@@ -43,8 +43,12 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
 		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("CustomNodeInit"):
+		return &cloudgooglecomv1.CustomNodeInitApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Dra"):
 		return &cloudgooglecomv1.DraApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("EtcHostsEntry"):
+		return &cloudgooglecomv1.EtcHostsEntryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
 		return &cloudgooglecomv1.EvictionMinimumReclaimApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionSoft"):
@@ -65,6 +69,12 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.HugepagesConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ImageStreaming"):
 		return &cloudgooglecomv1.ImageStreamingApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("InitScript"):
+		return &cloudgooglecomv1.InitScriptApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("KernelCommandlineOverrides"):
+		return &cloudgooglecomv1.KernelCommandlineOverridesApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("KernelOverrides"):
+		return &cloudgooglecomv1.KernelOverridesApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("KubeletConfig"):
 		return &cloudgooglecomv1.KubeletConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("LinuxNodeConfig"):
@@ -73,6 +83,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.LocationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("LoggingVariantConfig"):
 		return &cloudgooglecomv1.LoggingVariantConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("LRUGen"):
+		return &cloudgooglecomv1.LRUGenApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MemoryManager"):
 		return &cloudgooglecomv1.MemoryManagerApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MinimumCapacity"):
@@ -105,6 +117,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ReservationsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationSubBlock"):
 		return &cloudgooglecomv1.ReservationSubBlockApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ResolvedConfEntry"):
+		return &cloudgooglecomv1.ResolvedConfEntryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ResourceInfo"):
 		return &cloudgooglecomv1.ResourceInfoApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Sandbox"):

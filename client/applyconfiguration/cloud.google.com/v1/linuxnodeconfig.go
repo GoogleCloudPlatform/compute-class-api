@@ -18,14 +18,24 @@
 
 package v1
 
+import (
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+)
+
 // LinuxNodeConfigApplyConfiguration represents an declarative configuration of the LinuxNodeConfig type for use
 // with apply.
 type LinuxNodeConfigApplyConfiguration struct {
-	Sysctls                    *SysctlsConfigApplyConfiguration   `json:"sysctls,omitempty"`
-	Hugepages                  *HugepagesConfigApplyConfiguration `json:"hugepageConfig,omitempty"`
-	TransparentHugepageEnabled *string                            `json:"transparentHugepageEnabled,omitempty"`
-	TransparentHugepageDefrag  *string                            `json:"transparentHugepageDefrag,omitempty"`
-	SwapConfig                 *SwapConfigApplyConfiguration      `json:"swapConfig,omitempty"`
+	Sysctls                          *SysctlsConfigApplyConfiguration      `json:"sysctls,omitempty"`
+	Hugepages                        *HugepagesConfigApplyConfiguration    `json:"hugepageConfig,omitempty"`
+	TransparentHugepageEnabled       *string                               `json:"transparentHugepageEnabled,omitempty"`
+	TransparentHugepageDefrag        *string                               `json:"transparentHugepageDefrag,omitempty"`
+	SwapConfig                       *SwapConfigApplyConfiguration         `json:"swapConfig,omitempty"`
+	AdditionalEtcHosts               []*cloudgooglecomv1.EtcHostsEntry     `json:"additionalEtcHosts,omitempty"`
+	AdditionalEtcResolvConf          []*cloudgooglecomv1.ResolvedConfEntry `json:"additionalEtcResolvConf,omitempty"`
+	AdditionalEtcSystemdResolvedConf []*cloudgooglecomv1.ResolvedConfEntry `json:"additionalEtcSystemdResolvedConf,omitempty"`
+	CustomNodeInit                   *CustomNodeInitApplyConfiguration     `json:"customNodeInit,omitempty"`
+	KernelOverrides                  *KernelOverridesApplyConfiguration    `json:"kernelOverrides,omitempty"`
+	TimeZone                         *string                               `json:"timeZone,omitempty"`
 }
 
 // LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
@@ -71,5 +81,68 @@ func (b *LinuxNodeConfigApplyConfiguration) WithTransparentHugepageDefrag(value 
 // If called multiple times, the SwapConfig field is set to the value of the last call.
 func (b *LinuxNodeConfigApplyConfiguration) WithSwapConfig(value *SwapConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
 	b.SwapConfig = value
+	return b
+}
+
+// WithAdditionalEtcHosts adds the given value to the AdditionalEtcHosts field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AdditionalEtcHosts field.
+func (b *LinuxNodeConfigApplyConfiguration) WithAdditionalEtcHosts(values ...**cloudgooglecomv1.EtcHostsEntry) *LinuxNodeConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAdditionalEtcHosts")
+		}
+		b.AdditionalEtcHosts = append(b.AdditionalEtcHosts, *values[i])
+	}
+	return b
+}
+
+// WithAdditionalEtcResolvConf adds the given value to the AdditionalEtcResolvConf field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AdditionalEtcResolvConf field.
+func (b *LinuxNodeConfigApplyConfiguration) WithAdditionalEtcResolvConf(values ...**cloudgooglecomv1.ResolvedConfEntry) *LinuxNodeConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAdditionalEtcResolvConf")
+		}
+		b.AdditionalEtcResolvConf = append(b.AdditionalEtcResolvConf, *values[i])
+	}
+	return b
+}
+
+// WithAdditionalEtcSystemdResolvedConf adds the given value to the AdditionalEtcSystemdResolvedConf field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AdditionalEtcSystemdResolvedConf field.
+func (b *LinuxNodeConfigApplyConfiguration) WithAdditionalEtcSystemdResolvedConf(values ...**cloudgooglecomv1.ResolvedConfEntry) *LinuxNodeConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAdditionalEtcSystemdResolvedConf")
+		}
+		b.AdditionalEtcSystemdResolvedConf = append(b.AdditionalEtcSystemdResolvedConf, *values[i])
+	}
+	return b
+}
+
+// WithCustomNodeInit sets the CustomNodeInit field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CustomNodeInit field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithCustomNodeInit(value *CustomNodeInitApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.CustomNodeInit = value
+	return b
+}
+
+// WithKernelOverrides sets the KernelOverrides field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the KernelOverrides field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithKernelOverrides(value *KernelOverridesApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.KernelOverrides = value
+	return b
+}
+
+// WithTimeZone sets the TimeZone field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the TimeZone field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithTimeZone(value string) *LinuxNodeConfigApplyConfiguration {
+	b.TimeZone = &value
 	return b
 }

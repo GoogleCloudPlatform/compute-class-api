@@ -867,6 +867,31 @@ type LinuxNodeConfig struct {
 	TransparentHugepageDefrag *string `json:"transparentHugepageDefrag,omitempty" protobuf:"bytes,4,opt,name=transparentHugepageDefrag"`
 
 	SwapConfig *SwapConfig `json:"swapConfig,omitempty" protobuf:"bytes,5,opt,name=swapConfig"`
+
+	// Additional entries to be added to /etc/hosts.
+	// +optional
+	AdditionalEtcHosts []*EtcHostsEntry `json:"additionalEtcHosts,omitempty" protobuf:"bytes,6,rep,name=additionalEtcHosts"`
+
+	// Additional entries to be added to /etc/resolv.conf.
+	// +optional
+	AdditionalEtcResolvConf []*ResolvedConfEntry `json:"additionalEtcResolvConf,omitempty" protobuf:"bytes,7,rep,name=additionalEtcResolvConf"`
+
+	// Additional entries to be added to /etc/systemd/resolved.conf.
+	// +optional
+	AdditionalEtcSystemdResolvedConf []*ResolvedConfEntry `json:"additionalEtcSystemdResolvedConf,omitempty" protobuf:"bytes,8,rep,name=additionalEtcSystemdResolvedConf"`
+
+	// Support for running custom init code while bootstrapping nodes.
+	// +optional
+	CustomNodeInit *CustomNodeInit `json:"customNodeInit,omitempty" protobuf:"bytes,9,opt,name=customNodeInit"`
+
+	// Parameters that can be configured on the kernel.
+	// +optional
+	KernelOverrides *KernelOverrides `json:"kernelOverrides,omitempty" protobuf:"bytes,10,opt,name=kernelOverrides"`
+
+	// Configures the timezone of the node.
+	// +kubebuilder:validation:MaxLength=256
+	// +optional
+	TimeZone *string `json:"timeZone,omitempty" protobuf:"bytes,11,opt,name=timeZone"`
 }
 
 type TopologyManager struct {
@@ -1844,4 +1869,88 @@ type SwapConfigDedicatedLocalSsdProfile struct {
 	// +kubebuilder:validation:Minimum=1
 	// The number of physical local NVMe SSD disks to attach.
 	DiskCount int64 `json:"diskCount,omitempty" protobuf:"bytes,1,opt,name=diskCount"`
+}
+
+// EtcHostsEntry defines an entry in /etc/hosts.
+type EtcHostsEntry struct {
+	// The IPv4 or IPv6 address of the host.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Ip string `json:"ip,omitempty" protobuf:"bytes,1,opt,name=ip"`
+	// The hostname of the host.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Host string `json:"host,omitempty" protobuf:"bytes,2,opt,name=host"`
+}
+
+// ResolvedConfEntry defines an entry in resolved.conf.
+type ResolvedConfEntry struct {
+	// The key of resolved.conf
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
+	// The value of resolved.conf
+	// +kubebuilder:validation:MaxItems=256
+	// +optional
+	Value []string `json:"value,omitempty" protobuf:"bytes,2,rep,name=value"`
+}
+
+// CustomNodeInit defines the init script to be executed on the node.
+type CustomNodeInit struct {
+	// The init script to be executed on the node.
+	// +optional
+	InitScript *InitScript `json:"initScript,omitempty" protobuf:"bytes,1,opt,name=initScript"`
+}
+
+// InitScript defines the init script source and arguments.
+type InitScript struct {
+	// The Cloud Storage URI for storing the init script.
+	// +kubebuilder:validation:MaxLength=1024
+	// +optional
+	GcsUri *string `json:"gcsUri,omitempty" protobuf:"bytes,1,opt,name=gcsUri"`
+	// The generation of the init script stored in GCS.
+	// +optional
+	GcsGeneration *int64 `json:"gcsGeneration,omitempty" protobuf:"varint,2,opt,name=gcsGeneration"`
+	// Optional arguments to be passed to the init script.
+	// +kubebuilder:validation:MaxItems=50
+	// +kubebuilder:validation:items:MinLength=1
+	// +kubebuilder:validation:items:MaxLength=512
+	// +optional
+	Args []string `json:"args,omitempty" protobuf:"bytes,3,rep,name=args"`
+	// The resource name of the secret manager secret hosting the init script.
+	// +kubebuilder:validation:MaxLength=256
+	// +optional
+	GcpSecretManagerSecretUri *string `json:"gcpSecretManagerSecretUri,omitempty" protobuf:"bytes,4,opt,name=gcpSecretManagerSecretUri"`
+}
+
+// KernelOverrides defines kernel parameters.
+type KernelOverrides struct {
+	// Optional kernel command line arguments overrides.
+	// +optional
+	KernelCommandlineOverrides *KernelCommandlineOverrides `json:"kernelCommandlineOverrides,omitempty" protobuf:"bytes,1,opt,name=kernelCommandlineOverrides"`
+	// LRU Gen (Multi-Gen LRU) options.
+	// +optional
+	LruGen *LRUGen `json:"lruGen,omitempty" protobuf:"bytes,2,opt,name=lruGen"`
+}
+
+// KernelCommandlineOverrides defines kernel command line argument overrides.
+type KernelCommandlineOverrides struct {
+	// Defines the change of spec_rstack_overflow.
+	// +kubebuilder:validation:Enum=SPEC_RSTACK_OVERFLOW_UNSPECIFIED;SPEC_RSTACK_OVERFLOW_OFF
+	// +optional
+	SpecRstackOverflow *string `json:"specRstackOverflow,omitempty" protobuf:"bytes,1,opt,name=specRstackOverflow"`
+	// Defines the change of init_on_alloc.
+	// +kubebuilder:validation:Enum=INIT_ON_ALLOC_UNSPECIFIED;INIT_ON_ALLOC_OFF
+	// +optional
+	InitOnAlloc *string `json:"initOnAlloc,omitempty" protobuf:"bytes,2,opt,name=initOnAlloc"`
+}
+
+// LRUGen defines Multi-Gen LRU options.
+type LRUGen struct {
+	// Enable LRU Gen.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,1,opt,name=enabled"`
+	// Prevent working set of N milliseconds from getting evicted.
+	// +optional
+	MinTtlMs *int32 `json:"minTtlMs,omitempty" protobuf:"varint,2,opt,name=minTtlMs"`
 }
