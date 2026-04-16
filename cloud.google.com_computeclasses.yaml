@@ -3121,10 +3121,11 @@ spec:
                             description: Name is the name of a given resource measured
                               in this ResourceInfo.
                             enum:
-                            - CPU
-                            - Memory
-                            - GPU
-                            - TPU
+                            - cpu
+                            - memory
+                            - ephemeral-storage
+                            - nvidia.com/gpu
+                            - google.com/tpu
                             type: string
                           targetCount:
                             description: TargetCount represents the target count of
@@ -3198,10 +3199,11 @@ spec:
                       description: Name is the name of a given resource measured in
                         this ResourceInfo.
                       enum:
-                      - CPU
-                      - Memory
-                      - GPU
-                      - TPU
+                      - cpu
+                      - memory
+                      - ephemeral-storage
+                      - nvidia.com/gpu
+                      - google.com/tpu
                       type: string
                     targetCount:
                       description: TargetCount represents the target count of a given

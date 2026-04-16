@@ -1701,8 +1701,8 @@ type PriorityStatus struct {
 	ScalingEventsHistory *ScalingEventsHistory `json:"scalingEventsHistory,omitempty" protobuf:"bytes,4,opt,name=scalingEventsHistory"`
 }
 
-// ResourceName represents the resource a given ResourceInfo applies to. Can be one of CPU, Memory, GPU or TPU.
-// +kubebuilder:validation:Enum=CPU;Memory;GPU;TPU
+// ResourceName represents the resource a given ResourceInfo applies to. Can be one of "cpu", "memory", "ephemeral-storage", "nvidia.com/gpu", or "google.com/tpu".
+// +kubebuilder:validation:Enum=cpu;memory;ephemeral-storage;nvidia.com/gpu;google.com/tpu
 type ResourceName string
 
 // ResourceUnit specifies the unit used to measure a resource.
