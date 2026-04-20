@@ -47,6 +47,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CustomNodeInit"):
 		return &cloudgooglecomv1.CustomNodeInitApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("DiskIoScheduler"):
+		return &cloudgooglecomv1.DiskIoSchedulerApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Dra"):
 		return &cloudgooglecomv1.DraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EtcHostsEntry"):
@@ -107,6 +109,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.NodeRecyclingConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeSystemConfig"):
 		return &cloudgooglecomv1.NodeSystemConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodeVfioConfig"):
+		return &cloudgooglecomv1.NodeVfioConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Placement"):
 		return &cloudgooglecomv1.PlacementApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Priority"):

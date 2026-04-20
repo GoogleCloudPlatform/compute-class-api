@@ -37,6 +37,8 @@ type LinuxNodeConfigApplyConfiguration struct {
 	KernelOverrides                  *KernelOverridesApplyConfiguration    `json:"kernelOverrides,omitempty"`
 	TimeZone                         *string                               `json:"timeZone,omitempty"`
 	AccurateTimeConfig               *AccurateTimeConfigApplyConfiguration `json:"accurateTimeConfig,omitempty"`
+	NodeVfioConfig                   *NodeVfioConfigApplyConfiguration     `json:"nodeVfioConfig,omitempty"`
+	DiskIoScheduler                  *DiskIoSchedulerApplyConfiguration    `json:"diskIoScheduler,omitempty"`
 }
 
 // LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
@@ -153,5 +155,21 @@ func (b *LinuxNodeConfigApplyConfiguration) WithTimeZone(value string) *LinuxNod
 // If called multiple times, the AccurateTimeConfig field is set to the value of the last call.
 func (b *LinuxNodeConfigApplyConfiguration) WithAccurateTimeConfig(value *AccurateTimeConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
 	b.AccurateTimeConfig = value
+	return b
+}
+
+// WithNodeVfioConfig sets the NodeVfioConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodeVfioConfig field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithNodeVfioConfig(value *NodeVfioConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.NodeVfioConfig = value
+	return b
+}
+
+// WithDiskIoScheduler sets the DiskIoScheduler field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the DiskIoScheduler field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithDiskIoScheduler(value *DiskIoSchedulerApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.DiskIoScheduler = value
 	return b
 }

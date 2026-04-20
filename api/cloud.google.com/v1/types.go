@@ -936,6 +936,14 @@ type LinuxNodeConfig struct {
 	// AccurateTimeConfig defines accurate time configuration for a node.
 	// +optional
 	AccurateTimeConfig *AccurateTimeConfig `json:"accurateTimeConfig,omitempty" protobuf:"bytes,12,opt,name=accurateTimeConfig"`
+
+	// Contains VFIO-related configurations for this node.
+	// +optional
+	NodeVfioConfig *NodeVfioConfig `json:"nodeVfioConfig,omitempty" protobuf:"bytes,13,opt,name=nodeVfioConfig"`
+
+	// Controls the configuration for the disk IO scheduler.
+	// +optional
+	DiskIoScheduler *DiskIoScheduler `json:"diskIoScheduler,omitempty" protobuf:"bytes,14,opt,name=diskIoScheduler"`
 }
 
 // AccurateTimeConfig defines accurate time configuration for a node.
@@ -943,6 +951,39 @@ type AccurateTimeConfig struct {
 	// EnablePtpKvmTimeSync controls whether to enable accurate time synchronization with PTP-KVM.
 	// +optional
 	EnablePtpKvmTimeSync *bool `json:"enablePtpKvmTimeSync,omitempty" protobuf:"bytes,1,opt,name=enablePtpKvmTimeSync"`
+}
+
+// NodeVfioConfig defines configuration settings for VFIO on a node.
+type NodeVfioConfig struct {
+	// Specifies the maximum number of DMA entries (pages) that can be mapped
+	// by the VFIO IOMMU type 1 driver for a container. This limit affects the
+	// total amount of host memory that can be pinned for direct device access,
+	// which is often critical for high-performance devices like TPUs and GPUs.
+	// This setting corresponds to the kernel parameter at:
+	// /sys/module/vfio_iommu_type1/parameters/dma_entry_limit
+	// The default value in the kernel is 65535. Higher values may be
+	// needed for workloads mapping large memory regions.
+	//
+	// +kubebuilder:validation:Minimum=65535
+	// +kubebuilder:validation:Maximum=4194304
+	// +optional
+	DmaEntryLimit *int32 `json:"dmaEntryLimit,omitempty" protobuf:"bytes,1,opt,name=dmaEntryLimit"`
+}
+
+// DiskIoScheduler contains the configuration for the disk IO scheduler.
+type DiskIoScheduler struct {
+	// Configures the IO scheduler for the boot disk or ephemeral lssd that runs
+	// node system workloads.
+	//
+	// +kubebuilder:validation:Enum=mq-deadline;bfq;kyber;none
+	// +optional
+	NodeSystemIoScheduler string `json:"nodeSystemIoScheduler,omitempty" protobuf:"bytes,1,opt,name=nodeSystemIoScheduler"`
+
+	// Configures the IO scheduler for the attached disks.
+	//
+	// +kubebuilder:validation:Enum=mq-deadline;bfq;kyber;none
+	// +optional
+	NodeAttachedDiskIoScheduler string `json:"nodeAttachedDiskIoScheduler,omitempty" protobuf:"bytes,2,opt,name=nodeAttachedDiskIoScheduler"`
 }
 
 type TopologyManager struct {
