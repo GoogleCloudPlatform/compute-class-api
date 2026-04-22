@@ -788,7 +788,7 @@ type GPU struct {
 	// +kubebuilder:validation:Minimum=0
 	Count int64 `json:"count,omitempty" protobuf:"bytes,2,name=count"`
 	// DriverVersion describes version of GPU driver for a node.
-	// +kubebuilder:validation:Enum=default;latest
+	// +kubebuilder:validation:Enum=default;latest;autoinstall-disabled
 	// +kubebuilder:default=default
 	// +optional
 	DriverVersion string `json:"driverVersion,omitempty" protobuf:"bytes,3,name=driverVersion"`

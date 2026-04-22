@@ -479,6 +479,7 @@ spec:
                           enum:
                           - default
                           - latest
+                          - autoinstall-disabled
                           type: string
                         gpuSharing:
                           description: GpuSharing defines the way the nodes would
