@@ -1003,6 +1003,15 @@ spec:
                           description: LinuxNodeConfig defines linux node config for
                             a node.
                           properties:
+                            accurateTimeConfig:
+                              description: AccurateTimeConfig defines accurate time
+                                configuration for a node.
+                              properties:
+                                enablePtpKvmTimeSync:
+                                  description: EnablePtpKvmTimeSync controls whether
+                                    to enable accurate time synchronization with PTP-KVM.
+                                  type: boolean
+                              type: object
                             additionalEtcHosts:
                               description: Additional entries to be added to /etc/hosts.
                               items:
@@ -2384,6 +2393,15 @@ spec:
                         description: LinuxNodeConfig defines linux node config for
                           a node.
                         properties:
+                          accurateTimeConfig:
+                            description: AccurateTimeConfig defines accurate time
+                              configuration for a node.
+                            properties:
+                              enablePtpKvmTimeSync:
+                                description: EnablePtpKvmTimeSync controls whether
+                                  to enable accurate time synchronization with PTP-KVM.
+                                type: boolean
+                            type: object
                           additionalEtcHosts:
                             description: Additional entries to be added to /etc/hosts.
                             items:

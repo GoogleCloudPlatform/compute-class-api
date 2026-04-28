@@ -29,6 +29,8 @@ import (
 func ForKind(kind schema.GroupVersionKind) interface{} {
 	switch kind {
 	// Group=cloud.google.com, Version=v1
+	case v1.SchemeGroupVersion.WithKind("AccurateTimeConfig"):
+		return &cloudgooglecomv1.AccurateTimeConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ActiveMigration"):
 		return &cloudgooglecomv1.ActiveMigrationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Autopilot"):

@@ -892,6 +892,17 @@ type LinuxNodeConfig struct {
 	// +kubebuilder:validation:MaxLength=256
 	// +optional
 	TimeZone *string `json:"timeZone,omitempty" protobuf:"bytes,11,opt,name=timeZone"`
+
+	// AccurateTimeConfig defines accurate time configuration for a node.
+	// +optional
+	AccurateTimeConfig *AccurateTimeConfig `json:"accurateTimeConfig,omitempty" protobuf:"bytes,12,opt,name=accurateTimeConfig"`
+}
+
+// AccurateTimeConfig defines accurate time configuration for a node.
+type AccurateTimeConfig struct {
+	// EnablePtpKvmTimeSync controls whether to enable accurate time synchronization with PTP-KVM.
+	// +optional
+	EnablePtpKvmTimeSync *bool `json:"enablePtpKvmTimeSync,omitempty" protobuf:"bytes,1,opt,name=enablePtpKvmTimeSync"`
 }
 
 type TopologyManager struct {

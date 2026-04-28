@@ -36,6 +36,7 @@ type LinuxNodeConfigApplyConfiguration struct {
 	CustomNodeInit                   *CustomNodeInitApplyConfiguration     `json:"customNodeInit,omitempty"`
 	KernelOverrides                  *KernelOverridesApplyConfiguration    `json:"kernelOverrides,omitempty"`
 	TimeZone                         *string                               `json:"timeZone,omitempty"`
+	AccurateTimeConfig               *AccurateTimeConfigApplyConfiguration `json:"accurateTimeConfig,omitempty"`
 }
 
 // LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
@@ -144,5 +145,13 @@ func (b *LinuxNodeConfigApplyConfiguration) WithKernelOverrides(value *KernelOve
 // If called multiple times, the TimeZone field is set to the value of the last call.
 func (b *LinuxNodeConfigApplyConfiguration) WithTimeZone(value string) *LinuxNodeConfigApplyConfiguration {
 	b.TimeZone = &value
+	return b
+}
+
+// WithAccurateTimeConfig sets the AccurateTimeConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the AccurateTimeConfig field is set to the value of the last call.
+func (b *LinuxNodeConfigApplyConfiguration) WithAccurateTimeConfig(value *AccurateTimeConfigApplyConfiguration) *LinuxNodeConfigApplyConfiguration {
+	b.AccurateTimeConfig = value
 	return b
 }
