@@ -576,7 +576,7 @@ type ReservationSubBlock struct {
 
 // ReservationAffinity is an enumeration of supported reservation affinities
 //
-// +kubebuilder:validation:Enum=Specific;AnyBestEffort;None
+// +kubebuilder:validation:Enum=Specific;AnyBestEffort;None;AnyThenFail
 type ReservationAffinity string
 
 const (
@@ -586,6 +586,8 @@ const (
 	AnyBestEffortAffinity ReservationAffinity = "AnyBestEffort"
 	// NoneAffinity prevents reservations from being used.
 	NoneAffinity ReservationAffinity = "None"
+	// AnyBestEffortAffinity affinity allows to consume any reservation without a possibility to fallback to on demand.
+	AnyThenFail ReservationAffinity = "AnyThenFail"
 )
 
 // Reservations define reservations configuration per priority rule.
@@ -604,7 +606,10 @@ type Reservations struct {
 	// "Specific" means that only specific reservations are considered with no fallback possible.
 	// "AnyBestEffort" affinity would consider any non-specific reservation available
 	// to be claimed with a fallback to on-demand nodes in case of none claimable.
-	// "None" affinity would prevent reservations from being used
+	// "None" affinity would prevent reservations from being used.
+	// "AnyThenFail" affinity would consider any non-specific reservation available
+	// to be claimed without a fallback to on-demand nodes in case of none claimable,
+	// that means, node creation will fail if no reservation is available.
 	//
 	// +required
 	Affinity ReservationAffinity `json:"affinity" protobuf:"bytes,2,name=affinity"`

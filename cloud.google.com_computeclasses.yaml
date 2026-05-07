@@ -1771,11 +1771,15 @@ spec:
                             "Specific" means that only specific reservations are considered with no fallback possible.
                             "AnyBestEffort" affinity would consider any non-specific reservation available
                             to be claimed with a fallback to on-demand nodes in case of none claimable.
-                            "None" affinity would prevent reservations from being used
+                            "None" affinity would prevent reservations from being used.
+                            "AnyThenFail" affinity would consider any non-specific reservation available
+                            to be claimed without a fallback to on-demand nodes in case of none claimable,
+                            that means, node creation will fail if no reservation is available.
                           enum:
                           - Specific
                           - AnyBestEffort
                           - None
+                          - AnyThenFail
                           type: string
                         specific:
                           description: Specific is a non prioritized list of specific
