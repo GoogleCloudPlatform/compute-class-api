@@ -618,9 +618,6 @@ func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []st
 			if !ok || typeSpec.Name.Name != structName {
 				continue
 			}
-			if typeSpec.Doc == nil && gd.Doc == nil {
-				continue
-			}
 			comments := []*ast.CommentGroup{typeSpec.Doc, gd.Doc}
 			for _, cg := range comments {
 				if cg == nil {
@@ -630,6 +627,18 @@ func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []st
 					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
 					if rule != nil {
 						rules = append(rules, *rule)
+					}
+				}
+			}
+			if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+				for _, field := range structType.Fields.List {
+					if field.Doc != nil {
+						for _, comment := range field.Doc.List {
+							rule := extractRuleFromComment(t, comment.Text, ruleSubString)
+							if rule != nil {
+								rules = append(rules, *rule)
+							}
+						}
 					}
 				}
 			}
@@ -918,6 +927,133 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 			}
 			if isValid != tc.wantValid {
 				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestInstanceMetadataValidationRule(t *testing.T) {
+	structsToTest := []string{"NodePoolConfig", "Priority"}
+	for _, structName := range structsToTest {
+		t.Run(structName, func(t *testing.T) {
+			keyFormatRules := getTypeValidationRules(t, structName, "Metadata keys must be alphanumeric")
+			keyFormatProg := createCELProgram(t, keyFormatRules[0])
+
+			valueSizeRules := getTypeValidationRules(t, structName, "Metadata values cannot exceed")
+			valueSizeProg := createCELProgram(t, valueSizeRules[0])
+
+			reservedKeysRules := getTypeValidationRules(t, structName, "Reserved metadata keys are not allowed")
+			reservedKeysProg := createCELProgram(t, reservedKeysRules[0])
+
+			tests := []struct {
+				name      string
+				input     map[string]interface{}
+				prog      cel.Program
+				wantValid bool
+			}{
+				{
+					name: "valid metadata",
+					input: map[string]interface{}{
+						"valid-key_1": "valid-value",
+					},
+					prog:      keyFormatProg,
+					wantValid: true,
+				},
+				{
+					name: "invalid key format (contains space)",
+					input: map[string]interface{}{
+						"invalid key": "value",
+					},
+					prog:      keyFormatProg,
+					wantValid: false,
+				},
+				{
+					name: "valid key starting with dash",
+					input: map[string]interface{}{
+						"-valid-key": "valid-value",
+					},
+					prog:      keyFormatProg,
+					wantValid: true,
+				},
+				{
+					name: "invalid key format (contains colon)",
+					input: map[string]interface{}{
+						"invalid:key": "value",
+					},
+					prog:      keyFormatProg,
+					wantValid: false,
+				},
+				{
+					name: "invalid key format (contains at sign)",
+					input: map[string]interface{}{
+						"invalid@key": "value",
+					},
+					prog:      keyFormatProg,
+					wantValid: false,
+				},
+				{
+					name: "oversized key (128 characters or more)",
+					input: map[string]interface{}{
+						strings.Repeat("a", 128): "value",
+					},
+					prog:      keyFormatProg,
+					wantValid: false,
+				},
+				{
+					name: "valid key size (127 characters)",
+					input: map[string]interface{}{
+						strings.Repeat("a", 127): "value",
+					},
+					prog:      keyFormatProg,
+					wantValid: true,
+				},
+				{
+					name: "oversized value (more than 32768 characters)",
+					input: map[string]interface{}{
+						"key": strings.Repeat("a", 32769),
+					},
+					prog:      valueSizeProg,
+					wantValid: false,
+				},
+				{
+					name: "valid value size (exactly 32768 characters)",
+					input: map[string]interface{}{
+						"key": strings.Repeat("a", 32768),
+					},
+					prog:      valueSizeProg,
+					wantValid: true,
+				},
+				{
+					name: "reserved key (cluster-location)",
+					input: map[string]interface{}{
+						"cluster-location": "value",
+					},
+					prog:      reservedKeysProg,
+					wantValid: false,
+				},
+				{
+					name: "reserved key (windows-startup-script-ps1)",
+					input: map[string]interface{}{
+						"windows-startup-script-ps1": "value",
+					},
+					prog:      reservedKeysProg,
+					wantValid: false,
+				},
+			}
+
+			for _, tc := range tests {
+				t.Run(tc.name, func(t *testing.T) {
+					out, _, err := tc.prog.Eval(map[string]interface{}{
+						"self": tc.input,
+					})
+					if err != nil {
+						t.Fatalf("CEL evaluation failed: %v", err)
+					}
+
+					if out.Value() != tc.wantValid {
+						t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
+					}
+				})
 			}
 		})
 	}

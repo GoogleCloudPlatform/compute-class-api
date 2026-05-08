@@ -46,6 +46,7 @@ type PriorityApplyConfiguration struct {
 	AcceleratorNetworkProfile    *string                             `json:"acceleratorNetworkProfile,omitempty"`
 	GpuDirect                    *string                             `json:"gpuDirect,omitempty"`
 	MinimumCapacity              *MinimumCapacityApplyConfiguration  `json:"minimumCapacity,omitempty"`
+	InstanceMetadata             map[string]string                   `json:"instanceMetadata,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
@@ -264,5 +265,19 @@ func (b *PriorityApplyConfiguration) WithGpuDirect(value string) *PriorityApplyC
 // If called multiple times, the MinimumCapacity field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithMinimumCapacity(value *MinimumCapacityApplyConfiguration) *PriorityApplyConfiguration {
 	b.MinimumCapacity = value
+	return b
+}
+
+// WithInstanceMetadata puts the entries into the InstanceMetadata field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, the entries provided by each call will be put on the InstanceMetadata field,
+// overwriting an existing map entries in InstanceMetadata field with the same key.
+func (b *PriorityApplyConfiguration) WithInstanceMetadata(entries map[string]string) *PriorityApplyConfiguration {
+	if b.InstanceMetadata == nil && len(entries) > 0 {
+		b.InstanceMetadata = make(map[string]string, len(entries))
+	}
+	for k, v := range entries {
+		b.InstanceMetadata[k] = v
+	}
 	return b
 }

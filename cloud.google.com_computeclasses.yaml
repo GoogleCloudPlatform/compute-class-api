@@ -248,6 +248,28 @@ spec:
                     - cos_containerd
                     - ubuntu_containerd
                     type: string
+                  instanceMetadata:
+                    additionalProperties:
+                      type: string
+                    description: InstanceMetadata is a map of custom key-value pairs
+                      to be injected into the underlying Compute Engine instances.
+                    maxProperties: 32
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Metadata keys must be alphanumeric with dashes/underscores
+                        and less than 128 characters
+                      rule: self.all(k, k.matches('^[a-zA-Z0-9_-]+$') && size(k) <
+                        128)
+                    - message: Metadata values cannot exceed 32768 characters
+                      rule: self.all(k, size(self[k]) <= 32768)
+                    - message: Reserved metadata keys are not allowed
+                      rule: self.all(k, !(k in ['cluster-location', 'cluster-name',
+                        'cluster-uid', 'configure-sh', 'containerd-configure-sh',
+                        'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled',
+                        'gci-update-strategy', 'instance-template', 'kube-env', 'startup-script',
+                        'user-data', 'disable-address-manager', 'windows-startup-script-ps1',
+                        'common-psm1', 'k8s-node-setup-psm1', 'install-ssh-psm1',
+                        'user-profile-psm1']))
                   ipType:
                     description: |-
                       IPType specifies whether the nodes in the node pool use public or private IP addresses.
@@ -527,6 +549,29 @@ spec:
                       x-kubernetes-validations:
                       - message: gpuDirect must be 'rdma'
                         rule: self == 'rdma'
+                    instanceMetadata:
+                      additionalProperties:
+                        type: string
+                      description: |-
+                        InstanceMetadata is a map of custom key-value pairs to be injected into the underlying Compute Engine instances.
+                        Overrides conflicting keys defined in NodePoolConfig.InstanceMetadata.
+                      maxProperties: 32
+                      type: object
+                      x-kubernetes-validations:
+                      - message: Metadata keys must be alphanumeric with dashes/underscores
+                          and less than 128 characters
+                        rule: self.all(k, k.matches('^[a-zA-Z0-9_-]+$') && size(k)
+                          < 128)
+                      - message: Metadata values cannot exceed 32768 characters
+                        rule: self.all(k, size(self[k]) <= 32768)
+                      - message: Reserved metadata keys are not allowed
+                        rule: self.all(k, !(k in ['cluster-location', 'cluster-name',
+                          'cluster-uid', 'configure-sh', 'containerd-configure-sh',
+                          'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled',
+                          'gci-update-strategy', 'instance-template', 'kube-env',
+                          'startup-script', 'user-data', 'disable-address-manager',
+                          'windows-startup-script-ps1', 'common-psm1', 'k8s-node-setup-psm1',
+                          'install-ssh-psm1', 'user-profile-psm1']))
                     location:
                       description: Location describes CCC zonal preferences config.
                       properties:

@@ -1148,6 +1148,13 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.InstanceMetadata != nil {
+		in, out := &in.InstanceMetadata, &out.InstanceMetadata
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	return
 }
 
@@ -1385,6 +1392,13 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		in, out := &in.MinimumCapacity, &out.MinimumCapacity
 		*out = new(MinimumCapacity)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.InstanceMetadata != nil {
+		in, out := &in.InstanceMetadata, &out.InstanceMetadata
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	return
 }

@@ -39,6 +39,7 @@ type NodePoolConfigApplyConfiguration struct {
 	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
 	Sandbox              *SandboxApplyConfiguration               `json:"sandbox,omitempty"`
 	WorkloadMetadata     *string                                  `json:"workloadMetadata,omitempty"`
+	InstanceMetadata     map[string]string                        `json:"instanceMetadata,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -204,5 +205,19 @@ func (b *NodePoolConfigApplyConfiguration) WithSandbox(value *SandboxApplyConfig
 // If called multiple times, the WorkloadMetadata field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithWorkloadMetadata(value string) *NodePoolConfigApplyConfiguration {
 	b.WorkloadMetadata = &value
+	return b
+}
+
+// WithInstanceMetadata puts the entries into the InstanceMetadata field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, the entries provided by each call will be put on the InstanceMetadata field,
+// overwriting an existing map entries in InstanceMetadata field with the same key.
+func (b *NodePoolConfigApplyConfiguration) WithInstanceMetadata(entries map[string]string) *NodePoolConfigApplyConfiguration {
+	if b.InstanceMetadata == nil && len(entries) > 0 {
+		b.InstanceMetadata = make(map[string]string, len(entries))
+	}
+	for k, v := range entries {
+		b.InstanceMetadata[k] = v
+	}
 	return b
 }

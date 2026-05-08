@@ -425,6 +425,14 @@ type NodePoolConfig struct {
 	// +optional
 	// +kubebuilder:validation:Enum=GCE_METADATA;GKE_METADATA
 	WorkloadMetadata *string `json:"workloadMetadata,omitempty" protobuf:"bytes,18,opt,name=workloadMetadata"`
+
+	// InstanceMetadata is a map of custom key-value pairs to be injected into the underlying Compute Engine instances.
+	// +optional
+	// +kubebuilder:validation:MaxProperties=32
+	// +kubebuilder:validation:XValidation:rule="self.all(k, k.matches('^[a-zA-Z0-9_-]+$') && size(k) < 128)", message="Metadata keys must be alphanumeric with dashes/underscores and less than 128 characters"
+	// +kubebuilder:validation:XValidation:rule="self.all(k, size(self[k]) <= 32768)", message="Metadata values cannot exceed 32768 characters"
+	// +kubebuilder:validation:XValidation:rule="self.all(k, !(k in ['cluster-location', 'cluster-name', 'cluster-uid', 'configure-sh', 'containerd-configure-sh', 'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled', 'gci-update-strategy', 'instance-template', 'kube-env', 'startup-script', 'user-data', 'disable-address-manager', 'windows-startup-script-ps1', 'common-psm1', 'k8s-node-setup-psm1', 'install-ssh-psm1', 'user-profile-psm1']))", message="Reserved metadata keys are not allowed"
+	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty" protobuf:"bytes,19,rep,name=instanceMetadata"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.
@@ -775,6 +783,15 @@ type Priority struct {
 	// for this specific priority.
 	// +optional
 	MinimumCapacity *MinimumCapacity `json:"minimumCapacity,omitempty" protobuf:"bytes,26,opt,name=minimumCapacity"`
+
+	// InstanceMetadata is a map of custom key-value pairs to be injected into the underlying Compute Engine instances.
+	// Overrides conflicting keys defined in NodePoolConfig.InstanceMetadata.
+	// +optional
+	// +kubebuilder:validation:MaxProperties=32
+	// +kubebuilder:validation:XValidation:rule="self.all(k, k.matches('^[a-zA-Z0-9_-]+$') && size(k) < 128)", message="Metadata keys must be alphanumeric with dashes/underscores and less than 128 characters"
+	// +kubebuilder:validation:XValidation:rule="self.all(k, size(self[k]) <= 32768)", message="Metadata values cannot exceed 32768 characters"
+	// +kubebuilder:validation:XValidation:rule="self.all(k, !(k in ['cluster-location', 'cluster-name', 'cluster-uid', 'configure-sh', 'containerd-configure-sh', 'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled', 'gci-update-strategy', 'instance-template', 'kube-env', 'startup-script', 'user-data', 'disable-address-manager', 'windows-startup-script-ps1', 'common-psm1', 'k8s-node-setup-psm1', 'install-ssh-psm1', 'user-profile-psm1']))", message="Reserved metadata keys are not allowed"
+	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty" protobuf:"bytes,27,rep,name=instanceMetadata"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
