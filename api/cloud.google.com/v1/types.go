@@ -433,6 +433,23 @@ type NodePoolConfig struct {
 	// +kubebuilder:validation:XValidation:rule="self.all(k, size(self[k]) <= 32768)", message="Metadata values cannot exceed 32768 characters"
 	// +kubebuilder:validation:XValidation:rule="self.all(k, !(k in ['cluster-location', 'cluster-name', 'cluster-uid', 'configure-sh', 'containerd-configure-sh', 'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled', 'gci-update-strategy', 'instance-template', 'kube-env', 'startup-script', 'user-data', 'disable-address-manager', 'windows-startup-script-ps1', 'common-psm1', 'k8s-node-setup-psm1', 'install-ssh-psm1', 'user-profile-psm1']))", message="Reserved metadata keys are not allowed"
 	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty" protobuf:"bytes,19,rep,name=instanceMetadata"`
+
+	// TaintConfig contains node pool taint configuration.
+	//
+	// +optional
+	TaintConfig *NodePoolTaintConfig `json:"taintConfig,omitempty" protobuf:"bytes,20,opt,name=taintConfig"`
+}
+
+// NodePoolTaintConfig contains node pool taint configuration.
+type NodePoolTaintConfig struct {
+	// ArchitectureTaintBehavior specifies the behavior of architecture taint.
+	// If set to NONE, architecture taint will not be applied to the nodes.
+	// If set to ARM, it will be applied to ARM64 nodes.
+	// Default is ARM if unspecified.
+	//
+	// +optional
+	// +kubebuilder:validation:Enum=NONE;ARM
+	ArchitectureTaintBehavior string `json:"architectureTaintBehavior,omitempty" protobuf:"string,1,opt,name=architectureTaintBehavior"`
 }
 
 // NodePoolLoggingConfig specifies logging configuration for nodepools.

@@ -40,6 +40,7 @@ type NodePoolConfigApplyConfiguration struct {
 	Sandbox              *SandboxApplyConfiguration               `json:"sandbox,omitempty"`
 	WorkloadMetadata     *string                                  `json:"workloadMetadata,omitempty"`
 	InstanceMetadata     map[string]string                        `json:"instanceMetadata,omitempty"`
+	TaintConfig          *NodePoolTaintConfigApplyConfiguration   `json:"taintConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -219,5 +220,13 @@ func (b *NodePoolConfigApplyConfiguration) WithInstanceMetadata(entries map[stri
 	for k, v := range entries {
 		b.InstanceMetadata[k] = v
 	}
+	return b
+}
+
+// WithTaintConfig sets the TaintConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the TaintConfig field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithTaintConfig(value *NodePoolTaintConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.TaintConfig = value
 	return b
 }

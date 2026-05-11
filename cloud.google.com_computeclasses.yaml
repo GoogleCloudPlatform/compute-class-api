@@ -346,6 +346,20 @@ spec:
                   serviceAccount:
                     description: ServiceAccount used by the node pool.
                     type: string
+                  taintConfig:
+                    description: TaintConfig contains node pool taint configuration.
+                    properties:
+                      architectureTaintBehavior:
+                        description: |-
+                          ArchitectureTaintBehavior specifies the behavior of architecture taint.
+                          If set to NONE, architecture taint will not be applied to the nodes.
+                          If set to ARM, it will be applied to ARM64 nodes.
+                          Default is ARM if unspecified.
+                        enum:
+                        - NONE
+                        - ARM
+                        type: string
+                    type: object
                   taints:
                     description: |-
                       Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.

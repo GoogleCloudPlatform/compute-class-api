@@ -101,6 +101,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.NodePoolGroupApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodePoolLoggingConfig"):
 		return &cloudgooglecomv1.NodePoolLoggingConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NodePoolTaintConfig"):
+		return &cloudgooglecomv1.NodePoolTaintConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeRecyclingConfig"):
 		return &cloudgooglecomv1.NodeRecyclingConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeSystemConfig"):
