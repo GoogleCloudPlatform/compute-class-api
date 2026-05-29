@@ -3347,12 +3347,23 @@ spec:
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType))
                 ? self.priorities.all(priority, has(priority.machineFamily) || has(priority.machineType))
                 : true'
-            - message: ConfidentialNodeType SEV only supports N2D, C2D, C3D, C4D
+            - message: ConfidentialNodeType SEV only supports N2D, C2D, C3D, C4D,
+                G4
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.nodePoolConfig.confidentialNodeType == "SEV") ? self.priorities.all(priority,
                 ((has(priority.machineFamily) && priority.machineFamily in [''n2d'',
-                ''c2d'', ''c3d'', ''c4d'']) || (has(priority.machineType) && priority.machineType.split(''-'')[0]
-                in [''n2d'', ''c2d'', ''c3d'', ''c4d'']))) : true'
+                ''c2d'', ''c3d'', ''c4d'', ''g4'']) || (has(priority.machineType)
+                && priority.machineType.split(''-'')[0] in [''n2d'', ''c2d'', ''c3d'',
+                ''c4d'', ''g4'']))) : true'
+            - message: ConfidentialNodeType SEV on G4 only supports g4-standard-48
+                machine type and nvidia-rtx-pro-6000 GPU type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
+                && self.nodePoolConfig.confidentialNodeType == "SEV") ? self.priorities.all(priority,
+                (has(priority.machineFamily) && priority.machineFamily == ''g4'')
+                ? false : (has(priority.machineType) && priority.machineType.startsWith(''g4-''))
+                ? (priority.machineType == ''g4-standard-48'' && (!has(priority.gpu)
+                || has(priority.gpu) && (!has(priority.gpu.type) || priority.gpu.type
+                == ''nvidia-rtx-pro-6000''))) : true) : true'
             - message: ConfidentialNodeType SEV_SNP only supports N2D
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.nodePoolConfig.confidentialNodeType == "SEV_SNP") ? self.priorities.all(priority,

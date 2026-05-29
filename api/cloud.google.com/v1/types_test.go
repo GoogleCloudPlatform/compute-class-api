@@ -27,6 +27,7 @@ import (
 	"testing"
 
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/ext"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -259,6 +260,192 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 				},
 			},
 			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestSEVValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "SEV")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid: sev with n2d machine family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n2d",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: sev with c2d machine family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c2d",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: sev with c3d machine family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c3d",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: sev with c4d machine family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "c4d",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: sev with g4 machine family and nvidia-rtx-pro-6000 gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "g4",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-rtx-pro-6000",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: sev with g4 machine family and no gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "g4",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid: sev with g4-standard-48 machine type and nvidia-rtx-pro-6000 gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "g4-standard-48",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-rtx-pro-6000",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: sev with unsupported machine family",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "n2",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: sev with g4 machine family but unsupported gpu",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineFamily": "g4",
+						"gpu": map[string]interface{}{
+							"type": "nvidia-h100-80gb",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: sev with g4-standard-16 machine type",
+			input: map[string]interface{}{
+				"nodePoolConfig": map[string]interface{}{
+					"confidentialNodeType": "SEV",
+				},
+				"priorities": []map[string]interface{}{
+					{
+						"machineType": "g4-standard-16",
+					},
+				},
+			},
+			wantValid: false,
 		},
 	}
 
@@ -679,6 +866,7 @@ func createCELProgram(t *testing.T, rule string) cel.Program {
 	t.Helper()
 	env, err := cel.NewEnv(
 		cel.Variable("self", cel.MapType(cel.StringType, cel.DynType)),
+		ext.Strings(),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create CEL environment: %v", err)
@@ -1215,4 +1403,3 @@ func TestComputeClassStatusJSON(t *testing.T) {
 		})
 	}
 }
-
