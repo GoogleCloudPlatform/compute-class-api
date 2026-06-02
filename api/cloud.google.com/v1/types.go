@@ -611,7 +611,7 @@ const (
 	AnyBestEffortAffinity ReservationAffinity = "AnyBestEffort"
 	// NoneAffinity prevents reservations from being used.
 	NoneAffinity ReservationAffinity = "None"
-	// AnyBestEffortAffinity affinity allows to consume any reservation without a possibility to fallback to on demand.
+	// AnyThenFail affinity allows to consume any reservation without a possibility to fallback to on demand.
 	AnyThenFail ReservationAffinity = "AnyThenFail"
 )
 
