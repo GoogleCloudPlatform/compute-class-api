@@ -72,6 +72,35 @@ spec:
                 required:
                 - optimizeRulePriority
                 type: object
+              allocationStrategyDefaults:
+                description: AllocationStrategyDefaults define the default allocation
+                  strategies for different provisioning models.
+                properties:
+                  flexStart:
+                    default: lowest-cost
+                    description: FlexStart defines the default allocation strategy
+                      for flex start provisioning model.
+                    enum:
+                    - lowest-cost
+                    - fleet-efficiency
+                    type: string
+                  onDemand:
+                    default: lowest-cost
+                    description: OnDemand defines the default allocation strategy
+                      for on-demand provisioning model.
+                    enum:
+                    - lowest-cost
+                    - fleet-efficiency
+                    type: string
+                  spot:
+                    default: lowest-cost
+                    description: Spot defines the default allocation strategy for
+                      spot provisioning model.
+                    enum:
+                    - lowest-cost
+                    - fleet-efficiency
+                    type: string
+                type: object
               autopilot:
                 description: Autopilot describes the autopilot settings for a given
                   ComputeClass.
@@ -468,6 +497,14 @@ spec:
                       - message: acceleratorNetworkProfile must be 'auto' or start
                           with 'auto-'
                         rule: self == 'auto' || self.startsWith('auto-')
+                    allocationStrategy:
+                      default: lowest-cost
+                      description: AllocationStrategy defines the allocation strategy
+                        for a node pool.
+                      enum:
+                      - lowest-cost
+                      - fleet-efficiency
+                      type: string
                     capacityCheckWaitTimeSeconds:
                       description: CapacityCheckWaitTimeSeconds defines for how long
                         will this priority be attempted to scale up before moving

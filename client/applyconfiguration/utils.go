@@ -33,6 +33,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.AccurateTimeConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ActiveMigration"):
 		return &cloudgooglecomv1.ActiveMigrationApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("AllocationStrategyDefaults"):
+		return &cloudgooglecomv1.AllocationStrategyDefaultsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Autopilot"):
 		return &cloudgooglecomv1.AutopilotApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("AutoscalingPolicy"):

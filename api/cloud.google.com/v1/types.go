@@ -170,6 +170,11 @@ type ComputeClassSpec struct {
 	// for the entire ComputeClass.
 	// +optional
 	MinimumCapacity *MinimumCapacity `json:"minimumCapacity,omitempty" protobuf:"bytes,11,opt,name=minimumCapacity"`
+
+	// AllocationStrategyDefaults define the default allocation strategies for different provisioning models.
+	//
+	// +optional
+	AllocationStrategyDefaults *AllocationStrategyDefaults `json:"allocationStrategyDefaults,omitempty" protobuf:"bytes,12,opt,name=allocationStrategyDefaults"`
 }
 
 type NetworkingDra struct {
@@ -809,6 +814,12 @@ type Priority struct {
 	// +kubebuilder:validation:XValidation:rule="self.all(k, size(self[k]) <= 32768)", message="Metadata values cannot exceed 32768 characters"
 	// +kubebuilder:validation:XValidation:rule="self.all(k, !(k in ['cluster-location', 'cluster-name', 'cluster-uid', 'configure-sh', 'containerd-configure-sh', 'enable-os-login', 'gci-ensure-gke-docker', 'gci-metrics-enabled', 'gci-update-strategy', 'instance-template', 'kube-env', 'startup-script', 'user-data', 'disable-address-manager', 'windows-startup-script-ps1', 'common-psm1', 'k8s-node-setup-psm1', 'install-ssh-psm1', 'user-profile-psm1']))", message="Reserved metadata keys are not allowed"
 	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty" protobuf:"bytes,27,rep,name=instanceMetadata"`
+
+	// AllocationStrategy defines the allocation strategy for a node pool.
+	//
+	// +optional
+	// +kubebuilder:default=lowest-cost
+	AllocationStrategy *AllocationStrategy `json:"allocationStrategy,omitempty" protobuf:"bytes,28,opt,name=allocationStrategy"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
@@ -1745,6 +1756,40 @@ type PriorityDefaults struct {
 	//
 	// +optional
 	Location *Location `json:"location,omitempty" protobuf:"bytes,2,opt,name=location"`
+}
+
+// AllocationStrategy is an enumeration of supported allocation strategies.
+//
+// +kubebuilder:validation:Enum=lowest-cost;fleet-efficiency
+type AllocationStrategy string
+
+const (
+	// AllocationStrategyLowestCost uses the existing lowest price strategy.
+	AllocationStrategyLowestCost AllocationStrategy = "lowest-cost"
+	// AllocationStrategyFleetEfficiency prefers instances that would keep GCE fleet most efficient.
+	AllocationStrategyFleetEfficiency AllocationStrategy = "fleet-efficiency"
+)
+
+// AllocationStrategyDefaults defines the default allocation strategies for different provisioning models.
+// These can be overridden at priority level.
+type AllocationStrategyDefaults struct {
+	// OnDemand defines the default allocation strategy for on-demand provisioning model.
+	//
+	// +optional
+	// +kubebuilder:default=lowest-cost
+	OnDemand *AllocationStrategy `json:"onDemand,omitempty" protobuf:"bytes,1,opt,name=onDemand"`
+
+	// Spot defines the default allocation strategy for spot provisioning model.
+	//
+	// +optional
+	// +kubebuilder:default=lowest-cost
+	Spot *AllocationStrategy `json:"spot,omitempty" protobuf:"bytes,2,opt,name=spot"`
+
+	// FlexStart defines the default allocation strategy for flex start provisioning model.
+	//
+	// +optional
+	// +kubebuilder:default=lowest-cost
+	FlexStart *AllocationStrategy `json:"flexStart,omitempty" protobuf:"bytes,3,opt,name=flexStart"`
 }
 
 // TaintConfig applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling.

@@ -21,17 +21,18 @@ package v1
 // ComputeClassSpecApplyConfiguration represents an declarative configuration of the ComputeClassSpec type for use
 // with apply.
 type ComputeClassSpecApplyConfiguration struct {
-	Priorities           []PriorityApplyConfiguration            `json:"priorities,omitempty"`
-	NodePoolAutoCreation *NodePoolAutoCreationApplyConfiguration `json:"nodePoolAutoCreation,omitempty"`
-	ActiveMigration      *ActiveMigrationApplyConfiguration      `json:"activeMigration,omitempty"`
-	WhenUnsatisfiable    *string                                 `json:"whenUnsatisfiable,omitempty"`
-	AutoscalingPolicy    *AutoscalingPolicyApplyConfiguration    `json:"autoscalingPolicy,omitempty"`
-	Autopilot            *AutopilotApplyConfiguration            `json:"autopilot,omitempty"`
-	NodePoolConfig       *NodePoolConfigApplyConfiguration       `json:"nodePoolConfig,omitempty"`
-	NodePoolGroup        *NodePoolGroupApplyConfiguration        `json:"nodePoolGroup,omitempty"`
-	PriorityDefaults     *PriorityDefaultsApplyConfiguration     `json:"priorityDefaults,omitempty"`
-	Description          *string                                 `json:"description,omitempty"`
-	MinimumCapacity      *MinimumCapacityApplyConfiguration      `json:"minimumCapacity,omitempty"`
+	Priorities                 []PriorityApplyConfiguration                  `json:"priorities,omitempty"`
+	NodePoolAutoCreation       *NodePoolAutoCreationApplyConfiguration       `json:"nodePoolAutoCreation,omitempty"`
+	ActiveMigration            *ActiveMigrationApplyConfiguration            `json:"activeMigration,omitempty"`
+	WhenUnsatisfiable          *string                                       `json:"whenUnsatisfiable,omitempty"`
+	AutoscalingPolicy          *AutoscalingPolicyApplyConfiguration          `json:"autoscalingPolicy,omitempty"`
+	Autopilot                  *AutopilotApplyConfiguration                  `json:"autopilot,omitempty"`
+	NodePoolConfig             *NodePoolConfigApplyConfiguration             `json:"nodePoolConfig,omitempty"`
+	NodePoolGroup              *NodePoolGroupApplyConfiguration              `json:"nodePoolGroup,omitempty"`
+	PriorityDefaults           *PriorityDefaultsApplyConfiguration           `json:"priorityDefaults,omitempty"`
+	Description                *string                                       `json:"description,omitempty"`
+	MinimumCapacity            *MinimumCapacityApplyConfiguration            `json:"minimumCapacity,omitempty"`
+	AllocationStrategyDefaults *AllocationStrategyDefaultsApplyConfiguration `json:"allocationStrategyDefaults,omitempty"`
 }
 
 // ComputeClassSpecApplyConfiguration constructs an declarative configuration of the ComputeClassSpec type for use with
@@ -130,5 +131,13 @@ func (b *ComputeClassSpecApplyConfiguration) WithDescription(value string) *Comp
 // If called multiple times, the MinimumCapacity field is set to the value of the last call.
 func (b *ComputeClassSpecApplyConfiguration) WithMinimumCapacity(value *MinimumCapacityApplyConfiguration) *ComputeClassSpecApplyConfiguration {
 	b.MinimumCapacity = value
+	return b
+}
+
+// WithAllocationStrategyDefaults sets the AllocationStrategyDefaults field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the AllocationStrategyDefaults field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithAllocationStrategyDefaults(value *AllocationStrategyDefaultsApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.AllocationStrategyDefaults = value
 	return b
 }
