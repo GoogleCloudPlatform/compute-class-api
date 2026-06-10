@@ -431,7 +431,7 @@ func TestTDXValidationRule(t *testing.T) {
 			name: "invalid:_tdx_with_unsupported_machine_family_and_supported_gpu",
 			input: map[string]interface{}{
 				"nodePoolConfig": map[string]interface{}{
-				"confidentialNodeType": "TDX",
+					"confidentialNodeType": "TDX",
 				},
 				"priorities": []map[string]interface{}{
 					{
@@ -914,6 +914,114 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		t.Run("Priority/"+tc.name, func(t *testing.T) {
 			isValid := true
 			for _, program := range priorityPrograms {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestNodepoolValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "Priority", "Nodepool field cannot be set along with other nodepool configuration fields")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     map[string]interface{}
+		wantValid bool
+	}{
+		{
+			name: "valid:_no_nodepools",
+			input: map[string]interface{}{
+				"machineFamily": "n1",
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_only_nodepools",
+			input: map[string]interface{}{
+				"nodepools": []string{"pool1", "pool2"},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_nodepools_and_allocationStrategy",
+			input: map[string]interface{}{
+				"nodepools": []string{"pool1"},
+				"allocationStrategy": map[string]interface{}{
+					"inSystem": map[string]interface{}{},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_nodepools_and_priorityScore",
+			input: map[string]interface{}{
+				"nodepools":     []string{"pool1"},
+				"priorityScore": 100,
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_nodepools_allocationStrategy_and_priorityScore",
+			input: map[string]interface{}{
+				"nodepools": []string{"pool1"},
+				"allocationStrategy": map[string]interface{}{
+					"inSystem": map[string]interface{}{},
+				},
+				"priorityScore": 100,
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid:_nodepools_and_machineFamily",
+			input: map[string]interface{}{
+				"nodepools":     []string{"pool1"},
+				"machineFamily": "n1",
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_nodepools_allocationStrategy_and_machineType",
+			input: map[string]interface{}{
+				"nodepools": []string{"pool1"},
+				"allocationStrategy": map[string]interface{}{
+					"inSystem": map[string]interface{}{},
+				},
+				"machineType": "n1-standard-1",
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_nodepools_and_gpu",
+			input: map[string]interface{}{
+				"nodepools": []string{"pool1"},
+				"gpu": map[string]interface{}{
+					"type": "nvidia-tesla-t4",
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
 					"self": tc.input,
 				})

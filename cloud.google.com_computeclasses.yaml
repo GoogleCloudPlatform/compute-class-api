@@ -77,7 +77,6 @@ spec:
                   strategies for different provisioning models.
                 properties:
                   flexStart:
-                    default: lowest-cost
                     description: FlexStart defines the default allocation strategy
                       for flex start provisioning model.
                     enum:
@@ -85,7 +84,6 @@ spec:
                     - fleet-efficiency
                     type: string
                   onDemand:
-                    default: lowest-cost
                     description: OnDemand defines the default allocation strategy
                       for on-demand provisioning model.
                     enum:
@@ -93,7 +91,6 @@ spec:
                     - fleet-efficiency
                     type: string
                   spot:
-                    default: lowest-cost
                     description: Spot defines the default allocation strategy for
                       spot provisioning model.
                     enum:
@@ -498,7 +495,6 @@ spec:
                           with 'auto-'
                         rule: self == 'auto' || self.startsWith('auto-')
                     allocationStrategy:
-                      default: lowest-cost
                       description: AllocationStrategy defines the allocation strategy
                         for a node pool.
                       enum:
@@ -2099,8 +2095,10 @@ spec:
                       type: object
                   type: object
                   x-kubernetes-validations:
-                  - message: Nodepool field cannot be set along with other fields
-                    rule: 'has(self.nodepools) ? (size(dyn(self)) == 1) : true'
+                  - message: Nodepool field cannot be set along with other nodepool
+                      configuration fields
+                    rule: 'has(self.nodepools) ? (size(dyn(self)) == 1 + (has(self.allocationStrategy)
+                      ? 1 : 0) + (has(self.priorityScore) ? 1 : 0)) : true'
                   - message: MachineFamily and MachineType cannot be set together
                     rule: '!(has(self.machineFamily) && has(self.machineType))'
                   - message: MachineType cannot be set together with MinCores/MinMemoryGb
