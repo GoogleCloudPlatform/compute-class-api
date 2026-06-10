@@ -3442,6 +3442,15 @@ spec:
                 ? self.priorities.all(p, has(p.machineType) || has(p.gpu) || has(p.tpu)
                 || (has(p.reservations) && p.reservations.affinity == ''Specific''))
                 : true'
+            - message: Sysctl config net_ipv4_tcp_congestion_control cannot be set
+                when Autopilot is enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? ((!has(self.priorityDefaults)
+                || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig)
+                || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig.sysctls)
+                || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig.sysctls.net_ipv4_tcp_congestion_control))
+                && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.linuxNodeConfig)
+                || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls.net_ipv4_tcp_congestion_control)))
+                : true'
           status:
             description: Status of the ComputeClass.
             properties:
