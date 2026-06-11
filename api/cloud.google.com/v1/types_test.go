@@ -17,6 +17,7 @@ package v1
 
 import (
 	_ "embed"
+	"encoding/json"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -26,6 +27,7 @@ import (
 	"testing"
 
 	"github.com/google/cel-go/cel"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Embedding the file is needed because the test is also executed inside google3 (this repo is copied by copybara)
@@ -1166,3 +1168,51 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestComputeClassStatusJSON(t *testing.T) {
+	tests := []struct {
+		name     string
+		status   ComputeClassStatus
+		wantJSON string
+	}{
+		{
+			name:     "nil fields",
+			status:   ComputeClassStatus{},
+			wantJSON: `{}`,
+		},
+		{
+			name: "empty slice fields",
+			status: ComputeClassStatus{
+				Conditions:       []metav1.Condition{},
+				PriorityStatuses: []PriorityStatus{},
+				ResourceInfo:     []ResourceInfo{},
+			},
+			wantJSON: `{}`,
+		},
+		{
+			name: "non-empty fields",
+			status: ComputeClassStatus{
+				PriorityStatuses: []PriorityStatus{
+					{
+						Identifier: "p1",
+					},
+				},
+			},
+			wantJSON: `{"priorityStatuses":[{"identifier":"p1","conditions":null,"resourceInfo":null}]}`,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			gotBytes, err := json.Marshal(tc.status)
+			if err != nil {
+				t.Fatalf("json.Marshal failed: %v", err)
+			}
+			got := string(gotBytes)
+			if got != tc.wantJSON {
+				t.Errorf("json.Marshal() = %s, want %s", got, tc.wantJSON)
+			}
+		})
+	}
+}
+
