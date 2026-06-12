@@ -303,6 +303,13 @@ type Autopilot struct {
 	Enabled bool `json:"enabled" protobuf:"bytes,1,name=enabled"`
 }
 
+type MaintenanceExclusionType string
+
+const (
+	// MaintenanceExclusionUntilEndOfSupport denotes an exclusion until the end of support of the nodepool's minor version.
+	MaintenanceExclusionUntilEndOfSupport MaintenanceExclusionType = "UNTIL_END_OF_SUPPORT"
+)
+
 // NodePoolConfig defines required node pool configuration. Existing node pools will be matched with the ComputeClass
 // only if their configuration match this field. Auto-provisioned node pools will be created with this configuration.
 type NodePoolConfig struct {
@@ -444,7 +451,14 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	TaintConfig *NodePoolTaintConfig `json:"taintConfig,omitempty" protobuf:"bytes,20,opt,name=taintConfig"`
+
+	// MaintenanceExclusion defines the type of exclusion policy applied to node pools.
+	// UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
+	//
+	// +optional
+	MaintenanceExclusion *MaintenanceExclusionType `json:"maintenanceExclusion,omitempty" protobuf:"bytes,21,opt,name=maintenanceExclusion"`
 }
+
 
 // NodePoolTaintConfig contains node pool taint configuration.
 type NodePoolTaintConfig struct {

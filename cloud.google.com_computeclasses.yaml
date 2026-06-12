@@ -320,6 +320,11 @@ spec:
                             type: string
                         type: object
                     type: object
+                  maintenanceExclusion:
+                    description: |-
+                      MaintenanceExclusion defines the type of exclusion policy applied to node pools.
+                      UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
+                    type: string
                   nodeLabels:
                     additionalProperties:
                       type: string

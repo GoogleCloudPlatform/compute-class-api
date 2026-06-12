@@ -1222,6 +1222,11 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = new(NodePoolTaintConfig)
 		**out = **in
 	}
+	if in.MaintenanceExclusion != nil {
+		in, out := &in.MaintenanceExclusion, &out.MaintenanceExclusion
+		*out = new(MaintenanceExclusionType)
+		**out = **in
+	}
 	return
 }
 

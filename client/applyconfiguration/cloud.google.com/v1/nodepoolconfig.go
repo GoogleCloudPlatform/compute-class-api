@@ -18,29 +18,34 @@
 
 package v1
 
+import (
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+)
+
 // NodePoolConfigApplyConfiguration represents an declarative configuration of the NodePoolConfig type for use
 // with apply.
 type NodePoolConfigApplyConfiguration struct {
-	ServiceAccount       *string                                  `json:"serviceAccount,omitempty"`
-	ImageType            *string                                  `json:"imageType,omitempty"`
-	WorkloadType         *string                                  `json:"workloadType,omitempty"`
-	NodeLabels           map[string]string                        `json:"nodeLabels,omitempty"`
-	Taints               []TaintConfigApplyConfiguration          `json:"taints,omitempty"`
-	ConfidentialNodeType *string                                  `json:"confidentialNodeType,omitempty"`
-	AutoRepair           *bool                                    `json:"autoRepair,omitempty"`
-	AutoUpgrade          *bool                                    `json:"autoUpgrade,omitempty"`
-	ImageStreaming       *ImageStreamingApplyConfiguration        `json:"imageStreaming,omitempty"`
-	ResourceManagerTags  []TagsApplyConfiguration                 `json:"resourceManagerTags,omitempty"`
-	Gvnic                *GvnicApplyConfiguration                 `json:"gvnic,omitempty"`
-	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration `json:"loggingConfig,omitempty"`
-	Dra                  *DraApplyConfiguration                   `json:"dra,omitempty"`
-	IPType               *string                                  `json:"ipType,omitempty"`
-	NodeVersion          *string                                  `json:"nodeVersion,omitempty"`
-	Tpu                  *GoogleTpuApplyConfiguration             `json:"tpu,omitempty"`
-	Sandbox              *SandboxApplyConfiguration               `json:"sandbox,omitempty"`
-	WorkloadMetadata     *string                                  `json:"workloadMetadata,omitempty"`
-	InstanceMetadata     map[string]string                        `json:"instanceMetadata,omitempty"`
-	TaintConfig          *NodePoolTaintConfigApplyConfiguration   `json:"taintConfig,omitempty"`
+	ServiceAccount       *string                                    `json:"serviceAccount,omitempty"`
+	ImageType            *string                                    `json:"imageType,omitempty"`
+	WorkloadType         *string                                    `json:"workloadType,omitempty"`
+	NodeLabels           map[string]string                          `json:"nodeLabels,omitempty"`
+	Taints               []TaintConfigApplyConfiguration            `json:"taints,omitempty"`
+	ConfidentialNodeType *string                                    `json:"confidentialNodeType,omitempty"`
+	AutoRepair           *bool                                      `json:"autoRepair,omitempty"`
+	AutoUpgrade          *bool                                      `json:"autoUpgrade,omitempty"`
+	ImageStreaming       *ImageStreamingApplyConfiguration          `json:"imageStreaming,omitempty"`
+	ResourceManagerTags  []TagsApplyConfiguration                   `json:"resourceManagerTags,omitempty"`
+	Gvnic                *GvnicApplyConfiguration                   `json:"gvnic,omitempty"`
+	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration   `json:"loggingConfig,omitempty"`
+	Dra                  *DraApplyConfiguration                     `json:"dra,omitempty"`
+	IPType               *string                                    `json:"ipType,omitempty"`
+	NodeVersion          *string                                    `json:"nodeVersion,omitempty"`
+	Tpu                  *GoogleTpuApplyConfiguration               `json:"tpu,omitempty"`
+	Sandbox              *SandboxApplyConfiguration                 `json:"sandbox,omitempty"`
+	WorkloadMetadata     *string                                    `json:"workloadMetadata,omitempty"`
+	InstanceMetadata     map[string]string                          `json:"instanceMetadata,omitempty"`
+	TaintConfig          *NodePoolTaintConfigApplyConfiguration     `json:"taintConfig,omitempty"`
+	MaintenanceExclusion *cloudgooglecomv1.MaintenanceExclusionType `json:"maintenanceExclusion,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
@@ -228,5 +233,13 @@ func (b *NodePoolConfigApplyConfiguration) WithInstanceMetadata(entries map[stri
 // If called multiple times, the TaintConfig field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithTaintConfig(value *NodePoolTaintConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.TaintConfig = value
+	return b
+}
+
+// WithMaintenanceExclusion sets the MaintenanceExclusion field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MaintenanceExclusion field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithMaintenanceExclusion(value cloudgooglecomv1.MaintenanceExclusionType) *NodePoolConfigApplyConfiguration {
+	b.MaintenanceExclusion = &value
 	return b
 }
