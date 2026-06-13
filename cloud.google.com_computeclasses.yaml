@@ -372,6 +372,7 @@ spec:
                           for all nodes managed by this class.
                         enum:
                         - gvisor
+                        - microvm
                         type: string
                     type: object
                   serviceAccount:
