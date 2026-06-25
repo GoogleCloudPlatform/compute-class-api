@@ -19,19 +19,27 @@
 package v1
 
 import (
-	v1 "k8s.io/client-go/applyconfigurations/meta/v1"
+	metav1 "k8s.io/client-go/applyconfigurations/meta/v1"
 )
 
-// PriorityStatusApplyConfiguration represents an declarative configuration of the PriorityStatus type for use
+// PriorityStatusApplyConfiguration represents a declarative configuration of the PriorityStatus type for use
 // with apply.
+//
+// PriorityStatus describes a Status of ComputeClass priority.
 type PriorityStatusApplyConfiguration struct {
-	Identifier           *string                                 `json:"identifier,omitempty"`
-	Conditions           []v1.ConditionApplyConfiguration        `json:"conditions,omitempty"`
-	ResourceInfo         []ResourceInfoApplyConfiguration        `json:"resourceInfo,omitempty"`
+	// Identifier represents the identifier of priority this PriorityStatus refers to.
+	// If WhenUnsatisfiable is set to "ScaleUpAnyway", there will be an additional PriorityStatus with the identifier "ScaleUpAnyway",
+	// and it will contain information about capacity provisioned as part of the implicit "ScaleUpAnyway" rule.
+	Identifier *string `json:"identifier,omitempty"`
+	// Conditions represent the observations of a priority current state.
+	Conditions []metav1.ConditionApplyConfiguration `json:"conditions,omitempty"`
+	// ResourceInfo represents the current information about resource allocation and usage within the priority.
+	ResourceInfo []ResourceInfoApplyConfiguration `json:"resourceInfo,omitempty"`
+	// ScalingEventsHistory represents the aggregated information about scaling events.
 	ScalingEventsHistory *ScalingEventsHistoryApplyConfiguration `json:"scalingEventsHistory,omitempty"`
 }
 
-// PriorityStatusApplyConfiguration constructs an declarative configuration of the PriorityStatus type for use with
+// PriorityStatusApplyConfiguration constructs a declarative configuration of the PriorityStatus type for use with
 // apply.
 func PriorityStatus() *PriorityStatusApplyConfiguration {
 	return &PriorityStatusApplyConfiguration{}
@@ -48,7 +56,7 @@ func (b *PriorityStatusApplyConfiguration) WithIdentifier(value string) *Priorit
 // WithConditions adds the given value to the Conditions field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the Conditions field.
-func (b *PriorityStatusApplyConfiguration) WithConditions(values ...*v1.ConditionApplyConfiguration) *PriorityStatusApplyConfiguration {
+func (b *PriorityStatusApplyConfiguration) WithConditions(values ...*metav1.ConditionApplyConfiguration) *PriorityStatusApplyConfiguration {
 	for i := range values {
 		if values[i] == nil {
 			panic("nil value passed to WithConditions")

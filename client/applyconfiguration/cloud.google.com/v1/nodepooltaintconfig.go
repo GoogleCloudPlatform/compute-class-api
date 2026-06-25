@@ -18,13 +18,19 @@
 
 package v1
 
-// NodePoolTaintConfigApplyConfiguration represents an declarative configuration of the NodePoolTaintConfig type for use
+// NodePoolTaintConfigApplyConfiguration represents a declarative configuration of the NodePoolTaintConfig type for use
 // with apply.
+//
+// NodePoolTaintConfig contains node pool taint configuration.
 type NodePoolTaintConfigApplyConfiguration struct {
+	// ArchitectureTaintBehavior specifies the behavior of architecture taint.
+	// If set to NONE, architecture taint will not be applied to the nodes.
+	// If set to ARM, it will be applied to ARM64 nodes.
+	// Default is ARM if unspecified.
 	ArchitectureTaintBehavior *string `json:"architectureTaintBehavior,omitempty"`
 }
 
-// NodePoolTaintConfigApplyConfiguration constructs an declarative configuration of the NodePoolTaintConfig type for use with
+// NodePoolTaintConfigApplyConfiguration constructs a declarative configuration of the NodePoolTaintConfig type for use with
 // apply.
 func NodePoolTaintConfig() *NodePoolTaintConfigApplyConfiguration {
 	return &NodePoolTaintConfigApplyConfiguration{}

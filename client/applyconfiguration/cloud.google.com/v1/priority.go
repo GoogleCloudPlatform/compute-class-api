@@ -22,39 +22,82 @@ import (
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// PriorityApplyConfiguration represents an declarative configuration of the Priority type for use
+// PriorityApplyConfiguration represents a declarative configuration of the Priority type for use
 // with apply.
+//
+// Priority is a specification of preferred machine characteristics.
 type PriorityApplyConfiguration struct {
-	MachineFamily                *string                              `json:"machineFamily,omitempty"`
-	Spot                         *bool                                `json:"spot,omitempty"`
-	MinCores                     *int                                 `json:"minCores,omitempty"`
-	MinMemoryGb                  *int                                 `json:"minMemoryGb,omitempty"`
-	Nodepools                    []string                             `json:"nodepools,omitempty"`
-	Storage                      *StorageApplyConfiguration           `json:"storage,omitempty"`
-	MachineType                  *string                              `json:"machineType,omitempty"`
-	Gpu                          *GPUApplyConfiguration               `json:"gpu,omitempty"`
-	Tpu                          *TPUApplyConfiguration               `json:"tpu,omitempty"`
-	Reservations                 *ReservationsApplyConfiguration      `json:"reservations,omitempty"`
-	MaxRunDurationSeconds        *int                                 `json:"maxRunDurationSeconds,omitempty"`
-	MaxPodsPerNode               *int                                 `json:"maxPodsPerNode,omitempty"`
-	NodeSystemConfig             *NodeSystemConfigApplyConfiguration  `json:"nodeSystemConfig,omitempty"`
-	FlexStart                    *FlexStartApplyConfiguration         `json:"flexStart,omitempty"`
-	PodFamily                    *string                              `json:"podFamily,omitempty"`
-	Location                     *LocationApplyConfiguration          `json:"location,omitempty"`
-	Placement                    *PlacementApplyConfiguration         `json:"placement,omitempty"`
-	CapacityCheckWaitTimeSeconds *int                                 `json:"capacityCheckWaitTimeSeconds,omitempty"`
-	MinCpuPlatform               *string                              `json:"minCpuPlatform,omitempty"`
-	NodeLabels                   map[string]string                    `json:"nodeLabels,omitempty"`
-	Taints                       []TaintConfigApplyConfiguration      `json:"taints,omitempty"`
-	PriorityScore                *int                                 `json:"priorityScore,omitempty"`
-	AcceleratorNetworkProfile    *string                              `json:"acceleratorNetworkProfile,omitempty"`
-	GpuDirect                    *string                              `json:"gpuDirect,omitempty"`
-	MinimumCapacity              *MinimumCapacityApplyConfiguration   `json:"minimumCapacity,omitempty"`
-	InstanceMetadata             map[string]string                    `json:"instanceMetadata,omitempty"`
-	AllocationStrategy           *cloudgooglecomv1.AllocationStrategy `json:"allocationStrategy,omitempty"`
+	// Machine family describes preferred instance family for a node. If none is specified,
+	// the default autoprovisioning machine family is used.
+	MachineFamily *string `json:"machineFamily,omitempty"`
+	// Spot if set to true specifies that a node should be a spot instance, on-demand otherwise.
+	Spot *bool `json:"spot,omitempty"`
+	// MinCores describes a minimum number of CPU cores of a node.
+	MinCores *int `json:"minCores,omitempty"`
+	// MinMemoryGb describes a minimum GBs of memory of a node.
+	MinMemoryGb *int `json:"minMemoryGb,omitempty"`
+	// Nodepools describes preference of specific, preexisting nodepools.
+	Nodepools []string `json:"nodepools,omitempty"`
+	// Storage describes storage config of a node.
+	Storage *StorageApplyConfiguration `json:"storage,omitempty"`
+	// MachineType defines preferred machine type for a node.
+	MachineType *string `json:"machineType,omitempty"`
+	// Gpu defines preferred GPU config for a node.
+	Gpu *GPUApplyConfiguration `json:"gpu,omitempty"`
+	// Tpu defines preferred TPU config for a node.
+	Tpu *TPUApplyConfiguration `json:"tpu,omitempty"`
+	// Reservations defines reservations config for a node.
+	Reservations *ReservationsApplyConfiguration `json:"reservations,omitempty"`
+	// MaxRunDurationSeconds defines the maximum duration for the nodes to exist. If unspecified, the nodes can exist indefinitely.
+	MaxRunDurationSeconds *int `json:"maxRunDurationSeconds,omitempty"`
+	// MaxPodsPerNode describes the maximum number of pods a node can accommodate.
+	MaxPodsPerNode *int `json:"maxPodsPerNode,omitempty"`
+	// NodeSystemConfig defines node system config for a node.
+	NodeSystemConfig *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
+	// FlexStart defines Flex Start provisioning model.
+	FlexStart *FlexStartApplyConfiguration `json:"flexStart,omitempty"`
+	// PodFamily represents pod-based provisioning and billing config.
+	PodFamily *string `json:"podFamily,omitempty"`
+	// Location describes CCC zonal preferences config.
+	Location *LocationApplyConfiguration `json:"location,omitempty"`
+	// Placement defines resource policy used for BYOPP and BYOWP
+	Placement *PlacementApplyConfiguration `json:"placement,omitempty"`
+	// CapacityCheckWaitTimeSeconds defines for how long will this priority be attempted to scale up before moving on to the next priority.
+	CapacityCheckWaitTimeSeconds *int `json:"capacityCheckWaitTimeSeconds,omitempty"`
+	// MinCpuPlatform defines the minimum CPU platform for a node.
+	MinCpuPlatform *string `json:"minCpuPlatform,omitempty"`
+	// NodeLabels is used to add user defined Kubernetes labels to all nodes in the new node pool.
+	// These labels are applied to the Kubernetes API node object and can be used in nodeSelectors for pod scheduling.
+	// Note: Node labels are distinct from GKE labels.
+	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
+	NodeLabels map[string]string `json:"nodeLabels,omitempty"`
+	// Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
+	// These taints are applied to the Kubernetes API node object and can be used in tolerations for pod scheduling.
+	Taints []TaintConfigApplyConfiguration `json:"taints,omitempty"`
+	// A higher value is treated as a higher priority.
+	// Priorities with the same priorityScore value are treated equally.
+	// Not more than 3 priorities can have the same priorityScore.
+	PriorityScore *int `json:"priorityScore,omitempty"`
+	// AcceleratorNetworkProfile defines the type of automated accelerator network provisioning to use.
+	// Possible values:
+	// "auto": Enables automatic ANP configuration based on the machine type.
+	// "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
+	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty"`
+	// GpuDirect defines the gpu direct strategy.
+	// Possible values:
+	// "rdma"
+	GpuDirect *string `json:"gpuDirect,omitempty"`
+	// MinimumCapacity defines declarative minimum node preprovisioning requirements
+	// for this specific priority.
+	MinimumCapacity *MinimumCapacityApplyConfiguration `json:"minimumCapacity,omitempty"`
+	// InstanceMetadata is a map of custom key-value pairs to be injected into the underlying Compute Engine instances.
+	// Overrides conflicting keys defined in NodePoolConfig.InstanceMetadata.
+	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty"`
+	// AllocationStrategy defines the allocation strategy for a node pool.
+	AllocationStrategy *cloudgooglecomv1.AllocationStrategy `json:"allocationStrategy,omitempty"`
 }
 
-// PriorityApplyConfiguration constructs an declarative configuration of the Priority type for use with
+// PriorityApplyConfiguration constructs a declarative configuration of the Priority type for use with
 // apply.
 func Priority() *PriorityApplyConfiguration {
 	return &PriorityApplyConfiguration{}

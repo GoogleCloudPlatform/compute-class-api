@@ -18,18 +18,40 @@
 
 package v1
 
-// EvictionMinimumReclaimApplyConfiguration represents an declarative configuration of the EvictionMinimumReclaim type for use
+// EvictionMinimumReclaimApplyConfiguration represents a declarative configuration of the EvictionMinimumReclaim type for use
 // with apply.
+//
+// EvictionMinimumReclaim is a map of signal names to quantities that defines minimum reclaims.
+// It describes the minimum amount of a given resource the kubelet will reclaim when performing a pod eviction.
+// By default, all values are 0 if unspecified.
 type EvictionMinimumReclaimApplyConfiguration struct {
-	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
-	NodefsAvailable   *string `json:"nodefsAvailable,omitempty"`
-	ImagefsAvailable  *string `json:"imagefsAvailable,omitempty"`
+	// MemoryAvailable is the minimum reclaim for memory.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	MemoryAvailable *string `json:"memoryAvailable,omitempty"`
+	// NodefsAvailable is the minimum reclaim for nodefs.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty"`
+	// ImagefsAvailable is the minimum reclaim for imagefs.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty"`
+	// ImagefsInodesFree is the minimum reclaim for imagefs.inodesFree.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
 	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty"`
-	NodefsInodesFree  *string `json:"nodefsInodesFree,omitempty"`
-	PidAvailable      *string `json:"pidAvailable,omitempty"`
+	// NodefsInodesFree is the minimum reclaim for nodefs.inodesFree.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty"`
+	// PidAvailable is the minimum reclaim for pid.available.
+	// The value must be a percentage, e.g., "5%".
+	// The value must be positive and less than 10%.
+	PidAvailable *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionMinimumReclaimApplyConfiguration constructs an declarative configuration of the EvictionMinimumReclaim type for use with
+// EvictionMinimumReclaimApplyConfiguration constructs a declarative configuration of the EvictionMinimumReclaim type for use with
 // apply.
 func EvictionMinimumReclaim() *EvictionMinimumReclaimApplyConfiguration {
 	return &EvictionMinimumReclaimApplyConfiguration{}

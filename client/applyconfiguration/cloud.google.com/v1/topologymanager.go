@@ -18,14 +18,24 @@
 
 package v1
 
-// TopologyManagerApplyConfiguration represents an declarative configuration of the TopologyManager type for use
+// TopologyManagerApplyConfiguration represents a declarative configuration of the TopologyManager type for use
 // with apply.
 type TopologyManagerApplyConfiguration struct {
+	// Policy controls the Kubelet's Topology Manager policy.
+	// Policies:
+	// * none: (default) The Kubelet does not perform any topology alignment.
+	// * best-effort: The Kubelet will attempt to align resources but will not fail pod admission.
+	// * restricted: The Kubelet will reject pods that do not align to the minimal number of NUMA domains.
+	// * single-numa-node: The Kubelet will reject pods that do not align to a single NUMA domain.
 	Policy *string `json:"policy,omitempty"`
-	Scope  *string `json:"scope,omitempty"`
+	// Scope controls the Kubelet's Topology Manager scope.
+	// Scopes:
+	// * container: (default) The Kubelet performs topology alignment for each container in a pod.
+	// * pod: The Kubelet performs topology alignment for the pod as a whole. This setting ensures pod-level topology alignment, where the Topology Manager treats all containers as a single unit to place them on a common set of NUMA nodes.
+	Scope *string `json:"scope,omitempty"`
 }
 
-// TopologyManagerApplyConfiguration constructs an declarative configuration of the TopologyManager type for use with
+// TopologyManagerApplyConfiguration constructs a declarative configuration of the TopologyManager type for use with
 // apply.
 func TopologyManager() *TopologyManagerApplyConfiguration {
 	return &TopologyManagerApplyConfiguration{}

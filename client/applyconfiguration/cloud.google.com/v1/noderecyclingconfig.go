@@ -18,13 +18,16 @@
 
 package v1
 
-// NodeRecyclingConfigApplyConfiguration represents an declarative configuration of the NodeRecyclingConfig type for use
+// NodeRecyclingConfigApplyConfiguration represents a declarative configuration of the NodeRecyclingConfig type for use
 // with apply.
+//
+// NodeRecyclingConfig defines node recycling config.
 type NodeRecyclingConfigApplyConfiguration struct {
+	// LeadTimeSeconds defines how much time before node termination timestamp CA should start looking for a replacement node.
 	LeadTimeSeconds *int `json:"leadTimeSeconds,omitempty"`
 }
 
-// NodeRecyclingConfigApplyConfiguration constructs an declarative configuration of the NodeRecyclingConfig type for use with
+// NodeRecyclingConfigApplyConfiguration constructs a declarative configuration of the NodeRecyclingConfig type for use with
 // apply.
 func NodeRecyclingConfig() *NodeRecyclingConfigApplyConfiguration {
 	return &NodeRecyclingConfigApplyConfiguration{}

@@ -4,7 +4,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     components.gke.io/layer: addon
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.21.0
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
   name: computeclasses.cloud.google.com

@@ -18,18 +18,39 @@
 
 package v1
 
-// EvictionSoftGracePeriodApplyConfiguration represents an declarative configuration of the EvictionSoftGracePeriod type for use
+// EvictionSoftGracePeriodApplyConfiguration represents a declarative configuration of the EvictionSoftGracePeriod type for use
 // with apply.
+//
+// EvictionSoftGracePeriod is a map of signal names to durations that defines grace periods for soft eviction thresholds.
+// Each soft eviction threshold must have a corresponding grace period.
 type EvictionSoftGracePeriodApplyConfiguration struct {
-	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
-	NodefsAvailable   *string `json:"nodefsAvailable,omitempty"`
-	ImagefsAvailable  *string `json:"imagefsAvailable,omitempty"`
+	// MemoryAvailable is the grace period for the memory.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	MemoryAvailable *string `json:"memoryAvailable,omitempty"`
+	// NodefsAvailable is the grace period for the nodefs.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty"`
+	// ImagefsAvailable is the grace period for the imagefs.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty"`
+	// ImagefsInodesFree is the grace period for the imagefs.inodesFree soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
 	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty"`
-	NodefsInodesFree  *string `json:"nodefsInodesFree,omitempty"`
-	PidAvailable      *string `json:"pidAvailable,omitempty"`
+	// NodefsInodesFree is the grace period for the nodefs.inodesFree soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty"`
+	// PidAvailable is the grace period for the pid.available soft eviction threshold.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
+	PidAvailable *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionSoftGracePeriodApplyConfiguration constructs an declarative configuration of the EvictionSoftGracePeriod type for use with
+// EvictionSoftGracePeriodApplyConfiguration constructs a declarative configuration of the EvictionSoftGracePeriod type for use with
 // apply.
 func EvictionSoftGracePeriod() *EvictionSoftGracePeriodApplyConfiguration {
 	return &EvictionSoftGracePeriodApplyConfiguration{}

@@ -18,15 +18,23 @@
 
 package v1
 
-// TaintConfigApplyConfiguration represents an declarative configuration of the TaintConfig type for use
+// TaintConfigApplyConfiguration represents a declarative configuration of the TaintConfig type for use
 // with apply.
+//
+// TaintConfig applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling.
+// Any workload that does not tolerate the taints specified in this object will not be scheduled to the node pool.
+// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-taints
 type TaintConfigApplyConfiguration struct {
-	Key    *string `json:"key,omitempty"`
-	Value  *string `json:"value,omitempty"`
+	// Node taint key. The key must conform to syntax described in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set.
+	Key *string `json:"key,omitempty"`
+	// The value that matches the specified taint key.
+	Value *string `json:"value,omitempty"`
+	// It defines the taint's effect on pods that does not have the necessary toleration.
+	// The following values are supported: NoSchedule, PreferNoSchedule, and NoExecute.
 	Effect *string `json:"effect,omitempty"`
 }
 
-// TaintConfigApplyConfiguration constructs an declarative configuration of the TaintConfig type for use with
+// TaintConfigApplyConfiguration constructs a declarative configuration of the TaintConfig type for use with
 // apply.
 func TaintConfig() *TaintConfigApplyConfiguration {
 	return &TaintConfigApplyConfiguration{}

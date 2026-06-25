@@ -19,18 +19,30 @@
 package v1
 
 import (
-	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// LocationApplyConfiguration represents an declarative configuration of the Location type for use
+// LocationApplyConfiguration represents a declarative configuration of the Location type for use
 // with apply.
+//
+// Location describes CCC zonal preferences config.
 type LocationApplyConfiguration struct {
-	Zones          []string      `json:"zones,omitempty"`
-	LocationPolicy *string       `json:"locationPolicy,omitempty"`
-	ZoneTypes      []v1.ZoneType `json:"zoneTypes,omitempty"`
+	// Zones lists zones considered for node autoprovisioning.
+	Zones []string `json:"zones,omitempty"`
+	// LocationPolicy specifies the strategy for selecting zones when scaling up a node
+	// pool managed by this Compute Class. This setting controls the distribution of new
+	// nodes across zones in the node pool's region and corresponds to the node pool
+	// setting of the same name.
+	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--location-policy
+	LocationPolicy *string `json:"locationPolicy,omitempty"`
+	// ZoneTypes specifies sets of zones used for provisioning.
+	// STANDARD zone type designates the core Google Cloud zones within a region.
+	// AI zone type designates specialized zones optimized for AI.
+	// CLUSTER_DEFAULT zone type designate zones specified in the cluster's autoprovisioningLocations or cluster’s locations if autoprovisioningLocations is empty.
+	ZoneTypes []cloudgooglecomv1.ZoneType `json:"zoneTypes,omitempty"`
 }
 
-// LocationApplyConfiguration constructs an declarative configuration of the Location type for use with
+// LocationApplyConfiguration constructs a declarative configuration of the Location type for use with
 // apply.
 func Location() *LocationApplyConfiguration {
 	return &LocationApplyConfiguration{}
@@ -57,7 +69,7 @@ func (b *LocationApplyConfiguration) WithLocationPolicy(value string) *LocationA
 // WithZoneTypes adds the given value to the ZoneTypes field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the ZoneTypes field.
-func (b *LocationApplyConfiguration) WithZoneTypes(values ...v1.ZoneType) *LocationApplyConfiguration {
+func (b *LocationApplyConfiguration) WithZoneTypes(values ...cloudgooglecomv1.ZoneType) *LocationApplyConfiguration {
 	for i := range values {
 		b.ZoneTypes = append(b.ZoneTypes, values[i])
 	}

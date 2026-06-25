@@ -18,13 +18,17 @@
 
 package v1
 
-// ImageStreamingApplyConfiguration represents an declarative configuration of the ImageStreaming type for use
+// ImageStreamingApplyConfiguration represents a declarative configuration of the ImageStreaming type for use
 // with apply.
+//
+// ImageStreaming stores container image streaming settings. It is equivalent to `GcfsConfig` in GKE.
+// https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/GcfsConfig
 type ImageStreamingApplyConfiguration struct {
+	// Enabled enables container image` streaming.
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// ImageStreamingApplyConfiguration constructs an declarative configuration of the ImageStreaming type for use with
+// ImageStreamingApplyConfiguration constructs a declarative configuration of the ImageStreaming type for use with
 // apply.
 func ImageStreaming() *ImageStreamingApplyConfiguration {
 	return &ImageStreamingApplyConfiguration{}

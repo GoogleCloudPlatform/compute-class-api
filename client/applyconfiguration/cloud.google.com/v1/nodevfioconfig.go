@@ -18,13 +18,23 @@
 
 package v1
 
-// NodeVfioConfigApplyConfiguration represents an declarative configuration of the NodeVfioConfig type for use
+// NodeVfioConfigApplyConfiguration represents a declarative configuration of the NodeVfioConfig type for use
 // with apply.
+//
+// NodeVfioConfig defines configuration settings for VFIO on a node.
 type NodeVfioConfigApplyConfiguration struct {
+	// Specifies the maximum number of DMA entries (pages) that can be mapped
+	// by the VFIO IOMMU type 1 driver for a container. This limit affects the
+	// total amount of host memory that can be pinned for direct device access,
+	// which is often critical for high-performance devices like TPUs and GPUs.
+	// This setting corresponds to the kernel parameter at:
+	// /sys/module/vfio_iommu_type1/parameters/dma_entry_limit
+	// The default value in the kernel is 65535. Higher values may be
+	// needed for workloads mapping large memory regions.
 	DmaEntryLimit *int32 `json:"dmaEntryLimit,omitempty"`
 }
 
-// NodeVfioConfigApplyConfiguration constructs an declarative configuration of the NodeVfioConfig type for use with
+// NodeVfioConfigApplyConfiguration constructs a declarative configuration of the NodeVfioConfig type for use with
 // apply.
 func NodeVfioConfig() *NodeVfioConfigApplyConfiguration {
 	return &NodeVfioConfigApplyConfiguration{}

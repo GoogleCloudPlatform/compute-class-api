@@ -18,17 +18,24 @@
 
 package v1
 
-// GPUApplyConfiguration represents an declarative configuration of the GPU type for use
+// GPUApplyConfiguration represents a declarative configuration of the GPU type for use
 // with apply.
+//
+// GPU describes preference on given GPU config.
 type GPUApplyConfiguration struct {
-	Type          *string                       `json:"type,omitempty"`
-	Count         *int64                        `json:"count,omitempty"`
-	DriverVersion *string                       `json:"driverVersion,omitempty"`
-	Topology      *string                       `json:"topology,omitempty"`
-	GpuSharing    *GpuSharingApplyConfiguration `json:"gpuSharing,omitempty"`
+	// Type describes preferred GPU accelerator type for a node.
+	Type *string `json:"type,omitempty"`
+	// Count describes preferred count of GPUs for a node.
+	Count *int64 `json:"count,omitempty"`
+	// DriverVersion describes version of GPU driver for a node.
+	DriverVersion *string `json:"driverVersion,omitempty"`
+	// The topology defines the physical arrangement of GPUs chips within a slice.
+	Topology *string `json:"topology,omitempty"`
+	// GpuSharing defines the way the nodes would share the GPU.
+	GpuSharing *GpuSharingApplyConfiguration `json:"gpuSharing,omitempty"`
 }
 
-// GPUApplyConfiguration constructs an declarative configuration of the GPU type for use with
+// GPUApplyConfiguration constructs a declarative configuration of the GPU type for use with
 // apply.
 func GPU() *GPUApplyConfiguration {
 	return &GPUApplyConfiguration{}

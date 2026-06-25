@@ -18,16 +18,28 @@
 
 package v1
 
-// NodePoolAutoCreationApplyConfiguration represents an declarative configuration of the NodePoolAutoCreation type for use
+// NodePoolAutoCreationApplyConfiguration represents a declarative configuration of the NodePoolAutoCreation type for use
 // with apply.
+//
+// NodePoolAutoCreation defines node-pool autoprovisioning related settings.
 type NodePoolAutoCreationApplyConfiguration struct {
-	Enabled                *bool                                     `json:"enabled,omitempty"`
-	DynamicMaxPodsPerNode  *bool                                     `json:"dynamicMaxPodsPerNode,omitempty"`
-	DynamicBootDiskSize    *bool                                     `json:"dynamicBootDiskSize,omitempty"`
+	// Enabled indicates whether NodePoolAutoCreation is enabled for a given ComputeClass.
+	Enabled *bool `json:"enabled,omitempty"`
+	// DynamicMaxPodsPerNode if set to true specifies that max pods per node value for managed node pools will be selected
+	// by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.MaxPodsPerNode value specified.
+	// If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
+	// If set to false cluster wide static value for max pods per node is used.
+	DynamicMaxPodsPerNode *bool `json:"dynamicMaxPodsPerNode,omitempty"`
+	// DynamicBootDiskSize if set to true specifies that boot disk size value for managed node pools will be selected
+	// by Cluster Autoscaler automatically, based on the binpacking simulation results. It is ignored if there is a Priority.Storage.BootDiskSize value specified.
+	// If not specified the value defaults to being true for Compute Classes with Autopilot enabled.
+	// If set to false cluster wide static value from AutoprovisioningNodePoolDefaults is used.
+	DynamicBootDiskSize *bool `json:"dynamicBootDiskSize,omitempty"`
+	// ShieldedInstanceConfig defines the shielded instance configuration for auto-created node pools.
 	ShieldedInstanceConfig *ShieldedInstanceConfigApplyConfiguration `json:"shieldedInstanceConfig,omitempty"`
 }
 
-// NodePoolAutoCreationApplyConfiguration constructs an declarative configuration of the NodePoolAutoCreation type for use with
+// NodePoolAutoCreationApplyConfiguration constructs a declarative configuration of the NodePoolAutoCreation type for use with
 // apply.
 func NodePoolAutoCreation() *NodePoolAutoCreationApplyConfiguration {
 	return &NodePoolAutoCreationApplyConfiguration{}

@@ -18,13 +18,16 @@
 
 package v1
 
-// CustomNodeInitApplyConfiguration represents an declarative configuration of the CustomNodeInit type for use
+// CustomNodeInitApplyConfiguration represents a declarative configuration of the CustomNodeInit type for use
 // with apply.
+//
+// CustomNodeInit defines the init script to be executed on the node.
 type CustomNodeInitApplyConfiguration struct {
+	// The init script to be executed on the node.
 	InitScript *InitScriptApplyConfiguration `json:"initScript,omitempty"`
 }
 
-// CustomNodeInitApplyConfiguration constructs an declarative configuration of the CustomNodeInit type for use with
+// CustomNodeInitApplyConfiguration constructs a declarative configuration of the CustomNodeInit type for use with
 // apply.
 func CustomNodeInit() *CustomNodeInitApplyConfiguration {
 	return &CustomNodeInitApplyConfiguration{}

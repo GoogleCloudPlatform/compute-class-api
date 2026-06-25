@@ -18,13 +18,20 @@
 
 package v1
 
-// MemoryManagerApplyConfiguration represents an declarative configuration of the MemoryManager type for use
+// MemoryManagerApplyConfiguration represents a declarative configuration of the MemoryManager type for use
 // with apply.
+//
+// MemoryManagerConfig defines the configuration for the Kubelet Memory Manager.
 type MemoryManagerApplyConfiguration struct {
+	// Policy controls the Kubelet's Memory Manager policy.
+	// The Static policy is required for the Topology Manager to perform memory affinity alignment.
+	// Policies:
+	// * None: (default) The Kubelet does not perform any memory alignment.
+	// * Static: The Kubelet allows pods in the Guaranteed QoS class to be granted memory from a single NUMA node.
 	Policy *string `json:"policy,omitempty"`
 }
 
-// MemoryManagerApplyConfiguration constructs an declarative configuration of the MemoryManager type for use with
+// MemoryManagerApplyConfiguration constructs a declarative configuration of the MemoryManager type for use with
 // apply.
 func MemoryManager() *MemoryManagerApplyConfiguration {
 	return &MemoryManagerApplyConfiguration{}

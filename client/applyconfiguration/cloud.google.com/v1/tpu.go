@@ -18,15 +18,20 @@
 
 package v1
 
-// TPUApplyConfiguration represents an declarative configuration of the TPU type for use
+// TPUApplyConfiguration represents a declarative configuration of the TPU type for use
 // with apply.
+//
+// TPU describes preference on given TPU config.
 type TPUApplyConfiguration struct {
-	Type     *string `json:"type,omitempty"`
-	Count    *int64  `json:"count,omitempty"`
+	// Type describes preferred TPU type for a node.
+	Type *string `json:"type,omitempty"`
+	// Count describes preferred count of TPU chips for a node.
+	Count *int64 `json:"count,omitempty"`
+	// Topology describes preferred TPU topology of a node.
 	Topology *string `json:"topology,omitempty"`
 }
 
-// TPUApplyConfiguration constructs an declarative configuration of the TPU type for use with
+// TPUApplyConfiguration constructs a declarative configuration of the TPU type for use with
 // apply.
 func TPU() *TPUApplyConfiguration {
 	return &TPUApplyConfiguration{}

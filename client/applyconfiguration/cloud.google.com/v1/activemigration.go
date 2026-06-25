@@ -18,14 +18,21 @@
 
 package v1
 
-// ActiveMigrationApplyConfiguration represents an declarative configuration of the ActiveMigration type for use
+// ActiveMigrationApplyConfiguration represents a declarative configuration of the ActiveMigration type for use
 // with apply.
+//
+// ActiveMigration describes if and what type of active migration
+// should be performed.
 type ActiveMigrationApplyConfiguration struct {
-	OptimizeRulePriority          *bool `json:"optimizeRulePriority,omitempty"`
+	// OptimizeRulePriority defines whether workloads affected by given
+	// ComputeClass should be migrated to nodepool defined by higher priority rule, if possible.
+	OptimizeRulePriority *bool `json:"optimizeRulePriority,omitempty"`
+	// EnsureAllDaemonSetPodsRunning defines whether node pools should be migrated
+	// to larger ones to ensure that all daemon sets are schedulable.
 	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty"`
 }
 
-// ActiveMigrationApplyConfiguration constructs an declarative configuration of the ActiveMigration type for use with
+// ActiveMigrationApplyConfiguration constructs a declarative configuration of the ActiveMigration type for use with
 // apply.
 func ActiveMigration() *ActiveMigrationApplyConfiguration {
 	return &ActiveMigrationApplyConfiguration{}

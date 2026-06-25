@@ -18,14 +18,18 @@
 
 package v1
 
-// FlexStartApplyConfiguration represents an declarative configuration of the FlexStart type for use
+// FlexStartApplyConfiguration represents a declarative configuration of the FlexStart type for use
 // with apply.
+//
+// FlexStart defines Flex Start provisioning model.
 type FlexStartApplyConfiguration struct {
-	Enabled       *bool                                  `json:"enabled,omitempty"`
+	// Enabled indicates whether Flex Start provisioning model is enabled.
+	Enabled *bool `json:"enabled,omitempty"`
+	// NodeRecycling defines node recycling config.
 	NodeRecycling *NodeRecyclingConfigApplyConfiguration `json:"nodeRecycling,omitempty"`
 }
 
-// FlexStartApplyConfiguration constructs an declarative configuration of the FlexStart type for use with
+// FlexStartApplyConfiguration constructs a declarative configuration of the FlexStart type for use with
 // apply.
 func FlexStart() *FlexStartApplyConfiguration {
 	return &FlexStartApplyConfiguration{}

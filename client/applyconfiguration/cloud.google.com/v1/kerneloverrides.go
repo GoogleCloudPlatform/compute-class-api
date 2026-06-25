@@ -18,14 +18,18 @@
 
 package v1
 
-// KernelOverridesApplyConfiguration represents an declarative configuration of the KernelOverrides type for use
+// KernelOverridesApplyConfiguration represents a declarative configuration of the KernelOverrides type for use
 // with apply.
+//
+// KernelOverrides defines kernel parameters.
 type KernelOverridesApplyConfiguration struct {
+	// Optional kernel command line arguments overrides.
 	KernelCommandlineOverrides *KernelCommandlineOverridesApplyConfiguration `json:"kernelCommandlineOverrides,omitempty"`
-	LruGen                     *LRUGenApplyConfiguration                     `json:"lruGen,omitempty"`
+	// LRU Gen (Multi-Gen LRU) options.
+	LruGen *LRUGenApplyConfiguration `json:"lruGen,omitempty"`
 }
 
-// KernelOverridesApplyConfiguration constructs an declarative configuration of the KernelOverrides type for use with
+// KernelOverridesApplyConfiguration constructs a declarative configuration of the KernelOverrides type for use with
 // apply.
 func KernelOverrides() *KernelOverridesApplyConfiguration {
 	return &KernelOverridesApplyConfiguration{}

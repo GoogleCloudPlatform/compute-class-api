@@ -18,14 +18,18 @@
 
 package v1
 
-// HugepagesConfigApplyConfiguration represents an declarative configuration of the HugepagesConfig type for use
+// HugepagesConfigApplyConfiguration represents a declarative configuration of the HugepagesConfig type for use
 // with apply.
+//
+// HugepagesConfig defines hugepages config for a node.
 type HugepagesConfigApplyConfiguration struct {
+	// Number of 1-gigabyte-sized huge pages to allocate.
 	HugepageSize1g *int64 `json:"hugepage_size1g,omitempty"`
+	// Number of 2-megabyte-sized huge pages to allocate.
 	HugepageSize2m *int64 `json:"hugepage_size2m,omitempty"`
 }
 
-// HugepagesConfigApplyConfiguration constructs an declarative configuration of the HugepagesConfig type for use with
+// HugepagesConfigApplyConfiguration constructs a declarative configuration of the HugepagesConfig type for use with
 // apply.
 func HugepagesConfig() *HugepagesConfigApplyConfiguration {
 	return &HugepagesConfigApplyConfiguration{}

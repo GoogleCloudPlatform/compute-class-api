@@ -18,13 +18,19 @@
 
 package v1
 
-// MinimumCapacityApplyConfiguration represents an declarative configuration of the MinimumCapacity type for use
+// MinimumCapacityApplyConfiguration represents a declarative configuration of the MinimumCapacity type for use
 // with apply.
+//
+// MinimumCapacity defines the minimum capacity required for a given
+// compute class or priority. It allows managing statically sized infrastructure.
 type MinimumCapacityApplyConfiguration struct {
+	// TargetNodeCount defines a minimum number of nodes that should be present in the cluster.
+	// If the active node count falls below the defined threshold,
+	// Cluster Autoscaler will proactively provision capacity to satisfy the requirement.
 	TargetNodeCount *int `json:"targetNodeCount,omitempty"`
 }
 
-// MinimumCapacityApplyConfiguration constructs an declarative configuration of the MinimumCapacity type for use with
+// MinimumCapacityApplyConfiguration constructs a declarative configuration of the MinimumCapacity type for use with
 // apply.
 func MinimumCapacity() *MinimumCapacityApplyConfiguration {
 	return &MinimumCapacityApplyConfiguration{}

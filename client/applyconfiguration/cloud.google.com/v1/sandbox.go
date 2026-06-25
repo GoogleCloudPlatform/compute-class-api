@@ -18,13 +18,16 @@
 
 package v1
 
-// SandboxApplyConfiguration represents an declarative configuration of the Sandbox type for use
+// SandboxApplyConfiguration represents a declarative configuration of the Sandbox type for use
 // with apply.
+//
+// Sandbox stores sandbox configuration for nodepools.
 type SandboxApplyConfiguration struct {
+	// Type defines the sandbox type (e.g., gvisor) for all nodes managed by this class.
 	Type *string `json:"type,omitempty"`
 }
 
-// SandboxApplyConfiguration constructs an declarative configuration of the Sandbox type for use with
+// SandboxApplyConfiguration constructs a declarative configuration of the Sandbox type for use with
 // apply.
 func Sandbox() *SandboxApplyConfiguration {
 	return &SandboxApplyConfiguration{}

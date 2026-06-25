@@ -18,14 +18,18 @@
 
 package v1
 
-// EtcHostsEntryApplyConfiguration represents an declarative configuration of the EtcHostsEntry type for use
+// EtcHostsEntryApplyConfiguration represents a declarative configuration of the EtcHostsEntry type for use
 // with apply.
+//
+// EtcHostsEntry defines an entry in /etc/hosts.
 type EtcHostsEntryApplyConfiguration struct {
-	Ip   *string `json:"ip,omitempty"`
+	// The IPv4 or IPv6 address of the host.
+	Ip *string `json:"ip,omitempty"`
+	// The hostname of the host.
 	Host *string `json:"host,omitempty"`
 }
 
-// EtcHostsEntryApplyConfiguration constructs an declarative configuration of the EtcHostsEntry type for use with
+// EtcHostsEntryApplyConfiguration constructs a declarative configuration of the EtcHostsEntry type for use with
 // apply.
 func EtcHostsEntry() *EtcHostsEntryApplyConfiguration {
 	return &EtcHostsEntryApplyConfiguration{}

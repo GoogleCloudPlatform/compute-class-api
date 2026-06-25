@@ -18,15 +18,22 @@
 
 package v1
 
-// AutoscalingPolicyApplyConfiguration represents an declarative configuration of the AutoscalingPolicy type for use
+// AutoscalingPolicyApplyConfiguration represents a declarative configuration of the AutoscalingPolicy type for use
 // with apply.
+//
+// AutoscalingPolicy defines autoscaling related settings.
 type AutoscalingPolicyApplyConfiguration struct {
+	// ConsolidationDelayMinutes determines how long a node should be unneeded before it is eligible for scale down.
+	// Minimum duration is 1 minute, maximum is 24 hours or 1440 minutes
 	ConsolidationDelayMinutes *int `json:"consolidationDelayMinutes,omitempty"`
-	ConsolidationThreshold    *int `json:"consolidationThreshold,omitempty"`
+	// ConsolidationThreshold determines resource utilization threshold below which a node can be considered for scale down.
+	ConsolidationThreshold *int `json:"consolidationThreshold,omitempty"`
+	// GPUConsolidationThreshold determines GPU resource utilization threshold below which a node can be considered for scale down.
+	// Utilization calculation only cares about GPU resource for accelerator node, CPU and memory utilization will be ignored.
 	GPUConsolidationThreshold *int `json:"gpuConsolidationThreshold,omitempty"`
 }
 
-// AutoscalingPolicyApplyConfiguration constructs an declarative configuration of the AutoscalingPolicy type for use with
+// AutoscalingPolicyApplyConfiguration constructs a declarative configuration of the AutoscalingPolicy type for use with
 // apply.
 func AutoscalingPolicy() *AutoscalingPolicyApplyConfiguration {
 	return &AutoscalingPolicyApplyConfiguration{}

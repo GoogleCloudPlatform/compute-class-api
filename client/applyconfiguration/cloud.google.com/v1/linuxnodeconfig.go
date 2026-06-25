@@ -22,26 +22,49 @@ import (
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// LinuxNodeConfigApplyConfiguration represents an declarative configuration of the LinuxNodeConfig type for use
+// LinuxNodeConfigApplyConfiguration represents a declarative configuration of the LinuxNodeConfig type for use
 // with apply.
+//
+// LinuxNodeConfig defines linux node config for a node.
 type LinuxNodeConfigApplyConfiguration struct {
-	Sysctls                          *SysctlsConfigApplyConfiguration      `json:"sysctls,omitempty"`
-	Hugepages                        *HugepagesConfigApplyConfiguration    `json:"hugepageConfig,omitempty"`
-	TransparentHugepageEnabled       *string                               `json:"transparentHugepageEnabled,omitempty"`
-	TransparentHugepageDefrag        *string                               `json:"transparentHugepageDefrag,omitempty"`
-	SwapConfig                       *SwapConfigApplyConfiguration         `json:"swapConfig,omitempty"`
-	AdditionalEtcHosts               []*cloudgooglecomv1.EtcHostsEntry     `json:"additionalEtcHosts,omitempty"`
-	AdditionalEtcResolvConf          []*cloudgooglecomv1.ResolvedConfEntry `json:"additionalEtcResolvConf,omitempty"`
+	Sysctls   *SysctlsConfigApplyConfiguration   `json:"sysctls,omitempty"`
+	Hugepages *HugepagesConfigApplyConfiguration `json:"hugepageConfig,omitempty"`
+	// Controls transparent hugepage support for anonymous memory. Currently supported values:
+	// * TRANSPARENT_HUGEPAGE_ENABLED_ALWAYS: Transparent hugepage is enabled system wide.
+	// * TRANSPARENT_HUGEPAGE_ENABLED_MADVISE: Transparent hugepage is enabled inside MADV_HUGEPAGE regions. This is the default kernel configuration.
+	// * TRANSPARENT_HUGEPAGE_ENABLED_NEVER: Transparent hugepage is disabled.
+	// * TRANSPARENT_HUGEPAGE_ENABLED_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
+	TransparentHugepageEnabled *string `json:"transparentHugepageEnabled,omitempty"`
+	// Defines the transparent hugepage defrag configuration on the node. Currently supported values:
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_ALWAYS: An application requesting THP will stall on allocation failure and directly reclaim pages and compact memory in an effort to allocate a THP immediately.
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER: An application will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future. It is the responsibility of khugepaged to then install the THP pages later.
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_DEFER_WITH_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_MADVISE: An application will enter direct reclaim and compaction like always, but only for regions that have used madvise(MADV_HUGEPAGE); all other regions will wake kswapd in the background to reclaim pages and wake kcompactd to compact memory so that THP is available in the near future.
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_NEVER: An application will never enter direct reclaim or compaction.
+	// * TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED: Default value. GKE will not modify the kernel configuration.
+	TransparentHugepageDefrag *string                       `json:"transparentHugepageDefrag,omitempty"`
+	SwapConfig                *SwapConfigApplyConfiguration `json:"swapConfig,omitempty"`
+	// Additional entries to be added to /etc/hosts.
+	AdditionalEtcHosts []*cloudgooglecomv1.EtcHostsEntry `json:"additionalEtcHosts,omitempty"`
+	// Additional entries to be added to /etc/resolv.conf.
+	AdditionalEtcResolvConf []*cloudgooglecomv1.ResolvedConfEntry `json:"additionalEtcResolvConf,omitempty"`
+	// Additional entries to be added to /etc/systemd/resolved.conf.
 	AdditionalEtcSystemdResolvedConf []*cloudgooglecomv1.ResolvedConfEntry `json:"additionalEtcSystemdResolvedConf,omitempty"`
-	CustomNodeInit                   *CustomNodeInitApplyConfiguration     `json:"customNodeInit,omitempty"`
-	KernelOverrides                  *KernelOverridesApplyConfiguration    `json:"kernelOverrides,omitempty"`
-	TimeZone                         *string                               `json:"timeZone,omitempty"`
-	AccurateTimeConfig               *AccurateTimeConfigApplyConfiguration `json:"accurateTimeConfig,omitempty"`
-	NodeVfioConfig                   *NodeVfioConfigApplyConfiguration     `json:"nodeVfioConfig,omitempty"`
-	DiskIoScheduler                  *DiskIoSchedulerApplyConfiguration    `json:"diskIoScheduler,omitempty"`
+	// Support for running custom init code while bootstrapping nodes.
+	CustomNodeInit *CustomNodeInitApplyConfiguration `json:"customNodeInit,omitempty"`
+	// Parameters that can be configured on the kernel.
+	KernelOverrides *KernelOverridesApplyConfiguration `json:"kernelOverrides,omitempty"`
+	// Configures the timezone of the node.
+	TimeZone *string `json:"timeZone,omitempty"`
+	// AccurateTimeConfig defines accurate time configuration for a node.
+	AccurateTimeConfig *AccurateTimeConfigApplyConfiguration `json:"accurateTimeConfig,omitempty"`
+	// Contains VFIO-related configurations for this node.
+	NodeVfioConfig *NodeVfioConfigApplyConfiguration `json:"nodeVfioConfig,omitempty"`
+	// Controls the configuration for the disk IO scheduler.
+	DiskIoScheduler *DiskIoSchedulerApplyConfiguration `json:"diskIoScheduler,omitempty"`
 }
 
-// LinuxNodeConfigApplyConfiguration constructs an declarative configuration of the LinuxNodeConfig type for use with
+// LinuxNodeConfigApplyConfiguration constructs a declarative configuration of the LinuxNodeConfig type for use with
 // apply.
 func LinuxNodeConfig() *LinuxNodeConfigApplyConfiguration {
 	return &LinuxNodeConfigApplyConfiguration{}

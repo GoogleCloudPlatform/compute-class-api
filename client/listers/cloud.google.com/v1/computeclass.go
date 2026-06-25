@@ -19,10 +19,10 @@
 package v1
 
 import (
-	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/tools/cache"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	labels "k8s.io/apimachinery/pkg/labels"
+	listers "k8s.io/client-go/listers"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // ComputeClassLister helps list ComputeClasses.
@@ -30,39 +30,19 @@ import (
 type ComputeClassLister interface {
 	// List lists all ComputeClasses in the indexer.
 	// Objects returned here must be treated as read-only.
-	List(selector labels.Selector) (ret []*v1.ComputeClass, err error)
+	List(selector labels.Selector) (ret []*cloudgooglecomv1.ComputeClass, err error)
 	// Get retrieves the ComputeClass from the index for a given name.
 	// Objects returned here must be treated as read-only.
-	Get(name string) (*v1.ComputeClass, error)
+	Get(name string) (*cloudgooglecomv1.ComputeClass, error)
 	ComputeClassListerExpansion
 }
 
 // computeClassLister implements the ComputeClassLister interface.
 type computeClassLister struct {
-	indexer cache.Indexer
+	listers.ResourceIndexer[*cloudgooglecomv1.ComputeClass]
 }
 
 // NewComputeClassLister returns a new ComputeClassLister.
 func NewComputeClassLister(indexer cache.Indexer) ComputeClassLister {
-	return &computeClassLister{indexer: indexer}
-}
-
-// List lists all ComputeClasses in the indexer.
-func (s *computeClassLister) List(selector labels.Selector) (ret []*v1.ComputeClass, err error) {
-	err = cache.ListAll(s.indexer, selector, func(m interface{}) {
-		ret = append(ret, m.(*v1.ComputeClass))
-	})
-	return ret, err
-}
-
-// Get retrieves the ComputeClass from the index for a given name.
-func (s *computeClassLister) Get(name string) (*v1.ComputeClass, error) {
-	obj, exists, err := s.indexer.GetByKey(name)
-	if err != nil {
-		return nil, err
-	}
-	if !exists {
-		return nil, errors.NewNotFound(v1.Resource("computeclass"), name)
-	}
-	return obj.(*v1.ComputeClass), nil
+	return &computeClassLister{listers.New[*cloudgooglecomv1.ComputeClass](indexer, cloudgooglecomv1.Resource("computeclass"))}
 }

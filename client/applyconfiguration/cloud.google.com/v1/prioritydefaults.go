@@ -18,14 +18,18 @@
 
 package v1
 
-// PriorityDefaultsApplyConfiguration represents an declarative configuration of the PriorityDefaults type for use
+// PriorityDefaultsApplyConfiguration represents a declarative configuration of the PriorityDefaults type for use
 // with apply.
+//
+// PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
 type PriorityDefaultsApplyConfiguration struct {
+	// NodeSystemConfig defines node system config for a node.
 	NodeSystemConfig *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
-	Location         *LocationApplyConfiguration         `json:"location,omitempty"`
+	// Location describes CCC zonal preferences config.
+	Location *LocationApplyConfiguration `json:"location,omitempty"`
 }
 
-// PriorityDefaultsApplyConfiguration constructs an declarative configuration of the PriorityDefaults type for use with
+// PriorityDefaultsApplyConfiguration constructs a declarative configuration of the PriorityDefaults type for use with
 // apply.
 func PriorityDefaults() *PriorityDefaultsApplyConfiguration {
 	return &PriorityDefaultsApplyConfiguration{}

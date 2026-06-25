@@ -18,24 +18,55 @@
 
 package v1
 
-// ComputeClassSpecApplyConfiguration represents an declarative configuration of the ComputeClassSpec type for use
+// ComputeClassSpecApplyConfiguration represents a declarative configuration of the ComputeClassSpec type for use
 // with apply.
+//
+// ComputeClassSpec is a specification of provisioning priorities and
+// other autoscaling settings.
+//
+// TDX should only be enabled on C3, C4, A3 and A4 machine families. This is because TDX has specific hardware requirements that are only met by these machine families.
 type ComputeClassSpecApplyConfiguration struct {
-	Priorities                 []PriorityApplyConfiguration                  `json:"priorities,omitempty"`
-	NodePoolAutoCreation       *NodePoolAutoCreationApplyConfiguration       `json:"nodePoolAutoCreation,omitempty"`
-	ActiveMigration            *ActiveMigrationApplyConfiguration            `json:"activeMigration,omitempty"`
-	WhenUnsatisfiable          *string                                       `json:"whenUnsatisfiable,omitempty"`
-	AutoscalingPolicy          *AutoscalingPolicyApplyConfiguration          `json:"autoscalingPolicy,omitempty"`
-	Autopilot                  *AutopilotApplyConfiguration                  `json:"autopilot,omitempty"`
-	NodePoolConfig             *NodePoolConfigApplyConfiguration             `json:"nodePoolConfig,omitempty"`
-	NodePoolGroup              *NodePoolGroupApplyConfiguration              `json:"nodePoolGroup,omitempty"`
-	PriorityDefaults           *PriorityDefaultsApplyConfiguration           `json:"priorityDefaults,omitempty"`
-	Description                *string                                       `json:"description,omitempty"`
-	MinimumCapacity            *MinimumCapacityApplyConfiguration            `json:"minimumCapacity,omitempty"`
+	// Priorities is a description of user preferences to be
+	// used by a given ComputeClass.
+	Priorities []PriorityApplyConfiguration `json:"priorities,omitempty"`
+	// NodePoolAutoCreation describes the auto provisioning settings for a given
+	// ComputeClass.
+	NodePoolAutoCreation *NodePoolAutoCreationApplyConfiguration `json:"nodePoolAutoCreation,omitempty"`
+	// ActiveMigration describes settings related to active reconciliation of
+	// a given ComputeClass.
+	ActiveMigration *ActiveMigrationApplyConfiguration `json:"activeMigration,omitempty"`
+	// WhenUnsatisfiable describes autoscaler behaviour in case none
+	// of the provided priorities is satisfiable.
+	// Currently supported values:
+	// * ScaleUpAnyway
+	// * DoNotScaleUp
+	WhenUnsatisfiable *string `json:"whenUnsatisfiable,omitempty"`
+	// AutoscalingPolicy describes settings related to active reconciliation of
+	// a given ComputeClass.
+	AutoscalingPolicy *AutoscalingPolicyApplyConfiguration `json:"autoscalingPolicy,omitempty"`
+	// Autopilot describes the autopilot settings for a given ComputeClass.
+	Autopilot *AutopilotApplyConfiguration `json:"autopilot,omitempty"`
+	// NodePoolConfig defines required node pool configuration. Existing node pools will be matched with the ComputeClass
+	// only if their configuration match this field. Auto-provisioned node pools will be created with this configuration.
+	NodePoolConfig *NodePoolConfigApplyConfiguration `json:"nodePoolConfig,omitempty"`
+	// NodePoolGroup defines required node pool configurations that are shared between a group of node pools.
+	// Existing node pools will be matched with the ComputeClass only if their configuration matches this field.
+	// Auto-provisioned node pools will be created with this configuration.
+	NodePoolGroup *NodePoolGroupApplyConfiguration `json:"nodePoolGroup,omitempty"`
+	// PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
+	// Note: PriorityDefaults doesn't apply to priorities with only Nodepools.
+	PriorityDefaults *PriorityDefaultsApplyConfiguration `json:"priorityDefaults,omitempty"`
+	// Description is an arbitrary string that usually provides guidelines on
+	// when this compute class should be used.
+	Description *string `json:"description,omitempty"`
+	// MinimumCapacity defines declarative minimum node preprovisioning requirements
+	// for the entire ComputeClass.
+	MinimumCapacity *MinimumCapacityApplyConfiguration `json:"minimumCapacity,omitempty"`
+	// AllocationStrategyDefaults define the default allocation strategies for different provisioning models.
 	AllocationStrategyDefaults *AllocationStrategyDefaultsApplyConfiguration `json:"allocationStrategyDefaults,omitempty"`
 }
 
-// ComputeClassSpecApplyConfiguration constructs an declarative configuration of the ComputeClassSpec type for use with
+// ComputeClassSpecApplyConfiguration constructs a declarative configuration of the ComputeClassSpec type for use with
 // apply.
 func ComputeClassSpec() *ComputeClassSpecApplyConfiguration {
 	return &ComputeClassSpecApplyConfiguration{}

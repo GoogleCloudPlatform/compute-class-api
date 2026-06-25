@@ -18,14 +18,19 @@
 
 package v1
 
-// DiskIoSchedulerApplyConfiguration represents an declarative configuration of the DiskIoScheduler type for use
+// DiskIoSchedulerApplyConfiguration represents a declarative configuration of the DiskIoScheduler type for use
 // with apply.
+//
+// DiskIoScheduler contains the configuration for the disk IO scheduler.
 type DiskIoSchedulerApplyConfiguration struct {
-	NodeSystemIoScheduler       *string `json:"nodeSystemIoScheduler,omitempty"`
+	// Configures the IO scheduler for the boot disk or ephemeral lssd that runs
+	// node system workloads.
+	NodeSystemIoScheduler *string `json:"nodeSystemIoScheduler,omitempty"`
+	// Configures the IO scheduler for the attached disks.
 	NodeAttachedDiskIoScheduler *string `json:"nodeAttachedDiskIoScheduler,omitempty"`
 }
 
-// DiskIoSchedulerApplyConfiguration constructs an declarative configuration of the DiskIoScheduler type for use with
+// DiskIoSchedulerApplyConfiguration constructs a declarative configuration of the DiskIoScheduler type for use with
 // apply.
 func DiskIoScheduler() *DiskIoSchedulerApplyConfiguration {
 	return &DiskIoSchedulerApplyConfiguration{}

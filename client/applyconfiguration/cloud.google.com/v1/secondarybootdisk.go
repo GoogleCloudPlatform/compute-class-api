@@ -18,15 +18,22 @@
 
 package v1
 
-// SecondaryBootDiskApplyConfiguration represents an declarative configuration of the SecondaryBootDisk type for use
+// SecondaryBootDiskApplyConfiguration represents a declarative configuration of the SecondaryBootDisk type for use
 // with apply.
+//
+// SecondaryBootDisk represents a persistent disk attached to a node with special configurations based on its mode.
 type SecondaryBootDiskApplyConfiguration struct {
+	// The name of the disk image.
 	DiskImageName *string `json:"diskImageName,omitempty"`
-	Project       *string `json:"project,omitempty"`
-	Mode          *string `json:"mode,omitempty"`
+	// The name of the project that the disk image belongs to.
+	Project *string `json:"project,omitempty"`
+	// Currently supported modes:
+	// * MODE_UNSPECIFIED - MODE_UNSPECIFIED is when mode is not set.
+	// * CONTAINER_IMAGE_CACHE - it is for using the secondary boot disk as a container image cache.
+	Mode *string `json:"mode,omitempty"`
 }
 
-// SecondaryBootDiskApplyConfiguration constructs an declarative configuration of the SecondaryBootDisk type for use with
+// SecondaryBootDiskApplyConfiguration constructs a declarative configuration of the SecondaryBootDisk type for use with
 // apply.
 func SecondaryBootDisk() *SecondaryBootDiskApplyConfiguration {
 	return &SecondaryBootDiskApplyConfiguration{}

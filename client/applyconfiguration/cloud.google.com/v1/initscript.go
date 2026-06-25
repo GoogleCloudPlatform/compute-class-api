@@ -18,16 +18,22 @@
 
 package v1
 
-// InitScriptApplyConfiguration represents an declarative configuration of the InitScript type for use
+// InitScriptApplyConfiguration represents a declarative configuration of the InitScript type for use
 // with apply.
+//
+// InitScript defines the init script source and arguments.
 type InitScriptApplyConfiguration struct {
-	GcsUri                    *string  `json:"gcsUri,omitempty"`
-	GcsGeneration             *int64   `json:"gcsGeneration,omitempty"`
-	Args                      []string `json:"args,omitempty"`
-	GcpSecretManagerSecretUri *string  `json:"gcpSecretManagerSecretUri,omitempty"`
+	// The Cloud Storage URI for storing the init script.
+	GcsUri *string `json:"gcsUri,omitempty"`
+	// The generation of the init script stored in GCS.
+	GcsGeneration *int64 `json:"gcsGeneration,omitempty"`
+	// Optional arguments to be passed to the init script.
+	Args []string `json:"args,omitempty"`
+	// The resource name of the secret manager secret hosting the init script.
+	GcpSecretManagerSecretUri *string `json:"gcpSecretManagerSecretUri,omitempty"`
 }
 
-// InitScriptApplyConfiguration constructs an declarative configuration of the InitScript type for use with
+// InitScriptApplyConfiguration constructs a declarative configuration of the InitScript type for use with
 // apply.
 func InitScript() *InitScriptApplyConfiguration {
 	return &InitScriptApplyConfiguration{}

@@ -38,7 +38,7 @@ echo "INFO: Ensuring controller-gen ${CT_VERSION} is installed..."
 go install "${CT_MODULE}/cmd/controller-gen@${CT_VERSION}"
 
 # Specify the desired version of code-generator
-CODEGEN_PKG="k8s.io/code-generator@v0.30.3"
+CODEGEN_PKG="k8s.io/code-generator@v0.36.2"
 echo "INFO: Using ${CODEGEN_PKG}"
 # Get the path to the specified version in the module cache
 CODEGEN_PATH=$(go list -m -f '{{.Dir}}' "${CODEGEN_PKG}")
@@ -67,10 +67,10 @@ echo "INFO: Cleaning client directory..."
 rm -rf "${CLIENT_PATH}"
 
 echo "INFO: Generating helpers..."
-GOTOOLCHAIN=go1.24.0 kube::codegen::gen_helpers "${API_PATH}" --boilerplate "${BOILERPLATE_FILE}"
+GOTOOLCHAIN=go1.26.0 kube::codegen::gen_helpers "${API_PATH}" --boilerplate "${BOILERPLATE_FILE}"
 
 echo "INFO: Generating clients..."
-GOTOOLCHAIN=go1.24.0 kube::codegen::gen_client "${API_PATH}" \
+GOTOOLCHAIN=go1.26.0 kube::codegen::gen_client "${API_PATH}" \
     --output-dir "${CLIENT_PATH}" \
     --output-pkg "${OUTPUT_CLIENT_PKG}" \
     --with-applyconfig \
@@ -78,7 +78,7 @@ GOTOOLCHAIN=go1.24.0 kube::codegen::gen_client "${API_PATH}" \
     --boilerplate "${BOILERPLATE_FILE}"
 
 echo "INFO: Generating CRD manifest..."
-GOTOOLCHAIN=go1.24.0 go tool controller-gen \
+GOTOOLCHAIN=go1.26.0 go tool controller-gen \
   crd:generateEmbeddedObjectMeta=true \
   paths="${API_PATH}/..." \
   output:crd:dir="${ROOT}"

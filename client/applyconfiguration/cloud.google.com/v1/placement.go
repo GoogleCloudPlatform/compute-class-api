@@ -18,13 +18,16 @@
 
 package v1
 
-// PlacementApplyConfiguration represents an declarative configuration of the Placement type for use
+// PlacementApplyConfiguration represents a declarative configuration of the Placement type for use
 // with apply.
+//
+// Placement describes preference of Resource Policy for BYOPP
 type PlacementApplyConfiguration struct {
+	// PolicyName defines the name of the resource policy, e.g. my-resource-policy
 	PolicyName *string `json:"policyName,omitempty"`
 }
 
-// PlacementApplyConfiguration constructs an declarative configuration of the Placement type for use with
+// PlacementApplyConfiguration constructs a declarative configuration of the Placement type for use with
 // apply.
 func Placement() *PlacementApplyConfiguration {
 	return &PlacementApplyConfiguration{}

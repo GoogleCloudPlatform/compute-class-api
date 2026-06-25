@@ -18,34 +18,88 @@
 
 package v1
 
-// KubeletConfigApplyConfiguration represents an declarative configuration of the KubeletConfig type for use
+// KubeletConfigApplyConfiguration represents a declarative configuration of the KubeletConfig type for use
 // with apply.
+//
+// KubeletConfig defines kubelet config for a node.
 type KubeletConfigApplyConfiguration struct {
-	CpuCfsQuota                            *bool                                      `json:"cpuCfsQuota,omitempty"`
-	CpuCfsQuotaPeriod                      *string                                    `json:"cpuCfsQuotaPeriod,omitempty"`
-	CpuManagerPolicy                       *string                                    `json:"cpuManagerPolicy,omitempty"`
-	PodPidsLimit                           *int64                                     `json:"podPidsLimit,omitempty"`
-	ImageGcLowThresholdPercent             *int64                                     `json:"imageGcLowThresholdPercent,omitempty"`
-	ImageGcHighThresholdPercent            *int64                                     `json:"imageGcHighThresholdPercent,omitempty"`
-	ImageMinimumGcAge                      *string                                    `json:"imageMinimumGcAge,omitempty"`
-	ImageMaximumGcAge                      *string                                    `json:"imageMaximumGcAge,omitempty"`
-	ContainerLogMaxSize                    *string                                    `json:"containerLogMaxSize,omitempty"`
-	ContainerLogMaxFiles                   *int64                                     `json:"containerLogMaxFiles,omitempty"`
-	AllowedUnsafeSysctls                   []string                                   `json:"allowedUnsafeSysctls,omitempty"`
-	MaxParallelImagePulls                  *int64                                     `json:"maxParallelImagePulls,omitempty"`
-	SingleProcessOOMKill                   *bool                                      `json:"singleProcessOOMKill,omitempty"`
-	EvictionSoft                           *EvictionSoftApplyConfiguration            `json:"evictionSoft,omitempty"`
-	EvictionSoftGracePeriod                *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
-	EvictionMinimumReclaim                 *EvictionMinimumReclaimApplyConfiguration  `json:"evictionMinimumReclaim,omitempty"`
-	EvictionMaxPodGracePeriodSeconds       *int64                                     `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
-	TopologyManager                        *TopologyManagerApplyConfiguration         `json:"topologyManager,omitempty"`
-	MemoryManager                          *MemoryManagerApplyConfiguration           `json:"memoryManager,omitempty"`
-	ShutdownGracePeriodSeconds             *int32                                     `json:"shutdownGracePeriodSeconds,omitempty"`
-	ShutdownGracePeriodCriticalPodsSeconds *int32                                     `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty"`
-	CrashLoopBackOff                       *CrashLoopBackOffApplyConfiguration        `json:"crashLoopBackOff,omitempty"`
+	// This setting enforces the Pod's CPU limit. Setting this value to false means that the CPU limits for Pods are ignored.
+	// Ignoring CPU limits might be desirable in certain scenarios where Pods are sensitive to CPU limits.
+	// The risk of disabling cpuCFSQuota is that a rogue Pod can consume more CPU resources than intended.
+	CpuCfsQuota *bool `json:"cpuCfsQuota,omitempty"`
+	// This setting sets the CPU CFS quota period value, cpu.cfs_period_us, which specifies the period of how often a cgroup's access to CPU resources should be reallocated.
+	// This option lets you tune the CPU throttling behavior. Value must be 1ms <= period <= 1s.
+	CpuCfsQuotaPeriod *string `json:"cpuCfsQuotaPeriod,omitempty"`
+	// This setting controls the kubelet's CPU Manager Policy. The default value is none which is the default CPU affinity scheme, providing no affinity beyond what the OS scheduler does automatically.
+	// Setting this value to static allows Pods in the Guaranteed QoS class with integer CPU requests to be assigned exclusive use of CPUs.
+	CpuManagerPolicy *string `json:"cpuManagerPolicy,omitempty"`
+	// This setting sets the maximum number of process IDs (PIDs) that each Pod can use.
+	PodPidsLimit *int64 `json:"podPidsLimit,omitempty"`
+	// This setting sets the percent of disk usage before which image garbage collection is never
+	// run. Lowest disk usage to garbage collect to. The percent is calculated as
+	// this field value out of 100. Default is 80 if unspecified.
+	ImageGcLowThresholdPercent *int64 `json:"imageGcLowThresholdPercent,omitempty"`
+	// This setting sets the percent of disk usage after which image garbage collection is always
+	// run. The percent is calculated as this field value out of 100. Default is 85 if unspecified.
+	ImageGcHighThresholdPercent *int64 `json:"imageGcHighThresholdPercent,omitempty"`
+	// This setting sets the minimum age for an unused image before it is garbage collected.
+	// The string must be a decimal number with a unit suffix, such as "300s", "1.5h", and "2h45m".
+	// Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+	// The value must be a positive duration and less than or equal to 2 minutes.
+	// Default is "2m" if unspecified.
+	ImageMinimumGcAge *string `json:"imageMinimumGcAge,omitempty"`
+	// This setting sets the maximum age an image can be unused before it is garbage collected.
+	// The string must be a decimal number with a unit suffix, such as "300s", "1.5h", and "2h45m".
+	// Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+	// The value must be a positive duration.
+	// Default is "0s" if unspecified, which disables the field.
+	ImageMaximumGcAge *string `json:"imageMaximumGcAge,omitempty"`
+	// This setting sets the maximum size of the container log file before it is rotated.
+	// Format: positive number + unit, Eg. 100Ki, 10Mi, 5Gi. Valid units are Ki,
+	// Mi, Gi. The value must be between 10Mi and 500Mi. And the total
+	// container log size (container_log_max_size * container_log_max_files)
+	// cannot exceed 1% of the total storage of the node.
+	// Default is 10Mi in OSS if unspecified.
+	ContainerLogMaxSize *string `json:"containerLogMaxSize,omitempty"`
+	// This setting sets the maximum number of container log files that can be present for a
+	// container. Default is 5 in OSS if unspecified.
+	ContainerLogMaxFiles *int64 `json:"containerLogMaxFiles,omitempty"`
+	// This setting defines a comma-separated allowlist of unsafe sysctls or sysctl patterns
+	// (ending in `*`). The unsafe namespaced sysctl groups are `kernel.shm*`, `kernel.msg*`,
+	// `kernel.sem`, `fs.mqueue.*`, and `net.*`. Leaving this allowlist empty means they cannot be set on Pods.
+	AllowedUnsafeSysctls []string `json:"allowedUnsafeSysctls,omitempty"`
+	// This setting sets the maximum number of image pulls in parallel. Default is 2 or 3 depending on boot disk type.
+	MaxParallelImagePulls *int64 `json:"maxParallelImagePulls,omitempty"`
+	// This setting sets whether to enable single process OOM killer.
+	// If set to true, the processes in a container will be OOM killed individually instead of as a group.
+	SingleProcessOOMKill *bool `json:"singleProcessOOMKill,omitempty"`
+	// EvictionSoft defines soft eviction thresholds.
+	EvictionSoft *EvictionSoftApplyConfiguration `json:"evictionSoft,omitempty"`
+	// EvictionSoftGracePeriod defines grace periods for soft eviction thresholds.
+	EvictionSoftGracePeriod *EvictionSoftGracePeriodApplyConfiguration `json:"evictionSoftGracePeriod,omitempty"`
+	// EvictionMinimumReclaim defines minimum reclaims.
+	EvictionMinimumReclaim *EvictionMinimumReclaimApplyConfiguration `json:"evictionMinimumReclaim,omitempty"`
+	// EvictionMaxPodGracePeriodSeconds is the maximum allowed grace period
+	// (in seconds) to use when terminating pods in response to a soft eviction
+	// threshold being met.
+	EvictionMaxPodGracePeriodSeconds *int64 `json:"evictionMaxPodGracePeriodSeconds,omitempty"`
+	// TopologyManager contains the configuration for the Kubelet Topology Manager.
+	TopologyManager *TopologyManagerApplyConfiguration `json:"topologyManager,omitempty"`
+	// MemoryManager contains the configuration for the Kubelet Memory Manager.
+	MemoryManager *MemoryManagerApplyConfiguration `json:"memoryManager,omitempty"`
+	// ShutdownGracePeriodSeconds is the maximum allowed grace period
+	// (in seconds) that the node should delay the shutdown during a graceful shutdown.
+	ShutdownGracePeriodSeconds *int32 `json:"shutdownGracePeriodSeconds,omitempty"`
+	// ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
+	// (in seconds) that is used to terminate critical pods during a node shutdown.
+	// This value should be <= ShutdownGracePeriodSeconds, and is only valid if ShutdownGracePeriodSeconds is set.
+	ShutdownGracePeriodCriticalPodsSeconds *int32 `json:"shutdownGracePeriodCriticalPodsSeconds,omitempty"`
+	// CrashLoopBackOff contains the configuration to modify node level parameters
+	// for container restart behavior.
+	CrashLoopBackOff *CrashLoopBackOffApplyConfiguration `json:"crashLoopBackOff,omitempty"`
 }
 
-// KubeletConfigApplyConfiguration constructs an declarative configuration of the KubeletConfig type for use with
+// KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
 // apply.
 func KubeletConfig() *KubeletConfigApplyConfiguration {
 	return &KubeletConfigApplyConfiguration{}

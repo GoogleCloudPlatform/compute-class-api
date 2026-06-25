@@ -18,14 +18,20 @@
 
 package v1
 
-// TagsApplyConfiguration represents an declarative configuration of the Tags type for use
+// TagsApplyConfiguration represents a declarative configuration of the Tags type for use
 // with apply.
+//
+// Tags define the key/value of resource manager tags.
+// Tags must be in one of the following formats ([KEY]=[VALUE])
+// 1. tagKeys/{tag_key_id}=tagValues/{tag_value_id}
+// 2. {org_id}/{tag_key_name}={tag_value_name}
+// 3. {project_id}/{tag_key_name}={tag_value_name}
 type TagsApplyConfiguration struct {
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 }
 
-// TagsApplyConfiguration constructs an declarative configuration of the Tags type for use with
+// TagsApplyConfiguration constructs a declarative configuration of the Tags type for use with
 // apply.
 func Tags() *TagsApplyConfiguration {
 	return &TagsApplyConfiguration{}

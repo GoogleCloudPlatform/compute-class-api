@@ -18,15 +18,27 @@
 
 package v1
 
-// GpuSharingApplyConfiguration represents an declarative configuration of the GpuSharing type for use
+// GpuSharingApplyConfiguration represents a declarative configuration of the GpuSharing type for use
 // with apply.
+//
+// GpuSharing represents the GPU sharing configuration for
+// Hardware Accelerators.
 type GpuSharingApplyConfiguration struct {
-	SharingStrategy        *string `json:"sharingStrategy,omitempty"`
-	MaxSharedClientsPerGPU *int64  `json:"maxSharedClientsPerGPU,omitempty"`
-	GpuPartitionSize       *string `json:"gpuPartitionSize,omitempty"`
+	// SharingStrategy The type of GPU sharing strategy to enable on the GPU node.
+	// Possible values:
+	// * TIME_SHARING - GPUs are time-shared between containers.
+	// * MPS - GPUs are shared between containers with NVIDIA MPS.
+	SharingStrategy *string `json:"sharingStrategy,omitempty"`
+	// MaxSharedClientsPerGPU describes the max number of containers that can
+	// share a physical GPU.
+	MaxSharedClientsPerGPU *int64 `json:"maxSharedClientsPerGPU,omitempty"`
+	// GpuPartitionSize is size of partitions to create on the GPU. Valid values are
+	// described in the NVIDIA mig user guide. Example: "1g.5gb"
+	// (https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#partitioning).
+	GpuPartitionSize *string `json:"gpuPartitionSize,omitempty"`
 }
 
-// GpuSharingApplyConfiguration constructs an declarative configuration of the GpuSharing type for use with
+// GpuSharingApplyConfiguration constructs a declarative configuration of the GpuSharing type for use with
 // apply.
 func GpuSharing() *GpuSharingApplyConfiguration {
 	return &GpuSharingApplyConfiguration{}

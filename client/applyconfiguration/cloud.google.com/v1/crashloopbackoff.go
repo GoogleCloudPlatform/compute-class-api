@@ -18,13 +18,21 @@
 
 package v1
 
-// CrashLoopBackOffApplyConfiguration represents an declarative configuration of the CrashLoopBackOff type for use
+// CrashLoopBackOffApplyConfiguration represents a declarative configuration of the CrashLoopBackOff type for use
 // with apply.
+//
+// CrashLoopBackOff contains the configuration to modify node level parameters
+// for container restart behavior.
 type CrashLoopBackOffApplyConfiguration struct {
+	// MaxContainerRestartPeriod is the maximum duration the backoff delay can
+	// accrue to for container restarts. If not set, defaults to the internal
+	// crashloopbackoff maximum.
+	// The value must be a duration string. Eg. "30s", "1m30s".
+	// The value must be positive and less than '5m'.
 	MaxContainerRestartPeriod *string `json:"maxContainerRestartPeriod,omitempty"`
 }
 
-// CrashLoopBackOffApplyConfiguration constructs an declarative configuration of the CrashLoopBackOff type for use with
+// CrashLoopBackOffApplyConfiguration constructs a declarative configuration of the CrashLoopBackOff type for use with
 // apply.
 func CrashLoopBackOff() *CrashLoopBackOffApplyConfiguration {
 	return &CrashLoopBackOffApplyConfiguration{}

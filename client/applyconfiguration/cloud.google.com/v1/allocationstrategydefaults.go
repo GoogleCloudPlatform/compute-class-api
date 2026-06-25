@@ -19,18 +19,24 @@
 package v1
 
 import (
-	v1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// AllocationStrategyDefaultsApplyConfiguration represents an declarative configuration of the AllocationStrategyDefaults type for use
+// AllocationStrategyDefaultsApplyConfiguration represents a declarative configuration of the AllocationStrategyDefaults type for use
 // with apply.
+//
+// AllocationStrategyDefaults defines the default allocation strategies for different provisioning models.
+// These can be overridden at priority level.
 type AllocationStrategyDefaultsApplyConfiguration struct {
-	OnDemand  *v1.AllocationStrategy `json:"onDemand,omitempty"`
-	Spot      *v1.AllocationStrategy `json:"spot,omitempty"`
-	FlexStart *v1.AllocationStrategy `json:"flexStart,omitempty"`
+	// OnDemand defines the default allocation strategy for on-demand provisioning model.
+	OnDemand *cloudgooglecomv1.AllocationStrategy `json:"onDemand,omitempty"`
+	// Spot defines the default allocation strategy for spot provisioning model.
+	Spot *cloudgooglecomv1.AllocationStrategy `json:"spot,omitempty"`
+	// FlexStart defines the default allocation strategy for flex start provisioning model.
+	FlexStart *cloudgooglecomv1.AllocationStrategy `json:"flexStart,omitempty"`
 }
 
-// AllocationStrategyDefaultsApplyConfiguration constructs an declarative configuration of the AllocationStrategyDefaults type for use with
+// AllocationStrategyDefaultsApplyConfiguration constructs a declarative configuration of the AllocationStrategyDefaults type for use with
 // apply.
 func AllocationStrategyDefaults() *AllocationStrategyDefaultsApplyConfiguration {
 	return &AllocationStrategyDefaultsApplyConfiguration{}
@@ -39,7 +45,7 @@ func AllocationStrategyDefaults() *AllocationStrategyDefaultsApplyConfiguration 
 // WithOnDemand sets the OnDemand field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the OnDemand field is set to the value of the last call.
-func (b *AllocationStrategyDefaultsApplyConfiguration) WithOnDemand(value v1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
+func (b *AllocationStrategyDefaultsApplyConfiguration) WithOnDemand(value cloudgooglecomv1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
 	b.OnDemand = &value
 	return b
 }
@@ -47,7 +53,7 @@ func (b *AllocationStrategyDefaultsApplyConfiguration) WithOnDemand(value v1.All
 // WithSpot sets the Spot field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the Spot field is set to the value of the last call.
-func (b *AllocationStrategyDefaultsApplyConfiguration) WithSpot(value v1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
+func (b *AllocationStrategyDefaultsApplyConfiguration) WithSpot(value cloudgooglecomv1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
 	b.Spot = &value
 	return b
 }
@@ -55,7 +61,7 @@ func (b *AllocationStrategyDefaultsApplyConfiguration) WithSpot(value v1.Allocat
 // WithFlexStart sets the FlexStart field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the FlexStart field is set to the value of the last call.
-func (b *AllocationStrategyDefaultsApplyConfiguration) WithFlexStart(value v1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
+func (b *AllocationStrategyDefaultsApplyConfiguration) WithFlexStart(value cloudgooglecomv1.AllocationStrategy) *AllocationStrategyDefaultsApplyConfiguration {
 	b.FlexStart = &value
 	return b
 }

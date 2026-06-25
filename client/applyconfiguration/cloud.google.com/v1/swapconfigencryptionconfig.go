@@ -18,13 +18,17 @@
 
 package v1
 
-// SwapConfigEncryptionConfigApplyConfiguration represents an declarative configuration of the SwapConfigEncryptionConfig type for use
+// SwapConfigEncryptionConfigApplyConfiguration represents a declarative configuration of the SwapConfigEncryptionConfig type for use
 // with apply.
+//
+// SwapConfigEncryptionConfig defines encryption settings for the swap space.
 type SwapConfigEncryptionConfigApplyConfiguration struct {
+	// If true, swap space will NOT be encrypted.
+	// Defaults to false, swap space is encrypted by default.
 	Disabled *bool `json:"disabled,omitempty"`
 }
 
-// SwapConfigEncryptionConfigApplyConfiguration constructs an declarative configuration of the SwapConfigEncryptionConfig type for use with
+// SwapConfigEncryptionConfigApplyConfiguration constructs a declarative configuration of the SwapConfigEncryptionConfig type for use with
 // apply.
 func SwapConfigEncryptionConfig() *SwapConfigEncryptionConfigApplyConfiguration {
 	return &SwapConfigEncryptionConfigApplyConfiguration{}

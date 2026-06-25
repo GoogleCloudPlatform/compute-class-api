@@ -18,13 +18,18 @@
 
 package v1
 
-// NodePoolGroupApplyConfiguration represents an declarative configuration of the NodePoolGroup type for use
+// NodePoolGroupApplyConfiguration represents a declarative configuration of the NodePoolGroup type for use
 // with apply.
+//
+// NodePoolGroup defines required node pool configurations that are shared between a group of node pools. It is
+// GKE equivalent of GCE's Multi-MIG. Existing node pools will be matched with the ComputeClass only if their configuration
+// matches this field. Auto-provisioned node pools will be created with this configuration.
 type NodePoolGroupApplyConfiguration struct {
+	// Name defines the name of the node pool group, e.g. MultiMIG
 	Name *string `json:"name,omitempty"`
 }
 
-// NodePoolGroupApplyConfiguration constructs an declarative configuration of the NodePoolGroup type for use with
+// NodePoolGroupApplyConfiguration constructs a declarative configuration of the NodePoolGroup type for use with
 // apply.
 func NodePoolGroup() *NodePoolGroupApplyConfiguration {
 	return &NodePoolGroupApplyConfiguration{}

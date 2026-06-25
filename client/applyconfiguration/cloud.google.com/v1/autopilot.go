@@ -18,13 +18,16 @@
 
 package v1
 
-// AutopilotApplyConfiguration represents an declarative configuration of the Autopilot type for use
+// AutopilotApplyConfiguration represents a declarative configuration of the Autopilot type for use
 // with apply.
+//
+// Autopilot defines describes the autopilot settings for a given ComputeClass.
 type AutopilotApplyConfiguration struct {
+	// Enabled indicates whether nodes created for this compute class should be Autopilot managed.
 	Enabled *bool `json:"enabled,omitempty"`
 }
 
-// AutopilotApplyConfiguration constructs an declarative configuration of the Autopilot type for use with
+// AutopilotApplyConfiguration constructs a declarative configuration of the Autopilot type for use with
 // apply.
 func Autopilot() *AutopilotApplyConfiguration {
 	return &AutopilotApplyConfiguration{}

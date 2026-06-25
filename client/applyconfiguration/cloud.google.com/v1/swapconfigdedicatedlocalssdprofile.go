@@ -18,13 +18,16 @@
 
 package v1
 
-// SwapConfigDedicatedLocalSsdProfileApplyConfiguration represents an declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use
+// SwapConfigDedicatedLocalSsdProfileApplyConfiguration represents a declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use
 // with apply.
+//
+// SwapConfigDedicatedLocalSsdProfile provisions a new local SSD for swap.
 type SwapConfigDedicatedLocalSsdProfileApplyConfiguration struct {
+	// The number of physical local NVMe SSD disks to attach.
 	DiskCount *int64 `json:"diskCount,omitempty"`
 }
 
-// SwapConfigDedicatedLocalSsdProfileApplyConfiguration constructs an declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use with
+// SwapConfigDedicatedLocalSsdProfileApplyConfiguration constructs a declarative configuration of the SwapConfigDedicatedLocalSsdProfile type for use with
 // apply.
 func SwapConfigDedicatedLocalSsdProfile() *SwapConfigDedicatedLocalSsdProfileApplyConfiguration {
 	return &SwapConfigDedicatedLocalSsdProfileApplyConfiguration{}

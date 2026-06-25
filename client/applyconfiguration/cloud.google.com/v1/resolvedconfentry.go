@@ -18,14 +18,18 @@
 
 package v1
 
-// ResolvedConfEntryApplyConfiguration represents an declarative configuration of the ResolvedConfEntry type for use
+// ResolvedConfEntryApplyConfiguration represents a declarative configuration of the ResolvedConfEntry type for use
 // with apply.
+//
+// ResolvedConfEntry defines an entry in resolved.conf.
 type ResolvedConfEntryApplyConfiguration struct {
-	Key   *string  `json:"key,omitempty"`
+	// The key of resolved.conf
+	Key *string `json:"key,omitempty"`
+	// The value of resolved.conf
 	Value []string `json:"value,omitempty"`
 }
 
-// ResolvedConfEntryApplyConfiguration constructs an declarative configuration of the ResolvedConfEntry type for use with
+// ResolvedConfEntryApplyConfiguration constructs a declarative configuration of the ResolvedConfEntry type for use with
 // apply.
 func ResolvedConfEntry() *ResolvedConfEntryApplyConfiguration {
 	return &ResolvedConfEntryApplyConfiguration{}

@@ -22,33 +22,89 @@ import (
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// NodePoolConfigApplyConfiguration represents an declarative configuration of the NodePoolConfig type for use
+// NodePoolConfigApplyConfiguration represents a declarative configuration of the NodePoolConfig type for use
 // with apply.
+//
+// NodePoolConfig defines required node pool configuration. Existing node pools will be matched with the ComputeClass
+// only if their configuration match this field. Auto-provisioned node pools will be created with this configuration.
 type NodePoolConfigApplyConfiguration struct {
-	ServiceAccount       *string                                    `json:"serviceAccount,omitempty"`
-	ImageType            *string                                    `json:"imageType,omitempty"`
-	WorkloadType         *string                                    `json:"workloadType,omitempty"`
-	NodeLabels           map[string]string                          `json:"nodeLabels,omitempty"`
-	Taints               []TaintConfigApplyConfiguration            `json:"taints,omitempty"`
-	ConfidentialNodeType *string                                    `json:"confidentialNodeType,omitempty"`
-	AutoRepair           *bool                                      `json:"autoRepair,omitempty"`
-	AutoUpgrade          *bool                                      `json:"autoUpgrade,omitempty"`
-	ImageStreaming       *ImageStreamingApplyConfiguration          `json:"imageStreaming,omitempty"`
-	ResourceManagerTags  []TagsApplyConfiguration                   `json:"resourceManagerTags,omitempty"`
-	Gvnic                *GvnicApplyConfiguration                   `json:"gvnic,omitempty"`
-	LoggingConfig        *NodePoolLoggingConfigApplyConfiguration   `json:"loggingConfig,omitempty"`
-	Dra                  *DraApplyConfiguration                     `json:"dra,omitempty"`
-	IPType               *string                                    `json:"ipType,omitempty"`
-	NodeVersion          *string                                    `json:"nodeVersion,omitempty"`
-	Tpu                  *GoogleTpuApplyConfiguration               `json:"tpu,omitempty"`
-	Sandbox              *SandboxApplyConfiguration                 `json:"sandbox,omitempty"`
-	WorkloadMetadata     *string                                    `json:"workloadMetadata,omitempty"`
-	InstanceMetadata     map[string]string                          `json:"instanceMetadata,omitempty"`
-	TaintConfig          *NodePoolTaintConfigApplyConfiguration     `json:"taintConfig,omitempty"`
+	// ServiceAccount used by the node pool.
+	ServiceAccount *string `json:"serviceAccount,omitempty"`
+	// Image type used by nodes in the node pool.
+	ImageType *string `json:"imageType,omitempty"`
+	// WorkloadType defines Collection or Goodput SLO for the workload. Currently
+	// supported values:
+	// * HIGH_AVAILABILITY - for Collection SLO
+	// * HIGH_THROUGHPUT - for Goodput SLO
+	// HIGH_AVAILABILITY is desired for running serving workloads which require
+	// most of the infrastructure (slices) running all the time to achieve high
+	// availability.
+	// HIGH_THROUGHPUT is desired for running batch/training jobs
+	// which require all underlying infrastructure (slices) running for most of
+	// the time to make progress. HIGH_THROUGHPUT can be only set for a multi-host
+	// scenario, that is, when NodePoolGroup is set.
+	WorkloadType *string `json:"workloadType,omitempty"`
+	// NodeLabels is used to add user defined Kubernetes labels to all nodes in the new node pool.
+	// These labels are applied to the Kubernetes API node object and can be used in nodeSelectors for pod scheduling.
+	// Note: Node labels are distinct from GKE labels.
+	// More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
+	NodeLabels map[string]string `json:"nodeLabels,omitempty"`
+	// Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
+	// These taints are applied to the Kubernetes API node object and can be used in tolerations for pod scheduling.
+	Taints []TaintConfigApplyConfiguration `json:"taints,omitempty"`
+	// ConfidentialNodeType: Defines the type of technology used by the
+	// confidential node.
+	//
+	// Possible values:
+	// "CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED" - No type specified. Do not use
+	// this value.
+	// "SEV" - AMD Secure Encrypted Virtualization.
+	// "SEV_SNP" - AMD Secure Encrypted Virtualization - Secure Nested Paging.
+	// "TDX" - Intel Trust Domain eXtension.
+	ConfidentialNodeType *string `json:"confidentialNodeType,omitempty"`
+	// AutoRepair if set to true specifies that a node pool should have auto repair enabled, disabled in case of being set to false.
+	AutoRepair *bool `json:"autoRepair,omitempty"`
+	// AutoUpgrade if set to true specifies that a node pool should have auto upgrade enabled, disabled in case of being set to false.
+	AutoUpgrade *bool `json:"autoUpgrade,omitempty"`
+	// ImageStreaming contains image streaming settings.
+	ImageStreaming *ImageStreamingApplyConfiguration `json:"imageStreaming,omitempty"`
+	// ResourceManagerTags defines what existing GCE resource manager tag key/value pairs
+	// with purpose GCE_FIREWALL to attach to all node pools.
+	// Referenced Tags must be created beforehand via Resource Manager API.
+	ResourceManagerTags []TagsApplyConfiguration `json:"resourceManagerTags,omitempty"`
+	// Gvnic contains Google Virtual NIC settings.
+	Gvnic *GvnicApplyConfiguration `json:"gvnic,omitempty"`
+	// Contains logging configuration.
+	LoggingConfig *NodePoolLoggingConfigApplyConfiguration `json:"loggingConfig,omitempty"`
+	// Dra describes settings related to dynamic resource allocation
+	// and its integration with autoprovisioning
+	Dra *DraApplyConfiguration `json:"dra,omitempty"`
+	// IPType specifies whether the nodes in the node pool use public or private IP addresses.
+	// Possible values are "public" or "private".
+	// An empty string indicates the default IP type.
+	// This setting corresponds to the presence and value of the cloud.google.com/private-node node selector.
+	IPType *string `json:"ipType,omitempty"`
+	// NodeVersion defines the GKE version to be used for the node pool.
+	// If unspecified, the GKE cluster server will automatically pick a version
+	// as per https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version.
+	NodeVersion *string `json:"nodeVersion,omitempty"`
+	// Tpu defines node pool configuration for Google TPU.
+	Tpu *GoogleTpuApplyConfiguration `json:"tpu,omitempty"`
+	// Sandbox contains sandbox configuration.
+	Sandbox *SandboxApplyConfiguration `json:"sandbox,omitempty"`
+	// WorkloadMetadata specifies how node metadata is exposed to the workload.
+	// Possible values are "GCE_METADATA" or "GKE_METADATA".
+	WorkloadMetadata *string `json:"workloadMetadata,omitempty"`
+	// InstanceMetadata is a map of custom key-value pairs to be injected into the underlying Compute Engine instances.
+	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty"`
+	// TaintConfig contains node pool taint configuration.
+	TaintConfig *NodePoolTaintConfigApplyConfiguration `json:"taintConfig,omitempty"`
+	// MaintenanceExclusion defines the type of exclusion policy applied to node pools.
+	// UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
 	MaintenanceExclusion *cloudgooglecomv1.MaintenanceExclusionType `json:"maintenanceExclusion,omitempty"`
 }
 
-// NodePoolConfigApplyConfiguration constructs an declarative configuration of the NodePoolConfig type for use with
+// NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
 // apply.
 func NodePoolConfig() *NodePoolConfigApplyConfiguration {
 	return &NodePoolConfigApplyConfiguration{}

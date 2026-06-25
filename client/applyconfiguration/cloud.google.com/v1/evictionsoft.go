@@ -18,18 +18,39 @@
 
 package v1
 
-// EvictionSoftApplyConfiguration represents an declarative configuration of the EvictionSoft type for use
+// EvictionSoftApplyConfiguration represents a declarative configuration of the EvictionSoft type for use
 // with apply.
+//
+// EvictionSoft is a map of signal names to quantities that defines soft eviction thresholds.
+// A soft eviction threshold pairs with a grace period. The kubelet does not evict pods until the grace period is exceeded.
 type EvictionSoftApplyConfiguration struct {
-	MemoryAvailable   *string `json:"memoryAvailable,omitempty"`
-	NodefsAvailable   *string `json:"nodefsAvailable,omitempty"`
-	ImagefsAvailable  *string `json:"imagefsAvailable,omitempty"`
+	// MemoryAvailable is the soft eviction threshold for memory.available.
+	// The value must be a quantity, e.g., "100Mi".
+	// The value must be greater than the GKE default hard eviction threshold of 100Mi and less than 50% of machine memory.
+	MemoryAvailable *string `json:"memoryAvailable,omitempty"`
+	// NodefsAvailable is the soft eviction threshold for nodefs.available.
+	// The value must be a percentage, e.g., "20%".
+	// The value must be between 10% and 50% inclusive.
+	NodefsAvailable *string `json:"nodefsAvailable,omitempty"`
+	// ImagefsAvailable is the soft eviction threshold for imagefs.available.
+	// The value must be a percentage. Eg. "10%".
+	// The value must be between 15% and 50% inclusive.
+	ImagefsAvailable *string `json:"imagefsAvailable,omitempty"`
+	// ImagefsInodesFree is the soft eviction threshold for imagefs.inodesFree.
+	// The value must be a percentage. Eg. "5%".
+	// The value must be between 5% and 50% inclusive.
 	ImagefsInodesFree *string `json:"imagefsInodesFree,omitempty"`
-	NodefsInodesFree  *string `json:"nodefsInodesFree,omitempty"`
-	PidAvailable      *string `json:"pidAvailable,omitempty"`
+	// NodefsInodesFree is the soft eviction threshold for nodefs.inodesFree.
+	// The value must be a percentage. Eg. "5%".
+	// The value must be between 5% and 50% inclusive.
+	NodefsInodesFree *string `json:"nodefsInodesFree,omitempty"`
+	// PidAvailable is the soft eviction threshold for pid.available.
+	// The value must be a percentage. Eg. "10%".
+	// The value must be between 10% and 50% inclusive.
+	PidAvailable *string `json:"pidAvailable,omitempty"`
 }
 
-// EvictionSoftApplyConfiguration constructs an declarative configuration of the EvictionSoft type for use with
+// EvictionSoftApplyConfiguration constructs a declarative configuration of the EvictionSoft type for use with
 // apply.
 func EvictionSoft() *EvictionSoftApplyConfiguration {
 	return &EvictionSoftApplyConfiguration{}

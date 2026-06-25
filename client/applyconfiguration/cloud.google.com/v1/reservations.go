@@ -22,14 +22,25 @@ import (
 	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 )
 
-// ReservationsApplyConfiguration represents an declarative configuration of the Reservations type for use
+// ReservationsApplyConfiguration represents a declarative configuration of the Reservations type for use
 // with apply.
+//
+// Reservations define reservations configuration per priority rule.
 type ReservationsApplyConfiguration struct {
+	// Specific is a non prioritized list of specific reservations to be considered by the priority rule.
 	Specific []SpecificReservationApplyConfiguration `json:"specific,omitempty"`
-	Affinity *cloudgooglecomv1.ReservationAffinity   `json:"affinity,omitempty"`
+	// ReservationAffinity affects reservations considered and the way how they are consumed.
+	// "Specific" means that only specific reservations are considered with no fallback possible.
+	// "AnyBestEffort" affinity would consider any non-specific reservation available
+	// to be claimed with a fallback to on-demand nodes in case of none claimable.
+	// "None" affinity would prevent reservations from being used.
+	// "AnyThenFail" affinity would consider any non-specific reservation available
+	// to be claimed without a fallback to on-demand nodes in case of none claimable,
+	// that means, node creation will fail if no reservation is available.
+	Affinity *cloudgooglecomv1.ReservationAffinity `json:"affinity,omitempty"`
 }
 
-// ReservationsApplyConfiguration constructs an declarative configuration of the Reservations type for use with
+// ReservationsApplyConfiguration constructs a declarative configuration of the Reservations type for use with
 // apply.
 func Reservations() *ReservationsApplyConfiguration {
 	return &ReservationsApplyConfiguration{}

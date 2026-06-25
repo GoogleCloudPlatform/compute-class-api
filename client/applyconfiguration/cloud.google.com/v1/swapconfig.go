@@ -18,17 +18,24 @@
 
 package v1
 
-// SwapConfigApplyConfiguration represents an declarative configuration of the SwapConfig type for use
+// SwapConfigApplyConfiguration represents a declarative configuration of the SwapConfig type for use
 // with apply.
+//
+// SwapConfig specifies the swap memory configuration for a node pool.
 type SwapConfigApplyConfiguration struct {
-	Enabled                  *bool                                                 `json:"enabled,omitempty"`
-	EncryptionConfig         *SwapConfigEncryptionConfigApplyConfiguration         `json:"encryptionConfig,omitempty"`
-	BootDiskProfile          *SwapConfigBootDiskProfileApplyConfiguration          `json:"bootDiskProfile,omitempty"`
+	// Enables or disables swap for the node pool. Default to false.
+	Enabled *bool `json:"enabled,omitempty"`
+	// If omitted, swap space is encrypted by default.
+	EncryptionConfig *SwapConfigEncryptionConfigApplyConfiguration `json:"encryptionConfig,omitempty"`
+	// Use the node's boot disk for swap.
+	BootDiskProfile *SwapConfigBootDiskProfileApplyConfiguration `json:"bootDiskProfile,omitempty"`
+	// Use the local SSD (shared with ephemeral storage) for swap.
 	EphemeralLocalSsdProfile *SwapConfigEphemeralLocalSsdProfileApplyConfiguration `json:"ephemeralLocalSsdProfile,omitempty"`
+	// Provision a new, separate local NVMe SSD exclusively for swap.
 	DedicatedLocalSsdProfile *SwapConfigDedicatedLocalSsdProfileApplyConfiguration `json:"dedicatedLocalSsdProfile,omitempty"`
 }
 
-// SwapConfigApplyConfiguration constructs an declarative configuration of the SwapConfig type for use with
+// SwapConfigApplyConfiguration constructs a declarative configuration of the SwapConfig type for use with
 // apply.
 func SwapConfig() *SwapConfigApplyConfiguration {
 	return &SwapConfigApplyConfiguration{}

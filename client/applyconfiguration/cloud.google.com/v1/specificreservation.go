@@ -18,16 +18,22 @@
 
 package v1
 
-// SpecificReservationApplyConfiguration represents an declarative configuration of the SpecificReservation type for use
+// SpecificReservationApplyConfiguration represents a declarative configuration of the SpecificReservation type for use
 // with apply.
+//
+// SpecificReservation defines a single specific reservation to be consumed by the created node.
 type SpecificReservationApplyConfiguration struct {
-	Name             *string                             `json:"name,omitempty"`
-	Project          *string                             `json:"project,omitempty"`
+	// Name of the reservation to be used.
+	Name *string `json:"name,omitempty"`
+	// Project is the project where the specific reservation lives.
+	Project *string `json:"project,omitempty"`
+	// ReservationBlock is the block of the reservation.
 	ReservationBlock *ReservationBlockApplyConfiguration `json:"reservationBlock,omitempty"`
-	Zones            []string                            `json:"zones,omitempty"`
+	// Zones is a list of GCE zones where reservations are to be consumed.
+	Zones []string `json:"zones,omitempty"`
 }
 
-// SpecificReservationApplyConfiguration constructs an declarative configuration of the SpecificReservation type for use with
+// SpecificReservationApplyConfiguration constructs a declarative configuration of the SpecificReservation type for use with
 // apply.
 func SpecificReservation() *SpecificReservationApplyConfiguration {
 	return &SpecificReservationApplyConfiguration{}

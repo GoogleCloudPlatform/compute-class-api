@@ -18,14 +18,18 @@
 
 package v1
 
-// SwapConfigBootDiskProfileApplyConfiguration represents an declarative configuration of the SwapConfigBootDiskProfile type for use
+// SwapConfigBootDiskProfileApplyConfiguration represents a declarative configuration of the SwapConfigBootDiskProfile type for use
 // with apply.
+//
+// SwapConfigBootDiskProfile defines swap on the node's boot disk.
 type SwapConfigBootDiskProfileApplyConfiguration struct {
-	SwapSizeGib     *int64 `json:"swapSizeGib,omitempty"`
+	// The size of the swap space in GiB.
+	SwapSizeGib *int64 `json:"swapSizeGib,omitempty"`
+	// The size of the swap space as a percentage of the node's boot disk.
 	SwapSizePercent *int32 `json:"swapSizePercent,omitempty"`
 }
 
-// SwapConfigBootDiskProfileApplyConfiguration constructs an declarative configuration of the SwapConfigBootDiskProfile type for use with
+// SwapConfigBootDiskProfileApplyConfiguration constructs a declarative configuration of the SwapConfigBootDiskProfile type for use with
 // apply.
 func SwapConfigBootDiskProfile() *SwapConfigBootDiskProfileApplyConfiguration {
 	return &SwapConfigBootDiskProfileApplyConfiguration{}

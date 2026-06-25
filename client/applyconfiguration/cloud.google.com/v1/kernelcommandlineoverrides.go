@@ -18,14 +18,18 @@
 
 package v1
 
-// KernelCommandlineOverridesApplyConfiguration represents an declarative configuration of the KernelCommandlineOverrides type for use
+// KernelCommandlineOverridesApplyConfiguration represents a declarative configuration of the KernelCommandlineOverrides type for use
 // with apply.
+//
+// KernelCommandlineOverrides defines kernel command line argument overrides.
 type KernelCommandlineOverridesApplyConfiguration struct {
+	// Defines the change of spec_rstack_overflow.
 	SpecRstackOverflow *string `json:"specRstackOverflow,omitempty"`
-	InitOnAlloc        *string `json:"initOnAlloc,omitempty"`
+	// Defines the change of init_on_alloc.
+	InitOnAlloc *string `json:"initOnAlloc,omitempty"`
 }
 
-// KernelCommandlineOverridesApplyConfiguration constructs an declarative configuration of the KernelCommandlineOverrides type for use with
+// KernelCommandlineOverridesApplyConfiguration constructs a declarative configuration of the KernelCommandlineOverrides type for use with
 // apply.
 func KernelCommandlineOverrides() *KernelCommandlineOverridesApplyConfiguration {
 	return &KernelCommandlineOverridesApplyConfiguration{}

@@ -19,15 +19,16 @@
 package v1
 
 import (
-	"context"
+	context "context"
 	time "time"
 
-	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
+	apicloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/api/cloud.google.com/v1"
 	versioned "github.com/googlecloudplatform/compute-class-api/client/clientset/versioned"
 	internalinterfaces "github.com/googlecloudplatform/compute-class-api/client/informers/externalversions/internalinterfaces"
-	v1 "github.com/googlecloudplatform/compute-class-api/client/listers/cloud.google.com/v1"
+	cloudgooglecomv1 "github.com/googlecloudplatform/compute-class-api/client/listers/cloud.google.com/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -36,7 +37,7 @@ import (
 // ComputeClasses.
 type ComputeClassInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1.ComputeClassLister
+	Lister() cloudgooglecomv1.ComputeClassLister
 }
 
 type computeClassInformer struct {
@@ -48,42 +49,67 @@ type computeClassInformer struct {
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
 func NewComputeClassInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredComputeClassInformer(client, resyncPeriod, indexers, nil)
+	return NewComputeClassInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers})
 }
 
 // NewFilteredComputeClassInformer constructs a new informer for ComputeClass type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
 func NewFilteredComputeClassInformer(client versioned.Interface, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
-	return cache.NewSharedIndexInformer(
-		&cache.ListWatch{
-			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
+	return NewComputeClassInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: indexers, TweakListOptions: tweakListOptions})
+}
+
+// NewComputeClassInformerWithOptions constructs a new informer for ComputeClass type with additional options.
+// Always prefer using an informer factory to get a shared informer instead of getting an independent
+// one. This reduces memory footprint and number of connections to the server.
+func NewComputeClassInformerWithOptions(client versioned.Interface, options internalinterfaces.InformerOptions) cache.SharedIndexInformer {
+	gvr := schema.GroupVersionResource{Group: "cloud.google.com", Version: "v1", Resource: "computeclasss"}
+	identifier := options.InformerName.WithResource(gvr)
+	tweakListOptions := options.TweakListOptions
+	return cache.NewSharedIndexInformerWithOptions(
+		cache.ToListWatcherWithWatchListSemantics(&cache.ListWatch{
+			ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.CloudV1().ComputeClasses().List(context.TODO(), options)
+				return client.CloudV1().ComputeClasses().List(context.Background(), opts)
 			},
-			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
+			WatchFunc: func(opts metav1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
-					tweakListOptions(&options)
+					tweakListOptions(&opts)
 				}
-				return client.CloudV1().ComputeClasses().Watch(context.TODO(), options)
+				return client.CloudV1().ComputeClasses().Watch(context.Background(), opts)
 			},
+			ListWithContextFunc: func(ctx context.Context, opts metav1.ListOptions) (runtime.Object, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.CloudV1().ComputeClasses().List(ctx, opts)
+			},
+			WatchFuncWithContext: func(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+				if tweakListOptions != nil {
+					tweakListOptions(&opts)
+				}
+				return client.CloudV1().ComputeClasses().Watch(ctx, opts)
+			},
+		}, client),
+		&apicloudgooglecomv1.ComputeClass{},
+		cache.SharedIndexInformerOptions{
+			ResyncPeriod: options.ResyncPeriod,
+			Indexers:     options.Indexers,
+			Identifier:   identifier,
 		},
-		&cloudgooglecomv1.ComputeClass{},
-		resyncPeriod,
-		indexers,
 	)
 }
 
 func (f *computeClassInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredComputeClassInformer(client, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+	return NewComputeClassInformerWithOptions(client, internalinterfaces.InformerOptions{ResyncPeriod: resyncPeriod, Indexers: cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, InformerName: f.factory.InformerName(), TweakListOptions: f.tweakListOptions})
 }
 
 func (f *computeClassInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&cloudgooglecomv1.ComputeClass{}, f.defaultInformer)
+	return f.factory.InformerFor(&apicloudgooglecomv1.ComputeClass{}, f.defaultInformer)
 }
 
-func (f *computeClassInformer) Lister() v1.ComputeClassLister {
-	return v1.NewComputeClassLister(f.Informer().GetIndexer())
+func (f *computeClassInformer) Lister() cloudgooglecomv1.ComputeClassLister {
+	return cloudgooglecomv1.NewComputeClassLister(f.Informer().GetIndexer())
 }

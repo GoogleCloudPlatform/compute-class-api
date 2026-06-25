@@ -18,17 +18,30 @@
 
 package v1
 
-// StorageApplyConfiguration represents an declarative configuration of the Storage type for use
+// StorageApplyConfiguration represents a declarative configuration of the Storage type for use
 // with apply.
+//
+// Storage defines storage config per priority rule.
 type StorageApplyConfiguration struct {
-	BootDiskSize       *int                                  `json:"bootDiskSize,omitempty"`
-	BootDiskType       *string                               `json:"bootDiskType,omitempty"`
-	BootDiskKMSKey     *string                               `json:"bootDiskKMSKey,omitempty"`
-	LocalSSDCount      *int                                  `json:"localSSDCount,omitempty"`
+	// BootDiskSize defines the size of a disk attached to node, specified in GB.
+	BootDiskSize *int `json:"bootDiskSize,omitempty"`
+	// BootDiskType defines type of the disk attached to the node.
+	// Note that available boot disk types depend on the machine family / machine type selected.
+	// Currently supported types:
+	// * pd-balanced
+	// * pd-standard
+	// * pd-ssd
+	// * hyperdisk-balanced
+	BootDiskType *string `json:"bootDiskType,omitempty"`
+	// BootDiskKMSKey defines a key used to encrypt the boot disk attached.
+	BootDiskKMSKey *string `json:"bootDiskKMSKey,omitempty"`
+	// LocalSSDCount defines a number of local SSDs attached to node.
+	LocalSSDCount *int `json:"localSSDCount,omitempty"`
+	// SecondaryBootDisks represent persistent disks attached to a node with special configurations based on their modes.
 	SecondaryBootDisks []SecondaryBootDiskApplyConfiguration `json:"secondaryBootDisks,omitempty"`
 }
 
-// StorageApplyConfiguration constructs an declarative configuration of the Storage type for use with
+// StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
 // apply.
 func Storage() *StorageApplyConfiguration {
 	return &StorageApplyConfiguration{}

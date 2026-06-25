@@ -18,14 +18,18 @@
 
 package v1
 
-// LRUGenApplyConfiguration represents an declarative configuration of the LRUGen type for use
+// LRUGenApplyConfiguration represents a declarative configuration of the LRUGen type for use
 // with apply.
+//
+// LRUGen defines Multi-Gen LRU options.
 type LRUGenApplyConfiguration struct {
-	Enabled  *bool  `json:"enabled,omitempty"`
+	// Enable LRU Gen.
+	Enabled *bool `json:"enabled,omitempty"`
+	// Prevent working set of N milliseconds from getting evicted.
 	MinTtlMs *int32 `json:"minTtlMs,omitempty"`
 }
 
-// LRUGenApplyConfiguration constructs an declarative configuration of the LRUGen type for use with
+// LRUGenApplyConfiguration constructs a declarative configuration of the LRUGen type for use with
 // apply.
 func LRUGen() *LRUGenApplyConfiguration {
 	return &LRUGenApplyConfiguration{}

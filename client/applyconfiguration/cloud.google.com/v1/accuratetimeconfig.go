@@ -18,13 +18,16 @@
 
 package v1
 
-// AccurateTimeConfigApplyConfiguration represents an declarative configuration of the AccurateTimeConfig type for use
+// AccurateTimeConfigApplyConfiguration represents a declarative configuration of the AccurateTimeConfig type for use
 // with apply.
+//
+// AccurateTimeConfig defines accurate time configuration for a node.
 type AccurateTimeConfigApplyConfiguration struct {
+	// EnablePtpKvmTimeSync controls whether to enable accurate time synchronization with PTP-KVM.
 	EnablePtpKvmTimeSync *bool `json:"enablePtpKvmTimeSync,omitempty"`
 }
 
-// AccurateTimeConfigApplyConfiguration constructs an declarative configuration of the AccurateTimeConfig type for use with
+// AccurateTimeConfigApplyConfiguration constructs a declarative configuration of the AccurateTimeConfig type for use with
 // apply.
 func AccurateTimeConfig() *AccurateTimeConfigApplyConfiguration {
 	return &AccurateTimeConfigApplyConfiguration{}

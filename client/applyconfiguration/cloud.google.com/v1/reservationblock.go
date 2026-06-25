@@ -18,14 +18,18 @@
 
 package v1
 
-// ReservationBlockApplyConfiguration represents an declarative configuration of the ReservationBlock type for use
+// ReservationBlockApplyConfiguration represents a declarative configuration of the ReservationBlock type for use
 // with apply.
+//
+// ReservationBlock is the block of the reservation.
 type ReservationBlockApplyConfiguration struct {
-	Name                *string                                `json:"name,omitempty"`
+	// Name is the name of the block.
+	Name *string `json:"name,omitempty"`
+	// ReservationSubBlock is the subBlock of the reservation block.
 	ReservationSubBlock *ReservationSubBlockApplyConfiguration `json:"reservationSubBlock,omitempty"`
 }
 
-// ReservationBlockApplyConfiguration constructs an declarative configuration of the ReservationBlock type for use with
+// ReservationBlockApplyConfiguration constructs a declarative configuration of the ReservationBlock type for use with
 // apply.
 func ReservationBlock() *ReservationBlockApplyConfiguration {
 	return &ReservationBlockApplyConfiguration{}

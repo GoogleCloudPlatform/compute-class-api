@@ -18,72 +18,154 @@
 
 package v1
 
-// SysctlsConfigApplyConfiguration represents an declarative configuration of the SysctlsConfig type for use
+// SysctlsConfigApplyConfiguration represents a declarative configuration of the SysctlsConfig type for use
 // with apply.
+//
+// SysctlsConfig defines sysctls config for a node.
 type SysctlsConfigApplyConfiguration struct {
-	Net_core_netdev_max_backlog                        *int64  `json:"net.core.netdev_max_backlog,omitempty"`
-	Net_core_rmem_max                                  *int64  `json:"net.core.rmem_max,omitempty"`
-	Net_core_wmem_default                              *int64  `json:"net.core.wmem_default,omitempty"`
-	Net_core_wmem_max                                  *int64  `json:"net.core.wmem_max,omitempty"`
-	Net_core_optmem_max                                *int64  `json:"net.core.optmem_max,omitempty"`
-	Net_core_somaxconn                                 *int64  `json:"net.core.somaxconn,omitempty"`
-	Net_ipv4_tcp_rmem                                  *string `json:"net.ipv4.tcp_rmem,omitempty"`
-	Net_ipv4_tcp_wmem                                  *string `json:"net.ipv4.tcp_wmem,omitempty"`
-	Net_ipv4_tcp_tw_reuse                              *int64  `json:"net.ipv4.tcp_tw_reuse,omitempty"`
-	Net_core_busy_poll                                 *int64  `json:"net.core.busy_poll,omitempty"`
-	Net_core_busy_read                                 *int64  `json:"net.core.busy_read,omitempty"`
-	Net_ipv6_conf_all_disable_ipv6                     *bool   `json:"net.ipv6.conf.all.disable_ipv6,omitempty"`
-	Net_ipv6_conf_default_disable_ipv6                 *bool   `json:"net.ipv6.conf.default.disable_ipv6,omitempty"`
-	Vm_max_map_count                                   *int64  `json:"vm.max_map_count,omitempty"`
-	Kernel_shmmni                                      *int64  `json:"kernel.shmmni,omitempty"`
-	Kernel_shmall                                      *string `json:"kernel.shmall,omitempty"`
-	Kernel_shmmax                                      *string `json:"kernel.shmmax,omitempty"`
-	Net_core_rmem_default                              *int64  `json:"net.core.rmem_default,omitempty"`
-	Net_netfilter_nf_conntrack_max                     *int64  `json:"net.netfilter.nf_conntrack_max,omitempty"`
-	Net_netfilter_nf_conntrack_buckets                 *int64  `json:"net.netfilter.nf_conntrack_buckets,omitempty"`
-	Net_netfilter_nf_conntrack_acct                    *bool   `json:"net.netfilter.nf_conntrack_acct,omitempty"`
-	Net_netfilter_nf_conntrack_tcp_timeout_established *int64  `json:"net.netfilter.nf_conntrack_tcp_timeout_established,omitempty"`
-	Net_netfilter_nf_conntrack_tcp_timeout_close_wait  *int64  `json:"net.netfilter.nf_conntrack_tcp_timeout_close_wait,omitempty"`
-	Net_netfilter_nf_conntrack_tcp_timeout_time_wait   *int64  `json:"net.netfilter.nf_conntrack_tcp_timeout_time_wait,omitempty"`
-	Fs_nr_open                                         *int64  `json:"fs.nr_open,omitempty"`
-	Fs_inotify_max_user_watches                        *int64  `json:"fs.inotify.max_user_watches,omitempty"`
-	Fs_inotify_max_user_instances                      *int64  `json:"fs.inotify.max_user_instances,omitempty"`
-	Vm_overcommit_memory                               *int64  `json:"vm.overcommit_memory,omitempty"`
-	Vm_overcommit_ratio                                *int64  `json:"vm.overcommit_ratio,omitempty"`
-	Vm_vfs_cache_pressure                              *int64  `json:"vm.vfs_cache_pressure,omitempty"`
-	Vm_dirty_background_ratio                          *int64  `json:"vm.dirty_background_ratio,omitempty"`
-	Vm_dirty_ratio                                     *int64  `json:"vm.dirty_ratio,omitempty"`
-	Vm_dirty_expire_centisecs                          *int64  `json:"vm.dirty_expire_centisecs,omitempty"`
-	Vm_dirty_writeback_centisecs                       *int64  `json:"vm.dirty_writeback_centisecs,omitempty"`
-	Fs_file_max                                        *int64  `json:"fs.file-max,omitempty"`
-	Fs_aio_max_nr                                      *int64  `json:"fs.aio-max-nr,omitempty"`
-	Net_ipv4_tcp_max_orphans                           *int64  `json:"net.ipv4.tcp_max_orphans,omitempty"`
-	Vm_swappiness                                      *int64  `json:"vm.swappiness,omitempty"`
-	Vm_watermark_scale_factor                          *int64  `json:"vm.watermark_scale_factor,omitempty"`
-	Vm_min_free_kbytes                                 *int64  `json:"vm.min_free_kbytes,omitempty"`
-	Net_ipv4_tcp_mtu_probing                           *int64  `json:"net.ipv4.tcp_mtu_probing,omitempty"`
-	Net_ipv4_tcp_max_tw_buckets                        *int64  `json:"net.ipv4.tcp_max_tw_buckets,omitempty"`
-	Net_ipv4_tcp_syn_retries                           *int64  `json:"net.ipv4.tcp_syn_retries,omitempty"`
-	Net_ipv4_tcp_ecn                                   *int64  `json:"net.ipv4.tcp_ecn,omitempty"`
-	Net_ipv4_tcp_congestion_control                    *string `json:"net.ipv4.tcp_congestion_control,omitempty"`
-	Kernel_perf_event_paranoid                         *int64  `json:"kernel.perf_event_paranoid,omitempty"`
-	Kernel_sched_rt_runtime_us                         *int64  `json:"kernel.sched_rt_runtime_us,omitempty"`
-	Kernel_softlockup_panic                            *bool   `json:"kernel.softlockup_panic,omitempty"`
-	Kernel_yama_ptrace_scope                           *int64  `json:"kernel.yama.ptrace_scope,omitempty"`
-	Kernel_kptr_restrict                               *int64  `json:"kernel.kptr_restrict,omitempty"`
-	Kernel_dmesg_restrict                              *bool   `json:"kernel.dmesg_restrict,omitempty"`
-	Kernel_sysrq                                       *int64  `json:"kernel.sysrq,omitempty"`
-	Vm_dirty_background_bytes                          *int64  `json:"vm.dirty_background_bytes,omitempty"`
-	Vm_dirty_bytes                                     *int64  `json:"vm.dirty_bytes,omitempty"`
-	Kernel_core_pattern                                *string `json:"kernel.core_pattern,omitempty"`
-	Kernel_keys_maxkeys                                *int64  `json:"kernel.keys.maxkeys,omitempty"`
-	Kernel_keys_maxbytes                               *int64  `json:"kernel.keys.maxbytes,omitempty"`
-	Net_ipv4_neigh_default_gc_thresh1                  *int64  `json:"net.ipv4.neigh.default.gc_thresh1,omitempty"`
-	Net_ipv4_neigh_default_gc_thresh2                  *int64  `json:"net.ipv4.neigh.default.gc_thresh2,omitempty"`
-	Net_ipv4_neigh_default_gc_thresh3                  *int64  `json:"net.ipv4.neigh.default.gc_thresh3,omitempty"`
+	// Maximum number of packets, queued on the INPUT side, when the interface receives packets faster than kernel can process them.
+	Net_core_netdev_max_backlog *int64 `json:"net.core.netdev_max_backlog,omitempty"`
+	// The maximum receive socket buffer size in bytes.
+	Net_core_rmem_max *int64 `json:"net.core.rmem_max,omitempty"`
+	// The default setting (in bytes) of the socket send buffer.
+	Net_core_wmem_default *int64 `json:"net.core.wmem_default,omitempty"`
+	// The maximum send socket buffer size in bytes.
+	Net_core_wmem_max *int64 `json:"net.core.wmem_max,omitempty"`
+	// Maximum ancillary buffer size allowed per socket. Ancillary data is a sequence of struct cmsghdr structures with appended data.
+	Net_core_optmem_max *int64 `json:"net.core.optmem_max,omitempty"`
+	// Limit of socket listen() backlog, known in userspace as SOMAXCONN. Defaults to 128. See also tcp_max_syn_backlog for additional tuning for TCP sockets.
+	Net_core_somaxconn *int64 `json:"net.core.somaxconn,omitempty"`
+	// Minimal size of receive buffer used by UDP sockets in moderation. Each UDP socket is able to use the size for receiving data, even if total pages of UDP sockets exceed udp_mem pressure. The unit is byte. Default: 1 page. The three values are: min, default, max. Eg. '4096 87380 6291456'.
+	Net_ipv4_tcp_rmem *string `json:"net.ipv4.tcp_rmem,omitempty"`
+	// Minimal size of send buffer used by UDP sockets in moderation. Each UDP socket is able to use the size for sending data, even if total pages of UDP sockets exceed udp_mem pressure. The unit is byte. Default: 1 page. The three values are: min, default, max. Eg. '4096 87380 6291456'.
+	Net_ipv4_tcp_wmem *string `json:"net.ipv4.tcp_wmem,omitempty"`
+	// Allow to reuse TIME-WAIT sockets for new connections when it is safe from protocol viewpoint. It should not be changed without advice/request of technical experts.
+	Net_ipv4_tcp_tw_reuse *int64 `json:"net.ipv4.tcp_tw_reuse,omitempty"`
+	// Low latency busy poll timeout for poll and select. (needs CONFIG_NET_RX_BUSY_POLL) Approximate time in us to busy loop waiting for events.
+	Net_core_busy_poll *int64 `json:"net.core.busy_poll,omitempty"`
+	// Low latency busy poll timeout for socket reads. (needs CONFIG_NET_RX_BUSY_POLL) Approximate time in us to busy loop waiting for packets on the device queue.
+	Net_core_busy_read *int64 `json:"net.core.busy_read,omitempty"`
+	// Changing this value is same as changing conf/default/disable_ipv6 setting and also all per-interface disable_ipv6 settings to the same value.
+	Net_ipv6_conf_all_disable_ipv6 *bool `json:"net.ipv6.conf.all.disable_ipv6,omitempty"`
+	// Disable IPv6 operation.
+	Net_ipv6_conf_default_disable_ipv6 *bool `json:"net.ipv6.conf.default.disable_ipv6,omitempty"`
+	// Maximum number of memory map areas a process may have.
+	Vm_max_map_count *int64 `json:"vm.max_map_count,omitempty"`
+	// The system-wide maximum number of shared memory segments.
+	Kernel_shmmni *int64 `json:"kernel.shmmni,omitempty"`
+	// The maximum size (in bytes) of a single shared memory segment allowed by the kernel.
+	// Note that the actual range should be integer between 0 and 18446744073692774399, while kubebuilder would lose some precision on uint64 during the internal representation and parsing.
+	Kernel_shmall *string `json:"kernel.shmall,omitempty"`
+	// The total amount of shared memory pages that can be used on the system at one time.
+	// Note that the actual range should be integer between 0 and 18446744073692774399, while kubebuilder would lose some precision on uint64 during the internal representation and parsing.
+	Kernel_shmmax *string `json:"kernel.shmmax,omitempty"`
+	// The default receive socket buffer size in bytes.
+	Net_core_rmem_default *int64 `json:"net.core.rmem_default,omitempty"`
+	// The size of connection tracking table.
+	Net_netfilter_nf_conntrack_max *int64 `json:"net.netfilter.nf_conntrack_max,omitempty"`
+	// The size of hash table for connection tracking.
+	Net_netfilter_nf_conntrack_buckets *int64 `json:"net.netfilter.nf_conntrack_buckets,omitempty"`
+	// Whether to enable connection tracking flow accounting.
+	Net_netfilter_nf_conntrack_acct *bool `json:"net.netfilter.nf_conntrack_acct,omitempty"`
+	// The duration of dead connections before deleted automatically from connection tracking table.
+	Net_netfilter_nf_conntrack_tcp_timeout_established *int64 `json:"net.netfilter.nf_conntrack_tcp_timeout_established,omitempty"`
+	// The period for which the TCP connections can remain in the CLOSE_WAIT state, and stay in the table.
+	Net_netfilter_nf_conntrack_tcp_timeout_close_wait *int64 `json:"net.netfilter.nf_conntrack_tcp_timeout_close_wait,omitempty"`
+	// The period for which the TCP connections can remain in the TIME_WAIT state, and stay in the table.
+	Net_netfilter_nf_conntrack_tcp_timeout_time_wait *int64 `json:"net.netfilter.nf_conntrack_tcp_timeout_time_wait,omitempty"`
+	// The maximum number of file descriptors that can be opened by a process.
+	Fs_nr_open *int64 `json:"fs.nr_open,omitempty"`
+	// The maximum number of inotify watches that a user can create.
+	Fs_inotify_max_user_watches *int64 `json:"fs.inotify.max_user_watches,omitempty"`
+	// The maximum number of inotify instances that a user can create.
+	Fs_inotify_max_user_instances *int64 `json:"fs.inotify.max_user_instances,omitempty"`
+	// Determines the kernel's memory overcommit handling strategy.
+	// Supported values:
+	// 0: Rejects allocations that are obviously too large.
+	// 1: Allows overcommit until memory is exhausted.
+	// 2 (strict): Prevents overcommit beyond swap space plus a percentage of RAM defined by 'vm.overcommit_ratio'.
+	Vm_overcommit_memory *int64 `json:"vm.overcommit_memory,omitempty"`
+	// Specifies the percentage of physical RAM allowed for overcommit when 'vm.overcommit_memory' is set to 2.
+	// The total committed address space cannot exceed swap plus this RAM percentage.
+	Vm_overcommit_ratio *int64 `json:"vm.overcommit_ratio,omitempty"`
+	// Adjusts the kernel's preference for reclaiming memory used for dentry (directory) and inode caches.
+	Vm_vfs_cache_pressure *int64 `json:"vm.vfs_cache_pressure,omitempty"`
+	// Percentage of system memory that can be filled with dirty pages (modified but not yet written to disk) before background kernel flusher threads begin writeback.
+	// This value should be less than 'vm.dirty_ratio'.
+	Vm_dirty_background_ratio *int64 `json:"vm.dirty_background_ratio,omitempty"`
+	// Percentage of system memory that can be filled with dirty pages before processes performing writes are forced to block and write out dirty data synchronously.
+	// This value should be greater than 'vm.dirty_background_ratio'.
+	Vm_dirty_ratio *int64 `json:"vm.dirty_ratio,omitempty"`
+	// Maximum age (in hundredths of a second) that dirty data can remain in memory before kernel flusher threads write it to disk.
+	// Lower values result in faster, more frequent writebacks.
+	Vm_dirty_expire_centisecs *int64 `json:"vm.dirty_expire_centisecs,omitempty"`
+	// Interval (in hundredths of a second) at which kernel flusher threads wake up to write 'old' dirty data to disk.
+	Vm_dirty_writeback_centisecs *int64 `json:"vm.dirty_writeback_centisecs,omitempty"`
+	// Maximum number of file-handles that the Linux kernel will allocate.
+	Fs_file_max *int64 `json:"fs.file-max,omitempty"`
+	// The maximum system-wide number of asynchronous io requests.
+	Fs_aio_max_nr             *int64 `json:"fs.aio-max-nr,omitempty"`
+	Net_ipv4_tcp_max_orphans  *int64 `json:"net.ipv4.tcp_max_orphans,omitempty"`
+	Vm_swappiness             *int64 `json:"vm.swappiness,omitempty"`
+	Vm_watermark_scale_factor *int64 `json:"vm.watermark_scale_factor,omitempty"`
+	Vm_min_free_kbytes        *int64 `json:"vm.min_free_kbytes,omitempty"`
+	// Controls TCP Packetization-Layer Path MTU Discovery. Supported values:
+	// 0: Disabled
+	// 1: Disabled by default, enabled when an ICMP black hole detected
+	// 2: Always enabled, use initial MSS of tcp_base_mss.
+	Net_ipv4_tcp_mtu_probing *int64 `json:"net.ipv4.tcp_mtu_probing,omitempty"`
+	// Maximal number of timewait sockets held by system simultaneously. If this number is exceeded time-wait socket is immediately destroyed and warning is printed.
+	Net_ipv4_tcp_max_tw_buckets *int64 `json:"net.ipv4.tcp_max_tw_buckets,omitempty"`
+	// Number of times initial SYNs for an active TCP connection attempt will be retransmitted.
+	Net_ipv4_tcp_syn_retries *int64 `json:"net.ipv4.tcp_syn_retries,omitempty"`
+	// Control use of Explicit Congestion Notification (ECN) by TCP. ECN is used only when both ends of the TCP connection indicate support for it.
+	Net_ipv4_tcp_ecn *int64 `json:"net.ipv4.tcp_ecn,omitempty"`
+	// Set the congestion control algorithm to be used for new connections. The algorithm “reno” is always available, but additional choices may be available based on kernel configuration. Default is set as part of kernel configuration. For passive connections, the listener congestion control choice is inherited.
+	Net_ipv4_tcp_congestion_control *string `json:"net.ipv4.tcp_congestion_control,omitempty"`
+	// Controls use of the performance events system by unprivileged users (without CAP_PERFMON). The default value is 2 in kernel.
+	Kernel_perf_event_paranoid *int64 `json:"kernel.perf_event_paranoid,omitempty"`
+	// A global limit on how much time real-time scheduling may use.
+	Kernel_sched_rt_runtime_us *int64 `json:"kernel.sched_rt_runtime_us,omitempty"`
+	// Control whether the kernel panics when a soft lockup is detected.
+	Kernel_softlockup_panic *bool `json:"kernel.softlockup_panic,omitempty"`
+	// Defines the scope and restrictions for the ptrace() system call, impacting process debugging and tracing. Supported values:
+	// 0: Classic ptrace permissions.
+	// 1: Restricted ptrace (default in many distributions) - only child processes or CAP_SYS_PTRACE.
+	// 2: Admin-only ptrace - only processes with CAP_SYS_PTRACE.
+	// 3: No ptrace - ptrace calls are disallowed.
+	Kernel_yama_ptrace_scope *int64 `json:"kernel.yama.ptrace_scope,omitempty"`
+	// Indicates whether restrictions are placed on exposing kernel addresses via /proc and other interfaces.
+	Kernel_kptr_restrict *int64 `json:"kernel.kptr_restrict,omitempty"`
+	// Indicates whether unprivileged users are prevented from using dmesg(8) to view messages from the kernel’s log buffer.
+	Kernel_dmesg_restrict *bool `json:"kernel.dmesg_restrict,omitempty"`
+	// Controls the functions allowed to be invoked via the SysRq key. List of possible values:
+	// 0: Disables sysrq completely.
+	// 1: Enables all sysrq functions.
+	// >1 - bitmask of allowed sysrq functions. More details in https://docs.kernel.org/admin-guide/sysrq.html.
+	Kernel_sysrq *int64 `json:"kernel.sysrq,omitempty"`
+	// Contains the amount of dirty memory at which the background kernel flusher threads will start writeback.
+	// Note: Vm_dirty_background_bytes is the counterpart of Vm_dirty_background_ratio. Only one of them may be specified at a time.
+	Vm_dirty_background_bytes *int64 `json:"vm.dirty_background_bytes,omitempty"`
+	// Contains the amount of dirty memory at which a process generating disk writes will itself start writeback.
+	// Note: Vm_dirty_bytes is the counterpart of Vm_dirty_ratio. Only one of them may be specified at a time.
+	// Note: the minimum value allowed for Vm_dirty_bytes is two pages (in bytes); any value lower than this limit will be ignored and the old configuration will be retained.
+	Vm_dirty_bytes *int64 `json:"vm.dirty_bytes,omitempty"`
+	// Defines the core dump pattern for the kernel.
+	// Only absolute paths are supported. Piping and relative paths are not allowed.
+	Kernel_core_pattern *string `json:"kernel.core_pattern,omitempty"`
+	// Controls the maximum number of keys that a nonroot user may own.
+	Kernel_keys_maxkeys *int64 `json:"kernel.keys.maxkeys,omitempty"`
+	// Represents the maximum number of bytes that a nonroot user can hold in the payload section of all their keys.
+	Kernel_keys_maxbytes *int64 `json:"kernel.keys.maxbytes,omitempty"`
+	// Tells the garbage collector the minimum number of network entries that can sit in cache (floor).
+	Net_ipv4_neigh_default_gc_thresh1 *int64 `json:"net.ipv4.neigh.default.gc_thresh1,omitempty"`
+	// Acts as a soft limit to the number of network device entries stored in cache (soft ceiling).
+	Net_ipv4_neigh_default_gc_thresh2 *int64 `json:"net.ipv4.neigh.default.gc_thresh2,omitempty"`
+	// Sets a hard ceiling (absolute maximum) for the network neighbor cache.
+	Net_ipv4_neigh_default_gc_thresh3 *int64 `json:"net.ipv4.neigh.default.gc_thresh3,omitempty"`
 }
 
-// SysctlsConfigApplyConfiguration constructs an declarative configuration of the SysctlsConfig type for use with
+// SysctlsConfigApplyConfiguration constructs a declarative configuration of the SysctlsConfig type for use with
 // apply.
 func SysctlsConfig() *SysctlsConfigApplyConfiguration {
 	return &SysctlsConfigApplyConfiguration{}

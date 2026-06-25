@@ -18,14 +18,18 @@
 
 package v1
 
-// ShieldedInstanceConfigApplyConfiguration represents an declarative configuration of the ShieldedInstanceConfig type for use
+// ShieldedInstanceConfigApplyConfiguration represents a declarative configuration of the ShieldedInstanceConfig type for use
 // with apply.
+//
+// ShieldedInstanceConfig defines the shielded instance configuration for auto-created node pools.
 type ShieldedInstanceConfigApplyConfiguration struct {
-	EnableSecureBoot          *bool `json:"enableSecureBoot,omitempty"`
+	// EnableSecureBoot defines whether secure boot is enabled.
+	EnableSecureBoot *bool `json:"enableSecureBoot,omitempty"`
+	// EnableIntegrityMonitoring defines whether integrity monitoring is enabled.
 	EnableIntegrityMonitoring *bool `json:"enableIntegrityMonitoring,omitempty"`
 }
 
-// ShieldedInstanceConfigApplyConfiguration constructs an declarative configuration of the ShieldedInstanceConfig type for use with
+// ShieldedInstanceConfigApplyConfiguration constructs a declarative configuration of the ShieldedInstanceConfig type for use with
 // apply.
 func ShieldedInstanceConfig() *ShieldedInstanceConfigApplyConfiguration {
 	return &ShieldedInstanceConfigApplyConfiguration{}
