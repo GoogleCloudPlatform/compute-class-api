@@ -97,6 +97,8 @@ type KubeletConfigApplyConfiguration struct {
 	// CrashLoopBackOff contains the configuration to modify node level parameters
 	// for container restart behavior.
 	CrashLoopBackOff *CrashLoopBackOffApplyConfiguration `json:"crashLoopBackOff,omitempty"`
+	// ReservedResourcesConfig contains the configuration for the reserved resources on the node.
+	ReservedResourcesConfig *ReservedResourcesConfigApplyConfiguration `json:"reservedResourcesConfig,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
@@ -280,5 +282,13 @@ func (b *KubeletConfigApplyConfiguration) WithShutdownGracePeriodCriticalPodsSec
 // If called multiple times, the CrashLoopBackOff field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithCrashLoopBackOff(value *CrashLoopBackOffApplyConfiguration) *KubeletConfigApplyConfiguration {
 	b.CrashLoopBackOff = value
+	return b
+}
+
+// WithReservedResourcesConfig sets the ReservedResourcesConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ReservedResourcesConfig field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithReservedResourcesConfig(value *ReservedResourcesConfigApplyConfiguration) *KubeletConfigApplyConfiguration {
+	b.ReservedResourcesConfig = value
 	return b
 }

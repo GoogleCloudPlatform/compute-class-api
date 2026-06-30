@@ -130,6 +130,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ReservationsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationSubBlock"):
 		return &cloudgooglecomv1.ReservationSubBlockApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ReservedResourcesConfig"):
+		return &cloudgooglecomv1.ReservedResourcesConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ResolvedConfEntry"):
 		return &cloudgooglecomv1.ResolvedConfEntryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ResourceInfo"):

@@ -1321,6 +1321,10 @@ type KubeletConfig struct {
 	//
 	// +kubebuilder:validation:Optional
 	CrashLoopBackOff *CrashLoopBackOff `json:"crashLoopBackOff,omitempty" protobuf:"bytes,22,opt,name=crashLoopBackOff"`
+
+	// ReservedResourcesConfig contains the configuration for the reserved resources on the node.
+	// +kubebuilder:validation:Optional
+	ReservedResourcesConfig *ReservedResourcesConfig `json:"reservedResourcesConfig,omitempty" protobuf:"bytes,23,opt,name=reservedResourcesConfig"`
 }
 
 // CrashLoopBackOff contains the configuration to modify node level parameters
@@ -1334,6 +1338,19 @@ type CrashLoopBackOff struct {
 	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
 	// +optional
 	MaxContainerRestartPeriod *string `json:"maxContainerRestartPeriod,omitempty" protobuf:"bytes,1,opt,name=maxContainerRestartPeriod"`
+}
+
+// ReservedResourcesConfig contains the configuration for the reserved resources on the node.
+type ReservedResourcesConfig struct {
+	// CpuReservedMillicore is the amount of CPU to reserve for system daemons.
+	// This is a user-specified value. If unspecified, GKE decides the default.
+	// +optional
+	CpuReservedMillicore *int64 `json:"cpuReservedMillicore,omitempty" protobuf:"varint,1,opt,name=cpuReservedMillicore"`
+
+	// MemoryReservedMib is the amount of memory to reserve for system daemons (in MiB).
+	// This is a user-specified value. If unspecified, GKE decides the default.
+	// +optional
+	MemoryReservedMib *int64 `json:"memoryReservedMib,omitempty" protobuf:"varint,2,opt,name=memoryReservedMib"`
 }
 
 // SysctlsConfig defines sysctls config for a node.

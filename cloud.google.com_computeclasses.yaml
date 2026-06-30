@@ -1027,6 +1027,23 @@ spec:
                               maximum: 4194304
                               minimum: 1024
                               type: integer
+                            reservedResourcesConfig:
+                              description: ReservedResourcesConfig contains the configuration
+                                for the reserved resources on the node.
+                              properties:
+                                cpuReservedMillicore:
+                                  description: |-
+                                    CpuReservedMillicore is the amount of CPU to reserve for system daemons.
+                                    This is a user-specified value. If unspecified, GKE decides the default.
+                                  format: int64
+                                  type: integer
+                                memoryReservedMib:
+                                  description: |-
+                                    MemoryReservedMib is the amount of memory to reserve for system daemons (in MiB).
+                                    This is a user-specified value. If unspecified, GKE decides the default.
+                                  format: int64
+                                  type: integer
+                              type: object
                             shutdownGracePeriodCriticalPodsSeconds:
                               description: |-
                                 ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
@@ -2465,6 +2482,23 @@ spec:
                             maximum: 4194304
                             minimum: 1024
                             type: integer
+                          reservedResourcesConfig:
+                            description: ReservedResourcesConfig contains the configuration
+                              for the reserved resources on the node.
+                            properties:
+                              cpuReservedMillicore:
+                                description: |-
+                                  CpuReservedMillicore is the amount of CPU to reserve for system daemons.
+                                  This is a user-specified value. If unspecified, GKE decides the default.
+                                format: int64
+                                type: integer
+                              memoryReservedMib:
+                                description: |-
+                                  MemoryReservedMib is the amount of memory to reserve for system daemons (in MiB).
+                                  This is a user-specified value. If unspecified, GKE decides the default.
+                                format: int64
+                                type: integer
+                            type: object
                           shutdownGracePeriodCriticalPodsSeconds:
                             description: |-
                               ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
