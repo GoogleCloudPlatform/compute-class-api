@@ -1519,6 +1519,11 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		*out = new(AllocationStrategy)
 		**out = **in
 	}
+	if in.EnableNestedVirtualization != nil {
+		in, out := &in.EnableNestedVirtualization, &out.EnableNestedVirtualization
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -1544,6 +1549,11 @@ func (in *PriorityDefaults) DeepCopyInto(out *PriorityDefaults) {
 		in, out := &in.Location, &out.Location
 		*out = new(Location)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.EnableNestedVirtualization != nil {
+		in, out := &in.EnableNestedVirtualization, &out.EnableNestedVirtualization
+		*out = new(bool)
+		**out = **in
 	}
 	return
 }

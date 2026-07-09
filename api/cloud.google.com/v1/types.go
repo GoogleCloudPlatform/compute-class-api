@@ -460,7 +460,6 @@ type NodePoolConfig struct {
 	MaintenanceExclusion *MaintenanceExclusionType `json:"maintenanceExclusion,omitempty" protobuf:"bytes,21,opt,name=maintenanceExclusion"`
 }
 
-
 // NodePoolTaintConfig contains node pool taint configuration.
 type NodePoolTaintConfig struct {
 	// ArchitectureTaintBehavior specifies the behavior of architecture taint.
@@ -833,6 +832,11 @@ type Priority struct {
 	//
 	// +optional
 	AllocationStrategy *AllocationStrategy `json:"allocationStrategy,omitempty" protobuf:"bytes,28,opt,name=allocationStrategy"`
+
+	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
+	//
+	// +optional
+	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty" protobuf:"bytes,29,opt,name=enableNestedVirtualization"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP
@@ -1786,6 +1790,11 @@ type PriorityDefaults struct {
 	//
 	// +optional
 	Location *Location `json:"location,omitempty" protobuf:"bytes,2,opt,name=location"`
+
+	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
+	//
+	// +optional
+	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty" protobuf:"bytes,3,opt,name=enableNestedVirtualization"`
 }
 
 // AllocationStrategy is an enumeration of supported allocation strategies.

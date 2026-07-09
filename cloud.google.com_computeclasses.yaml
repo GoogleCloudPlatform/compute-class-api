@@ -514,6 +514,10 @@ spec:
                       maximum: 86400
                       minimum: 1
                       type: integer
+                    enableNestedVirtualization:
+                      description: EnableNestedVirtualization specifies whether to
+                        enable nested virtualization on the nodes.
+                      type: boolean
                     flexStart:
                       description: FlexStart defines Flex Start provisioning model.
                       properties:
@@ -2158,6 +2162,10 @@ spec:
                   PriorityDefaults define the default rules for all priorities if the rule doesn't exist in some priority.
                   Note: PriorityDefaults doesn't apply to priorities with only Nodepools.
                 properties:
+                  enableNestedVirtualization:
+                    description: EnableNestedVirtualization specifies whether to enable
+                      nested virtualization on the nodes.
+                    type: boolean
                   location:
                     description: Location describes CCC zonal preferences config.
                     properties:

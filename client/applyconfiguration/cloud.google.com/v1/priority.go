@@ -95,6 +95,8 @@ type PriorityApplyConfiguration struct {
 	InstanceMetadata map[string]string `json:"instanceMetadata,omitempty"`
 	// AllocationStrategy defines the allocation strategy for a node pool.
 	AllocationStrategy *cloudgooglecomv1.AllocationStrategy `json:"allocationStrategy,omitempty"`
+	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
+	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs a declarative configuration of the Priority type for use with
@@ -335,5 +337,13 @@ func (b *PriorityApplyConfiguration) WithInstanceMetadata(entries map[string]str
 // If called multiple times, the AllocationStrategy field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithAllocationStrategy(value cloudgooglecomv1.AllocationStrategy) *PriorityApplyConfiguration {
 	b.AllocationStrategy = &value
+	return b
+}
+
+// WithEnableNestedVirtualization sets the EnableNestedVirtualization field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the EnableNestedVirtualization field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithEnableNestedVirtualization(value bool) *PriorityApplyConfiguration {
+	b.EnableNestedVirtualization = &value
 	return b
 }

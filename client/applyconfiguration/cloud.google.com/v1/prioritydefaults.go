@@ -27,6 +27,8 @@ type PriorityDefaultsApplyConfiguration struct {
 	NodeSystemConfig *NodeSystemConfigApplyConfiguration `json:"nodeSystemConfig,omitempty"`
 	// Location describes CCC zonal preferences config.
 	Location *LocationApplyConfiguration `json:"location,omitempty"`
+	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
+	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty"`
 }
 
 // PriorityDefaultsApplyConfiguration constructs a declarative configuration of the PriorityDefaults type for use with
@@ -48,5 +50,13 @@ func (b *PriorityDefaultsApplyConfiguration) WithNodeSystemConfig(value *NodeSys
 // If called multiple times, the Location field is set to the value of the last call.
 func (b *PriorityDefaultsApplyConfiguration) WithLocation(value *LocationApplyConfiguration) *PriorityDefaultsApplyConfiguration {
 	b.Location = value
+	return b
+}
+
+// WithEnableNestedVirtualization sets the EnableNestedVirtualization field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the EnableNestedVirtualization field is set to the value of the last call.
+func (b *PriorityDefaultsApplyConfiguration) WithEnableNestedVirtualization(value bool) *PriorityDefaultsApplyConfiguration {
+	b.EnableNestedVirtualization = &value
 	return b
 }
