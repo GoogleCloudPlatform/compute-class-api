@@ -102,6 +102,8 @@ type NodePoolConfigApplyConfiguration struct {
 	// MaintenanceExclusion defines the type of exclusion policy applied to node pools.
 	// UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
 	MaintenanceExclusion *cloudgooglecomv1.MaintenanceExclusionType `json:"maintenanceExclusion,omitempty"`
+	// NodeDrainConfig contains node drain related configurations for node pool.
+	NodeDrainConfig *NodeDrainConfigApplyConfiguration `json:"nodeDrainConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -297,5 +299,13 @@ func (b *NodePoolConfigApplyConfiguration) WithTaintConfig(value *NodePoolTaintC
 // If called multiple times, the MaintenanceExclusion field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithMaintenanceExclusion(value cloudgooglecomv1.MaintenanceExclusionType) *NodePoolConfigApplyConfiguration {
 	b.MaintenanceExclusion = &value
+	return b
+}
+
+// WithNodeDrainConfig sets the NodeDrainConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NodeDrainConfig field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithNodeDrainConfig(value *NodeDrainConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.NodeDrainConfig = value
 	return b
 }

@@ -458,6 +458,42 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	MaintenanceExclusion *MaintenanceExclusionType `json:"maintenanceExclusion,omitempty" protobuf:"bytes,21,opt,name=maintenanceExclusion"`
+
+	// NodeDrainConfig contains node drain related configurations for node pool.
+	//
+	// +optional
+	NodeDrainConfig *NodeDrainConfig `json:"nodeDrainConfig,omitempty" protobuf:"bytes,22,opt,name=nodeDrainConfig"`
+}
+
+// NodeDrainConfig contains node drain related configurations for node pool.
+type NodeDrainConfig struct {
+	// PdbTimeoutDuration specifies the duration of the PDB timeout period for node drain.
+	// Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
+	// Other time units such as 'm' or 'h' are not supported.
+	//
+	// +optional
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]{1,9})?s$`
+	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('0s')",message="PDB timeout duration must be a non-negative duration"
+	// +kubebuilder:validation:XValidation:rule="duration(self) <= duration('168h')",message="PDB timeout duration must be less than or equal to 168h"
+	PdbTimeoutDuration *string `json:"pdbTimeoutDuration,omitempty" protobuf:"bytes,1,opt,name=pdbTimeoutDuration"`
+
+	// GraceTerminationDuration specifies the duration of the grace termination period for node drain.
+	// Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
+        // Other time units such as 'm' or 'h' are not supported.
+	//
+	// +optional
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]{1,9})?s$`
+	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('0s')",message="Graceful termination duration must be a non-negative duration"
+	// +kubebuilder:validation:XValidation:rule="duration(self) <= duration('24h')",message="Graceful termination duration must be less than or equal to 24h"
+	GraceTerminationDuration *string `json:"graceTerminationDuration,omitempty" protobuf:"bytes,2,opt,name=graceTerminationDuration"`
+
+	// RespectPdbDuringNodePoolDeletion specifies whether to respect PDB during node pool deletion.
+	//
+	// +optional
+	// +kubebuilder:validation:Optional
+	RespectPdbDuringNodePoolDeletion *bool `json:"respectPdbDuringNodePoolDeletion,omitempty" protobuf:"bytes,3,opt,name=respectPdbDuringNodePoolDeletion"`
 }
 
 // NodePoolTaintConfig contains node pool taint configuration.

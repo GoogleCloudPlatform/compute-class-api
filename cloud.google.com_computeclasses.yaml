@@ -325,6 +325,42 @@ spec:
                       MaintenanceExclusion defines the type of exclusion policy applied to node pools.
                       UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
                     type: string
+                  nodeDrainConfig:
+                    description: NodeDrainConfig contains node drain related configurations
+                      for node pool.
+                    properties:
+                      graceTerminationDuration:
+                        description: |-
+                          GraceTerminationDuration specifies the duration of the grace termination period for node drain.
+                          Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
+                          Other time units such as 'm' or 'h' are not supported.
+                        pattern: ^[0-9]+(\.[0-9]{1,9})?s$
+                        type: string
+                        x-kubernetes-validations:
+                        - message: Graceful termination duration must be a non-negative
+                            duration
+                          rule: duration(self) >= duration('0s')
+                        - message: Graceful termination duration must be less than
+                            or equal to 24h
+                          rule: duration(self) <= duration('24h')
+                      pdbTimeoutDuration:
+                        description: |-
+                          PdbTimeoutDuration specifies the duration of the PDB timeout period for node drain.
+                          Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
+                          Other time units such as 'm' or 'h' are not supported.
+                        pattern: ^[0-9]+(\.[0-9]{1,9})?s$
+                        type: string
+                        x-kubernetes-validations:
+                        - message: PDB timeout duration must be a non-negative duration
+                          rule: duration(self) >= duration('0s')
+                        - message: PDB timeout duration must be less than or equal
+                            to 168h
+                          rule: duration(self) <= duration('168h')
+                      respectPdbDuringNodePoolDeletion:
+                        description: RespectPdbDuringNodePoolDeletion specifies whether
+                          to respect PDB during node pool deletion.
+                        type: boolean
+                    type: object
                   nodeLabels:
                     additionalProperties:
                       type: string
