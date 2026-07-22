@@ -261,7 +261,7 @@ type ShieldedInstanceConfig struct {
 	EnableSecureBoot *bool `json:"enableSecureBoot,omitempty" protobuf:"bytes,1,opt,name=enableSecureBoot"`
 	// EnableIntegrityMonitoring defines whether integrity monitoring is enabled.
 	// +optional
-	// +kubebuilder:default=false
+	// +kubebuilder:default=true
 	EnableIntegrityMonitoring *bool `json:"enableIntegrityMonitoring,omitempty" protobuf:"bytes,2,opt,name=enableIntegrityMonitoring"`
 }
 

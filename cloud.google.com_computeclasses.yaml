@@ -190,7 +190,7 @@ spec:
                       configuration for auto-created node pools.
                     properties:
                       enableIntegrityMonitoring:
-                        default: false
+                        default: true
                         description: EnableIntegrityMonitoring defines whether integrity
                           monitoring is enabled.
                         type: boolean
