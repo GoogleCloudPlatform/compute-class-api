@@ -235,6 +235,21 @@ spec:
                     - SEV_SNP
                     - TDX
                     type: string
+                  customImageConfig:
+                    description: Custom node image configuration used by nodes in
+                      the node pool.
+                    properties:
+                      imageName:
+                        description: Image used by nodes in the node pool.
+                        type: string
+                      imageProjectId:
+                        description: Image project for the image used by nodes in
+                          the node pool.
+                        type: string
+                    required:
+                    - imageName
+                    - imageProjectId
+                    type: object
                   dra:
                     description: |-
                       Dra describes settings related to dynamic resource allocation
@@ -273,6 +288,7 @@ spec:
                     enum:
                     - cos_containerd
                     - ubuntu_containerd
+                    - custom_containerd
                     type: string
                   instanceMetadata:
                     additionalProperties:
@@ -466,6 +482,13 @@ spec:
                     - HIGH_THROUGHPUT
                     type: string
                 type: object
+                x-kubernetes-validations:
+                - message: customImageConfig must be specified when imageType is custom_containerd
+                  rule: 'self.imageType == ''custom_containerd'' ? has(self.customImageConfig)
+                    : true'
+                - message: customImageConfig can only be set when imageType is custom_containerd
+                  rule: 'has(self.customImageConfig) ? self.imageType == ''custom_containerd''
+                    : true'
               nodePoolGroup:
                 description: |-
                   NodePoolGroup defines required node pool configurations that are shared between a group of node pools.

@@ -313,6 +313,8 @@ const (
 
 // NodePoolConfig defines required node pool configuration. Existing node pools will be matched with the ComputeClass
 // only if their configuration match this field. Auto-provisioned node pools will be created with this configuration.
+// +kubebuilder:validation:XValidation:rule="self.imageType == 'custom_containerd' ? has(self.customImageConfig) : true", message="customImageConfig must be specified when imageType is custom_containerd"
+// +kubebuilder:validation:XValidation:rule="has(self.customImageConfig) ? self.imageType == 'custom_containerd' : true", message="customImageConfig can only be set when imageType is custom_containerd"
 type NodePoolConfig struct {
 	// ServiceAccount used by the node pool.
 	//
@@ -321,7 +323,7 @@ type NodePoolConfig struct {
 
 	// Image type used by nodes in the node pool.
 	//
-	// +kubebuilder:validation:Enum=cos_containerd;ubuntu_containerd
+	// +kubebuilder:validation:Enum=cos_containerd;ubuntu_containerd;custom_containerd
 	// +optional
 	ImageType string `json:"imageType,omitempty" protobuf:"string,2,name=imageType"`
 
@@ -458,6 +460,23 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	MaintenanceExclusion *MaintenanceExclusionType `json:"maintenanceExclusion,omitempty" protobuf:"bytes,21,opt,name=maintenanceExclusion"`
+
+	// Custom node image configuration used by nodes in the node pool.
+	//
+	// +optional
+	CustomImageConfig *CustomImageConfig `json:"customImageConfig,omitempty" protobuf:"string,22,name=customImageConfig"`
+}
+
+type CustomImageConfig struct {
+	// Image used by nodes in the node pool.
+	//
+	// +required
+	ImageName string `json:"imageName,omitempty" protobuf:"string,1,name=imageName"`
+
+	// Image project for the image used by nodes in the node pool.
+	//
+	// +required
+	ImageProjectId string `json:"imageProjectId,omitempty" protobuf:"string,2,name=imageProjectId"`
 }
 
 // NodePoolTaintConfig contains node pool taint configuration.
