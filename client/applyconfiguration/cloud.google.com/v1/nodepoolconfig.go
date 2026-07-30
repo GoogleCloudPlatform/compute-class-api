@@ -102,8 +102,6 @@ type NodePoolConfigApplyConfiguration struct {
 	// MaintenanceExclusion defines the type of exclusion policy applied to node pools.
 	// UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
 	MaintenanceExclusion *cloudgooglecomv1.MaintenanceExclusionType `json:"maintenanceExclusion,omitempty"`
-	// Custom node image configuration used by nodes in the node pool.
-	CustomImageConfig *CustomImageConfigApplyConfiguration `json:"customImageConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -299,13 +297,5 @@ func (b *NodePoolConfigApplyConfiguration) WithTaintConfig(value *NodePoolTaintC
 // If called multiple times, the MaintenanceExclusion field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithMaintenanceExclusion(value cloudgooglecomv1.MaintenanceExclusionType) *NodePoolConfigApplyConfiguration {
 	b.MaintenanceExclusion = &value
-	return b
-}
-
-// WithCustomImageConfig sets the CustomImageConfig field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the CustomImageConfig field is set to the value of the last call.
-func (b *NodePoolConfigApplyConfiguration) WithCustomImageConfig(value *CustomImageConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
-	b.CustomImageConfig = value
 	return b
 }
