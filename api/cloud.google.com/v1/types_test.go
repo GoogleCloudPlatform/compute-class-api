@@ -865,7 +865,7 @@ func extractRuleFromComment(t *testing.T, commentText string, ruleSubString stri
 func createCELProgram(t *testing.T, rule string) cel.Program {
 	t.Helper()
 	env, err := cel.NewEnv(
-		cel.Variable("self", cel.MapType(cel.StringType, cel.DynType)),
+		cel.Variable("self", cel.DynType),
 		ext.Strings(),
 	)
 	if err != nil {
@@ -1544,3 +1544,96 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestAcceleratorNetworkProfileValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "Priority", "acceleratorNetworkProfile")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     string
+		wantValid bool
+	}{
+		{
+			name:      "valid:_auto",
+			input:     "auto",
+			wantValid: true,
+		},
+		{
+			name:      "valid:_auto_prefix",
+			input:     "auto-profile",
+			wantValid: true,
+		},
+		{
+			name:      "valid:_standalone_profile_name",
+			input:     "my-gpu-profile",
+			wantValid: true,
+		},
+		{
+			name:      "valid:_single_letter",
+			input:     "a",
+			wantValid: true,
+		},
+		{
+			name:      "valid:_max_length_63",
+			input:     "a12345678901234567890123456789012345678901234567890123456789012",
+			wantValid: true,
+		},
+		{
+			name:      "invalid:_uppercase",
+			input:     "AUTO",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_starts_with_number",
+			input:     "1-profile",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_starts_with_hyphen",
+			input:     "-profile",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_ends_with_hyphen",
+			input:     "profile-",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_too_long_64_chars",
+			input:     "a123456789012345678901234567890123456789012345678901234567890123",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_empty_string",
+			input:     "",
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": tc.input,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+

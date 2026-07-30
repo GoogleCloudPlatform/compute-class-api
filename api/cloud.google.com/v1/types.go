@@ -803,7 +803,8 @@ type Priority struct {
 	// Possible values:
 	// "auto": Enables automatic ANP configuration based on the machine type.
 	// "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
-	// +kubebuilder:validation:XValidation:rule="self == 'auto' || self.startsWith('auto-')",message="acceleratorNetworkProfile must be 'auto' or start with 'auto-'"
+	// "<profile-name>": References a user-managed AcceleratorNetworkProfile resource name.
+	// +kubebuilder:validation:XValidation:rule="self.matches('^[a-z]([-a-z0-9]*[a-z0-9])?$') && size(self) <= 63",message="acceleratorNetworkProfile must be a valid resource ID up to 63 characters (lowercase letters, numbers, hyphens)"
 	// +optional
 	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty" protobuf:"bytes,24,opt,name=acceleratorNetworkProfile"`
 

@@ -82,6 +82,7 @@ type PriorityApplyConfiguration struct {
 	// Possible values:
 	// "auto": Enables automatic ANP configuration based on the machine type.
 	// "auto-<suffix>": Enables automatic ANP with a custom network profile suffix.
+	// "<profile-name>": References a user-managed AcceleratorNetworkProfile resource name.
 	AcceleratorNetworkProfile *string `json:"acceleratorNetworkProfile,omitempty"`
 	// GpuDirect defines the gpu direct strategy.
 	// Possible values:
