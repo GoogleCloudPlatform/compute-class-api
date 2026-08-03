@@ -879,6 +879,16 @@ func (in *KubeletConfig) DeepCopyInto(out *KubeletConfig) {
 		*out = new(ReservedResourcesConfig)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.ContainerLogMaxWorkers != nil {
+		in, out := &in.ContainerLogMaxWorkers, &out.ContainerLogMaxWorkers
+		*out = new(int64)
+		**out = **in
+	}
+	if in.ContainerLogMonitorInterval != nil {
+		in, out := &in.ContainerLogMonitorInterval, &out.ContainerLogMonitorInterval
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

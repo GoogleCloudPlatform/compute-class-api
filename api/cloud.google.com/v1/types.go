@@ -1377,6 +1377,23 @@ type KubeletConfig struct {
 	// ReservedResourcesConfig contains the configuration for the reserved resources on the node.
 	// +kubebuilder:validation:Optional
 	ReservedResourcesConfig *ReservedResourcesConfig `json:"reservedResourcesConfig,omitempty" protobuf:"bytes,23,opt,name=reservedResourcesConfig"`
+	// This setting defines the maximum number of concurrent workers to rotate container log files.
+	// The value must be an integer between 1 and 10, inclusive.
+	// Default is 1 if unspecified.
+	//
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=10
+	// +kubebuilder:validation:Optional
+	ContainerLogMaxWorkers *int64 `json:"containerLogMaxWorkers,omitempty" protobuf:"bytes,24,opt,name=containerLogMaxWorkers"`
+	// This setting specifies the interval at which the container logs are monitored for performing the log rotate operation.
+	// The value must be a positive duration between 3s and 300s, inclusive.
+	// Default is "10s" if unspecified.
+	//
+	// +kubebuilder:validation:Pattern=`^[0-9]+(\.[0-9]{1,9})?s$`
+	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('3s')",message="containerLogMonitorInterval must be greater than or equal to 3s"
+	// +kubebuilder:validation:XValidation:rule="duration(self) <= duration('300s')",message="containerLogMonitorInterval must be less than or equal to 300s"
+	// +kubebuilder:validation:Optional
+	ContainerLogMonitorInterval *string `json:"containerLogMonitorInterval,omitempty" protobuf:"bytes,25,opt,name=containerLogMonitorInterval"`
 }
 
 // CrashLoopBackOff contains the configuration to modify node level parameters

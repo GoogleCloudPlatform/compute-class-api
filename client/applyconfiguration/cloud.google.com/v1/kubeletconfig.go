@@ -99,6 +99,14 @@ type KubeletConfigApplyConfiguration struct {
 	CrashLoopBackOff *CrashLoopBackOffApplyConfiguration `json:"crashLoopBackOff,omitempty"`
 	// ReservedResourcesConfig contains the configuration for the reserved resources on the node.
 	ReservedResourcesConfig *ReservedResourcesConfigApplyConfiguration `json:"reservedResourcesConfig,omitempty"`
+	// This setting defines the maximum number of concurrent workers to rotate container log files.
+	// The value must be an integer between 1 and 10, inclusive.
+	// Default is 1 if unspecified.
+	ContainerLogMaxWorkers *int64 `json:"containerLogMaxWorkers,omitempty"`
+	// This setting specifies the interval at which the container logs are monitored for performing the log rotate operation.
+	// The value must be a positive duration between 3s and 300s, inclusive.
+	// Default is "10s" if unspecified.
+	ContainerLogMonitorInterval *string `json:"containerLogMonitorInterval,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
@@ -290,5 +298,21 @@ func (b *KubeletConfigApplyConfiguration) WithCrashLoopBackOff(value *CrashLoopB
 // If called multiple times, the ReservedResourcesConfig field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithReservedResourcesConfig(value *ReservedResourcesConfigApplyConfiguration) *KubeletConfigApplyConfiguration {
 	b.ReservedResourcesConfig = value
+	return b
+}
+
+// WithContainerLogMaxWorkers sets the ContainerLogMaxWorkers field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ContainerLogMaxWorkers field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithContainerLogMaxWorkers(value int64) *KubeletConfigApplyConfiguration {
+	b.ContainerLogMaxWorkers = &value
+	return b
+}
+
+// WithContainerLogMonitorInterval sets the ContainerLogMonitorInterval field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ContainerLogMonitorInterval field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithContainerLogMonitorInterval(value string) *KubeletConfigApplyConfiguration {
+	b.ContainerLogMonitorInterval = &value
 	return b
 }
