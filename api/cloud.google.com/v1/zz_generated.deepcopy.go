@@ -1954,6 +1954,11 @@ func (in *Storage) DeepCopyInto(out *Storage) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.BootDiskStoragePools != nil {
+		in, out := &in.BootDiskStoragePools, &out.BootDiskStoragePools
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

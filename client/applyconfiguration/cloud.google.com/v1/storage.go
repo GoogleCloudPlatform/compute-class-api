@@ -39,6 +39,9 @@ type StorageApplyConfiguration struct {
 	LocalSSDCount *int `json:"localSSDCount,omitempty"`
 	// SecondaryBootDisks represent persistent disks attached to a node with special configurations based on their modes.
 	SecondaryBootDisks []SecondaryBootDiskApplyConfiguration `json:"secondaryBootDisks,omitempty"`
+	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
+	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
+	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty"`
 }
 
 // StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
@@ -88,6 +91,16 @@ func (b *StorageApplyConfiguration) WithSecondaryBootDisks(values ...*SecondaryB
 			panic("nil value passed to WithSecondaryBootDisks")
 		}
 		b.SecondaryBootDisks = append(b.SecondaryBootDisks, *values[i])
+	}
+	return b
+}
+
+// WithBootDiskStoragePools adds the given value to the BootDiskStoragePools field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the BootDiskStoragePools field.
+func (b *StorageApplyConfiguration) WithBootDiskStoragePools(values ...string) *StorageApplyConfiguration {
+	for i := range values {
+		b.BootDiskStoragePools = append(b.BootDiskStoragePools, values[i])
 	}
 	return b
 }

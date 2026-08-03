@@ -580,20 +580,31 @@ type Storage struct {
 	// +kubebuilder:validation:Enum=pd-balanced;pd-standard;pd-ssd;hyperdisk-balanced
 	// +optional
 	BootDiskType *string `json:"bootDiskType,omitempty" protobuf:"bytes,2,opt,name=bootDiskType"`
+
 	// BootDiskKMSKey defines a key used to encrypt the boot disk attached.
 	//
 	// +optional
 	// +kubebuilder:validation:Pattern=projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+
 	BootDiskKMSKey *string `json:"bootDiskKMSKey,omitempty" protobuf:"bytes,3,opt,name=bootDiskKMSKey"`
+
 	// LocalSSDCount defines a number of local SSDs attached to node.
 	//
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	LocalSSDCount *int `json:"localSSDCount,omitempty" protobuf:"bytes,4,opt,name=localSSDCount"`
+
 	// SecondaryBootDisks represent persistent disks attached to a node with special configurations based on their modes.
 	//
 	// +optional
 	SecondaryBootDisks []SecondaryBootDisk `json:"secondaryBootDisks,omitempty" protobuf:"bytes,5,opt,name=secondaryBootDisks"`
+
+	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
+	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
+	//
+	// +kubebuilder:listType=atomic
+	// +kubebuilder:validation:items:Pattern=^projects/[^/]+/zones/[^/]+/storagePools/[^/]+$
+	// +optional
+	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty" protobuf:"bytes,6,opt,name=bootDiskStoragePools"`
 }
 
 // SecondaryBootDisk represents a persistent disk attached to a node with special configurations based on its mode.

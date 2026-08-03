@@ -2056,6 +2056,14 @@ spec:
                             to node, specified in GB.
                           minimum: 10
                           type: integer
+                        bootDiskStoragePools:
+                          description: |-
+                            BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
+                            The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
+                          items:
+                            pattern: ^projects/[^/]+/zones/[^/]+/storagePools/[^/]+$
+                            type: string
+                          type: array
                         bootDiskType:
                           description: |-
                             BootDiskType defines type of the disk attached to the node.
