@@ -562,6 +562,8 @@ type NodePoolGroup struct {
 }
 
 // Storage defines storage config per priority rule.
+//
+// +kubebuilder:validation:XValidation:rule="!has(self.bootDiskStoragePools) || !has(self.bootDiskType) || self.bootDiskType == 'hyperdisk-balanced'", message="bootDiskStoragePools requires bootDiskType to be 'hyperdisk-balanced' or omitted"
 type Storage struct {
 	// BootDiskSize defines the size of a disk attached to node, specified in GB.
 	//
@@ -601,8 +603,9 @@ type Storage struct {
 	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
 	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
 	//
-	// +kubebuilder:listType=atomic
-	// +kubebuilder:validation:items:Pattern=^projects/[^/]+/zones/[^/]+/storagePools/[^/]+$
+	// +kubebuilder:listType=set
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:items:Pattern=`^projects/[a-z0-9-]+/zones/[a-z0-9-]+/storagePools/[a-z0-9-]+$`
 	// +optional
 	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty" protobuf:"bytes,6,opt,name=bootDiskStoragePools"`
 }

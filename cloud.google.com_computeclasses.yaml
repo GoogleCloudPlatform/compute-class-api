@@ -2084,8 +2084,9 @@ spec:
                             BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
                             The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
                           items:
-                            pattern: ^projects/[^/]+/zones/[^/]+/storagePools/[^/]+$
+                            pattern: ^projects/[a-z0-9-]+/zones/[a-z0-9-]+/storagePools/[a-z0-9-]+$
                             type: string
+                          minItems: 1
                           type: array
                         bootDiskType:
                           description: |-
@@ -2137,6 +2138,11 @@ spec:
                             type: object
                           type: array
                       type: object
+                      x-kubernetes-validations:
+                      - message: bootDiskStoragePools requires bootDiskType to be
+                          'hyperdisk-balanced' or omitted
+                        rule: '!has(self.bootDiskStoragePools) || !has(self.bootDiskType)
+                          || self.bootDiskType == ''hyperdisk-balanced'''
                     taints:
                       description: |-
                         Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
