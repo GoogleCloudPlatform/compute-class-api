@@ -1612,6 +1612,21 @@ func TestAcceleratorNetworkProfileValidationRule(t *testing.T) {
 			input:     "",
 			wantValid: false,
 		},
+		{
+			name:      "invalid:_auto_prefix_trailing_hyphen",
+			input:     "auto-",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_auto_prefix_special_chars",
+			input:     "auto-!@#",
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_auto_prefix_uppercase",
+			input:     "auto-PROFILE",
+			wantValid: false,
+		},
 	}
 
 	for _, tc := range tests {
@@ -1636,4 +1651,3 @@ func TestAcceleratorNetworkProfileValidationRule(t *testing.T) {
 		})
 	}
 }
-
