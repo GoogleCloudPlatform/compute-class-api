@@ -480,7 +480,6 @@ type NodeDrainConfig struct {
 
 	// GraceTerminationDuration specifies the duration of the grace termination period for node drain.
 	// Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
-        // Other time units such as 'm' or 'h' are not supported.
 	//
 	// +optional
 	// +kubebuilder:validation:Optional
@@ -564,6 +563,7 @@ type NodePoolGroup struct {
 // Storage defines storage config per priority rule.
 //
 // +kubebuilder:validation:XValidation:rule="!has(self.bootDiskStoragePools) || !has(self.bootDiskType) || self.bootDiskType == 'hyperdisk-balanced'", message="bootDiskStoragePools requires bootDiskType to be 'hyperdisk-balanced' or omitted"
+// +kubebuilder:validation:XValidation:rule="has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput) && (!has(self.bootDiskProvisionedIops) || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced'))", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together on a Hyperdisk bootDiskType"
 type Storage struct {
 	// BootDiskSize defines the size of a disk attached to node, specified in GB.
 	//
@@ -608,6 +608,24 @@ type Storage struct {
 	// +kubebuilder:validation:items:Pattern=`^projects/[a-z0-9-]+/zones/[a-z0-9-]+/storagePools/[a-z0-9-]+$`
 	// +optional
 	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty" protobuf:"bytes,6,opt,name=bootDiskStoragePools"`
+
+	// BootDiskProvisionedIops defines the provisioned IOPS for the boot disk.
+	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+	//
+	// +optional
+	// +kubebuilder:validation:Minimum=2000
+	// +kubebuilder:validation:Maximum=160000
+	BootDiskProvisionedIops *int64 `json:"bootDiskProvisionedIops,omitempty" protobuf:"varint,7,opt,name=bootDiskProvisionedIops"`
+
+	// BootDiskProvisionedThroughput defines the provisioned throughput in MB/s for the boot disk.
+	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+	//
+	// +optional
+	// +kubebuilder:validation:Minimum=140
+	// +kubebuilder:validation:Maximum=2400
+	BootDiskProvisionedThroughput *int64 `json:"bootDiskProvisionedThroughput,omitempty" protobuf:"varint,8,opt,name=bootDiskProvisionedThroughput"`
 }
 
 // SecondaryBootDisk represents a persistent disk attached to a node with special configurations based on its mode.

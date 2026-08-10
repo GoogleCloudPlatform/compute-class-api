@@ -2075,6 +2075,24 @@ spec:
                             the boot disk attached.
                           pattern: projects/[^/]+/locations/[^/]+/keyRings/[^/]+/cryptoKeys/[^/]+
                           type: string
+                        bootDiskProvisionedIops:
+                          description: |-
+                            BootDiskProvisionedIops defines the provisioned IOPS for the boot disk.
+                            Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+                            When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+                          format: int64
+                          maximum: 160000
+                          minimum: 2000
+                          type: integer
+                        bootDiskProvisionedThroughput:
+                          description: |-
+                            BootDiskProvisionedThroughput defines the provisioned throughput in MB/s for the boot disk.
+                            Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+                            When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+                          format: int64
+                          maximum: 2400
+                          minimum: 140
+                          type: integer
                         bootDiskSize:
                           description: BootDiskSize defines the size of a disk attached
                             to node, specified in GB.
@@ -2144,6 +2162,11 @@ spec:
                           'hyperdisk-balanced' or omitted
                         rule: '!has(self.bootDiskStoragePools) || !has(self.bootDiskType)
                           || self.bootDiskType == ''hyperdisk-balanced'''
+                      - message: bootDiskProvisionedIops and bootDiskProvisionedThroughput
+                          must be specified together on a Hyperdisk bootDiskType
+                        rule: has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput)
+                          && (!has(self.bootDiskProvisionedIops) || (has(self.bootDiskType)
+                          && self.bootDiskType == 'hyperdisk-balanced'))
                     taints:
                       description: |-
                         Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.

@@ -1969,6 +1969,16 @@ func (in *Storage) DeepCopyInto(out *Storage) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.BootDiskProvisionedIops != nil {
+		in, out := &in.BootDiskProvisionedIops, &out.BootDiskProvisionedIops
+		*out = new(int64)
+		**out = **in
+	}
+	if in.BootDiskProvisionedThroughput != nil {
+		in, out := &in.BootDiskProvisionedThroughput, &out.BootDiskProvisionedThroughput
+		*out = new(int64)
+		**out = **in
+	}
 	return
 }
 

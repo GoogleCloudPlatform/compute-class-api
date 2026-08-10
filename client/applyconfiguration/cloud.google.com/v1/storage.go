@@ -42,6 +42,14 @@ type StorageApplyConfiguration struct {
 	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
 	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
 	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty"`
+	// BootDiskProvisionedIops defines the provisioned IOPS for the boot disk.
+	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+	BootDiskProvisionedIops *int64 `json:"bootDiskProvisionedIops,omitempty"`
+	// BootDiskProvisionedThroughput defines the provisioned throughput in MB/s for the boot disk.
+	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
+	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
+	BootDiskProvisionedThroughput *int64 `json:"bootDiskProvisionedThroughput,omitempty"`
 }
 
 // StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
@@ -102,5 +110,21 @@ func (b *StorageApplyConfiguration) WithBootDiskStoragePools(values ...string) *
 	for i := range values {
 		b.BootDiskStoragePools = append(b.BootDiskStoragePools, values[i])
 	}
+	return b
+}
+
+// WithBootDiskProvisionedIops sets the BootDiskProvisionedIops field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the BootDiskProvisionedIops field is set to the value of the last call.
+func (b *StorageApplyConfiguration) WithBootDiskProvisionedIops(value int64) *StorageApplyConfiguration {
+	b.BootDiskProvisionedIops = &value
+	return b
+}
+
+// WithBootDiskProvisionedThroughput sets the BootDiskProvisionedThroughput field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the BootDiskProvisionedThroughput field is set to the value of the last call.
+func (b *StorageApplyConfiguration) WithBootDiskProvisionedThroughput(value int64) *StorageApplyConfiguration {
+	b.BootDiskProvisionedThroughput = &value
 	return b
 }
