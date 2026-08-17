@@ -2415,6 +2415,11 @@ func (in *SysctlsConfig) DeepCopyInto(out *SysctlsConfig) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.Net_ipv6_conf_default_forwarding != nil {
+		in, out := &in.Net_ipv6_conf_default_forwarding, &out.Net_ipv6_conf_default_forwarding
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 

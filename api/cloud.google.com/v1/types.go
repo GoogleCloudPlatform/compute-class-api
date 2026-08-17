@@ -1816,6 +1816,10 @@ type SysctlsConfig struct {
 	// +kubebuilder:validation:Maximum=1048576
 	// +kubebuilder:validation:Optional
 	Net_ipv4_neigh_default_gc_thresh3 *int64 `json:"net.ipv4.neigh.default.gc_thresh3,omitempty" protobuf:"bytes,60,opt,name=net.ipv4.neigh.default.gc_thresh3"`
+	// Configure IPv6 forwarding on default network interface.
+	//
+	// +kubebuilder:validation:Optional
+	Net_ipv6_conf_default_forwarding *bool `json:"net.ipv6.conf.default.forwarding,omitempty" protobuf:"bytes,61,opt,name=net.ipv6.conf.default.forwarding"`
 }
 
 // HugepagesConfig defines hugepages config for a node.

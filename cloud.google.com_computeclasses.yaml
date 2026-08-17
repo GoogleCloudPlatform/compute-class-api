@@ -1774,6 +1774,10 @@ spec:
                                 net.ipv6.conf.default.disable_ipv6:
                                   description: Disable IPv6 operation.
                                   type: boolean
+                                net.ipv6.conf.default.forwarding:
+                                  description: Configure IPv6 forwarding on default
+                                    network interface.
+                                  type: boolean
                                 net.netfilter.nf_conntrack_acct:
                                   description: Whether to enable connection tracking
                                     flow accounting.
@@ -3285,6 +3289,10 @@ spec:
                                 type: boolean
                               net.ipv6.conf.default.disable_ipv6:
                                 description: Disable IPv6 operation.
+                                type: boolean
+                              net.ipv6.conf.default.forwarding:
+                                description: Configure IPv6 forwarding on default
+                                  network interface.
                                 type: boolean
                               net.netfilter.nf_conntrack_acct:
                                 description: Whether to enable connection tracking

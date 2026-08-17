@@ -163,6 +163,8 @@ type SysctlsConfigApplyConfiguration struct {
 	Net_ipv4_neigh_default_gc_thresh2 *int64 `json:"net.ipv4.neigh.default.gc_thresh2,omitempty"`
 	// Sets a hard ceiling (absolute maximum) for the network neighbor cache.
 	Net_ipv4_neigh_default_gc_thresh3 *int64 `json:"net.ipv4.neigh.default.gc_thresh3,omitempty"`
+	// Configure IPv6 forwarding on default network interface.
+	Net_ipv6_conf_default_forwarding *bool `json:"net.ipv6.conf.default.forwarding,omitempty"`
 }
 
 // SysctlsConfigApplyConfiguration constructs a declarative configuration of the SysctlsConfig type for use with
@@ -648,5 +650,13 @@ func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_neigh_default_gc_thresh2(
 // If called multiple times, the Net_ipv4_neigh_default_gc_thresh3 field is set to the value of the last call.
 func (b *SysctlsConfigApplyConfiguration) WithNet_ipv4_neigh_default_gc_thresh3(value int64) *SysctlsConfigApplyConfiguration {
 	b.Net_ipv4_neigh_default_gc_thresh3 = &value
+	return b
+}
+
+// WithNet_ipv6_conf_default_forwarding sets the Net_ipv6_conf_default_forwarding field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Net_ipv6_conf_default_forwarding field is set to the value of the last call.
+func (b *SysctlsConfigApplyConfiguration) WithNet_ipv6_conf_default_forwarding(value bool) *SysctlsConfigApplyConfiguration {
+	b.Net_ipv6_conf_default_forwarding = &value
 	return b
 }
