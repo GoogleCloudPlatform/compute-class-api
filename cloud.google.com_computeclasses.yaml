@@ -235,6 +235,21 @@ spec:
                     - SEV_SNP
                     - TDX
                     type: string
+                  customImageConfig:
+                    description: Custom node image configuration used by nodes in
+                      the node pool.
+                    properties:
+                      imageName:
+                        description: Image used by nodes in the node pool.
+                        type: string
+                      imageProjectId:
+                        description: Image project for the image used by nodes in
+                          the node pool.
+                        type: string
+                    required:
+                    - imageName
+                    - imageProjectId
+                    type: object
                   dra:
                     description: |-
                       Dra describes settings related to dynamic resource allocation
@@ -273,6 +288,7 @@ spec:
                     enum:
                     - cos_containerd
                     - ubuntu_containerd
+                    - custom_containerd
                     type: string
                   instanceMetadata:
                     additionalProperties:
@@ -333,7 +349,6 @@ spec:
                         description: |-
                           GraceTerminationDuration specifies the duration of the grace termination period for node drain.
                           Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
-                          Other time units such as 'm' or 'h' are not supported.
                         pattern: ^[0-9]+(\.[0-9]{1,9})?s$
                         type: string
                         x-kubernetes-validations:
@@ -502,6 +517,13 @@ spec:
                     - HIGH_THROUGHPUT
                     type: string
                 type: object
+                x-kubernetes-validations:
+                - message: customImageConfig must be specified when imageType is custom_containerd
+                  rule: 'has(self.imageType) && self.imageType == ''custom_containerd''
+                    ? has(self.customImageConfig) : true'
+                - message: customImageConfig can only be set when imageType is custom_containerd
+                  rule: 'has(self.customImageConfig) ? has(self.imageType) && self.imageType
+                    == ''custom_containerd'' : true'
               nodePoolGroup:
                 description: |-
                   NodePoolGroup defines required node pool configurations that are shared between a group of node pools.

@@ -50,6 +50,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
 		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("CustomImageConfig"):
+		return &cloudgooglecomv1.CustomImageConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CustomNodeInit"):
 		return &cloudgooglecomv1.CustomNodeInitApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("DiskIoScheduler"):

@@ -29,7 +29,6 @@ type NodeDrainConfigApplyConfiguration struct {
 	PdbTimeoutDuration *string `json:"pdbTimeoutDuration,omitempty"`
 	// GraceTerminationDuration specifies the duration of the grace termination period for node drain.
 	// Must be a duration string ending with 's' unit/suffix (e.g., "60s", "100.5s").
-	// Other time units such as 'm' or 'h' are not supported.
 	GraceTerminationDuration *string `json:"graceTerminationDuration,omitempty"`
 	// RespectPdbDuringNodePoolDeletion specifies whether to respect PDB during node pool deletion.
 	RespectPdbDuringNodePoolDeletion *bool `json:"respectPdbDuringNodePoolDeletion,omitempty"`

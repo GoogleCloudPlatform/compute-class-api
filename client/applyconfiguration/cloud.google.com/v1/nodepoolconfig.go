@@ -104,6 +104,8 @@ type NodePoolConfigApplyConfiguration struct {
 	MaintenanceExclusion *cloudgooglecomv1.MaintenanceExclusionType `json:"maintenanceExclusion,omitempty"`
 	// NodeDrainConfig contains node drain related configurations for node pool.
 	NodeDrainConfig *NodeDrainConfigApplyConfiguration `json:"nodeDrainConfig,omitempty"`
+	// Custom node image configuration used by nodes in the node pool.
+	CustomImageConfig *CustomImageConfigApplyConfiguration `json:"customImageConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -307,5 +309,13 @@ func (b *NodePoolConfigApplyConfiguration) WithMaintenanceExclusion(value cloudg
 // If called multiple times, the NodeDrainConfig field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithNodeDrainConfig(value *NodeDrainConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.NodeDrainConfig = value
+	return b
+}
+
+// WithCustomImageConfig sets the CustomImageConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the CustomImageConfig field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithCustomImageConfig(value *CustomImageConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.CustomImageConfig = value
 	return b
 }
