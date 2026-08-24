@@ -42,6 +42,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.AutopilotApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("AutoscalingPolicy"):
 		return &cloudgooglecomv1.AutoscalingPolicyApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("BootDiskStoragePool"):
+		return &cloudgooglecomv1.BootDiskStoragePoolApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClass"):
 		return &cloudgooglecomv1.ComputeClassApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassSpec"):

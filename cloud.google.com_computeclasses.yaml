@@ -2125,12 +2125,34 @@ spec:
                           minimum: 10
                           type: integer
                         bootDiskStoragePools:
-                          description: |-
-                            BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
-                            The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
+                          description: BootDiskStoragePools defines a list of storage
+                            pools to be used for the boot disk.
                           items:
-                            pattern: ^projects/[a-z0-9-]+/zones/[a-z0-9-]+/storagePools/[a-z0-9-]+$
-                            type: string
+                            description: BootDiskStoragePool represents a storage
+                              pool configuration for a boot disk.
+                            properties:
+                              name:
+                                description: Name defines the name of the storage
+                                  pool.
+                                minLength: 1
+                                pattern: ^[a-z0-9-]+$
+                                type: string
+                              project:
+                                description: |-
+                                  Project defines the GCP project where the storage pool resides.
+                                  If omitted, defaults to the cluster's project.
+                                pattern: ^[a-z0-9-]+$
+                                type: string
+                              zone:
+                                description: Zone defines the GCP zone where the storage
+                                  pool resides.
+                                minLength: 1
+                                pattern: ^[a-z0-9-]+$
+                                type: string
+                            required:
+                            - name
+                            - zone
+                            type: object
                           minItems: 1
                           type: array
                         bootDiskType:

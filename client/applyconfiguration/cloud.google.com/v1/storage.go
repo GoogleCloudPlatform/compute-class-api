@@ -40,8 +40,7 @@ type StorageApplyConfiguration struct {
 	// SecondaryBootDisks represent persistent disks attached to a node with special configurations based on their modes.
 	SecondaryBootDisks []SecondaryBootDiskApplyConfiguration `json:"secondaryBootDisks,omitempty"`
 	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
-	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
-	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty"`
+	BootDiskStoragePools []BootDiskStoragePoolApplyConfiguration `json:"bootDiskStoragePools,omitempty"`
 	// BootDiskProvisionedIops defines the provisioned IOPS for the boot disk.
 	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
 	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
@@ -106,9 +105,12 @@ func (b *StorageApplyConfiguration) WithSecondaryBootDisks(values ...*SecondaryB
 // WithBootDiskStoragePools adds the given value to the BootDiskStoragePools field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the BootDiskStoragePools field.
-func (b *StorageApplyConfiguration) WithBootDiskStoragePools(values ...string) *StorageApplyConfiguration {
+func (b *StorageApplyConfiguration) WithBootDiskStoragePools(values ...*BootDiskStoragePoolApplyConfiguration) *StorageApplyConfiguration {
 	for i := range values {
-		b.BootDiskStoragePools = append(b.BootDiskStoragePools, values[i])
+		if values[i] == nil {
+			panic("nil value passed to WithBootDiskStoragePools")
+		}
+		b.BootDiskStoragePools = append(b.BootDiskStoragePools, *values[i])
 	}
 	return b
 }

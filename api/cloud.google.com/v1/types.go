@@ -620,13 +620,11 @@ type Storage struct {
 	SecondaryBootDisks []SecondaryBootDisk `json:"secondaryBootDisks,omitempty" protobuf:"bytes,5,opt,name=secondaryBootDisks"`
 
 	// BootDiskStoragePools defines a list of storage pools to be used for the boot disk.
-	// The resource name must be in the format: projects/{project}/zones/{zone}/storagePools/{storage_pool}.
 	//
-	// +kubebuilder:listType=set
+	// +kubebuilder:listType=atomic
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:items:Pattern=`^projects/[a-z0-9-]+/zones/[a-z0-9-]+/storagePools/[a-z0-9-]+$`
 	// +optional
-	BootDiskStoragePools []string `json:"bootDiskStoragePools,omitempty" protobuf:"bytes,6,opt,name=bootDiskStoragePools"`
+	BootDiskStoragePools []BootDiskStoragePool `json:"bootDiskStoragePools,omitempty" protobuf:"bytes,6,rep,name=bootDiskStoragePools"`
 
 	// BootDiskProvisionedIops defines the provisioned IOPS for the boot disk.
 	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
@@ -645,6 +643,30 @@ type Storage struct {
 	// +kubebuilder:validation:Minimum=140
 	// +kubebuilder:validation:Maximum=2400
 	BootDiskProvisionedThroughput *int64 `json:"bootDiskProvisionedThroughput,omitempty" protobuf:"varint,8,opt,name=bootDiskProvisionedThroughput"`
+}
+
+// BootDiskStoragePool represents a storage pool configuration for a boot disk.
+type BootDiskStoragePool struct {
+	// Name defines the name of the storage pool.
+	//
+	// +required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:Pattern=`^[a-z0-9-]+$`
+	Name string `json:"name" protobuf:"bytes,1,name=name"`
+
+	// Zone defines the GCP zone where the storage pool resides.
+	//
+	// +required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:Pattern=`^[a-z0-9-]+$`
+	Zone string `json:"zone" protobuf:"bytes,2,name=zone"`
+
+	// Project defines the GCP project where the storage pool resides.
+	// If omitted, defaults to the cluster's project.
+	//
+	// +optional
+	// +kubebuilder:validation:Pattern=`^[a-z0-9-]+$`
+	Project string `json:"project,omitempty" protobuf:"bytes,3,opt,name=project"`
 }
 
 // SecondaryBootDisk represents a persistent disk attached to a node with special configurations based on its mode.
