@@ -126,15 +126,15 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "valid:_no_gpu_topology",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -142,15 +142,15 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_gpu_topology_with_a4x_with_placement",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4x",
-						"gpu": map[string]interface{}{
-							"topology": "1x72",
+						MachineFamily: ptr("a4x"),
+						Gpu: &GPU{
+							Topology: "1x72",
 						},
-						"placement": map[string]interface{}{
-							"policyName": "workloadPolicy",
+						Placement: &Placement{
+							PolicyName: "workloadPolicy",
 						},
 					},
 				},
@@ -159,12 +159,12 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_gpu_topology_with_a4x_without_placement",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4x",
-						"gpu": map[string]interface{}{
-							"topology": "1x72",
+						MachineFamily: ptr("a4x"),
+						Gpu: &GPU{
+							Topology: "1x72",
 						},
 					},
 				},
@@ -173,15 +173,15 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_gpu_topology_with_nvidia-gb200_with_placement",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"gpu": map[string]interface{}{
-							"type":     "nvidia-gb200",
-							"topology": "1x72",
+						Gpu: &GPU{
+							Type:     "nvidia-gb200",
+							Topology: "1x72",
 						},
-						"placement": map[string]interface{}{
-							"policyName": "workloadPolicy",
+						Placement: &Placement{
+							PolicyName: "workloadPolicy",
 						},
 					},
 				},
@@ -190,12 +190,12 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_gpu_topology_with_nvidia-gb200_without_policy",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"gpu": map[string]interface{}{
-							"type":     "nvidia-gb200",
-							"topology": "1x72",
+						Gpu: &GPU{
+							Type:     "nvidia-gb200",
+							Topology: "1x72",
 						},
 					},
 				},
@@ -204,15 +204,15 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_nvidia-gb200_with_policy_without_topology",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4x",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-gb200",
+						MachineFamily: ptr("a4x"),
+						Gpu: &GPU{
+							Type: "nvidia-gb200",
 						},
-						"placement": map[string]interface{}{
-							"policyName": "workloadPolicy",
+						Placement: &Placement{
+							PolicyName: "workloadPolicy",
 						},
 					},
 				},
@@ -221,12 +221,12 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_gpu_topology_with_c3",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"gpu": map[string]interface{}{
-							"topology": "1x72",
+						MachineFamily: ptr("c3"),
+						Gpu: &GPU{
+							Topology: "1x72",
 						},
 					},
 				},
@@ -235,12 +235,12 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_gpu_topology_with_other_gpu_type",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"gpu": map[string]interface{}{
-							"type":     "nvidia-h100-80gb",
-							"topology": "1x72",
+						Gpu: &GPU{
+							Type:     "nvidia-h100-80gb",
+							Topology: "1x72",
 						},
 					},
 				},
@@ -249,12 +249,12 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_gpu_without_topology",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("c3"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -263,13 +263,15 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 		},
 	}
 
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
