@@ -1460,15 +1460,15 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "autopilot disabled without sysctl",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1476,19 +1476,19 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		},
 		{
 			name: "autopilot disabled with sysctl in priorityDefaults",
-			input: map[string]interface{}{
-				"priorityDefaults": map[string]interface{}{
-					"nodeSystemConfig": map[string]interface{}{
-						"linuxNodeConfig": map[string]interface{}{
-							"sysctls": map[string]interface{}{
-								"net__dot__ipv4__dot__tcp_congestion_control": "bbr",
+			input: ComputeClassSpec{
+				PriorityDefaults: &PriorityDefaults{
+					NodeSystemConfig: &NodeSystemConfig{
+						LinuxNodeConfig: &LinuxNodeConfig{
+							Sysctls: &SysctlsConfig{
+								Net_ipv4_tcp_congestion_control: ptr("bbr"),
 							},
 						},
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1496,14 +1496,14 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		},
 		{
 			name: "autopilot disabled with sysctl in priorities",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"nodeSystemConfig": map[string]interface{}{
-							"linuxNodeConfig": map[string]interface{}{
-								"sysctls": map[string]interface{}{
-									"net__dot__ipv4__dot__tcp_congestion_control": "bbr",
+						MachineFamily: ptr("c3"),
+						NodeSystemConfig: &NodeSystemConfig{
+							LinuxNodeConfig: &LinuxNodeConfig{
+								Sysctls: &SysctlsConfig{
+									Net_ipv4_tcp_congestion_control: ptr("bbr"),
 								},
 							},
 						},
@@ -1514,13 +1514,13 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		},
 		{
 			name: "autopilot enabled without sysctl",
-			input: map[string]interface{}{
-				"autopilot": map[string]interface{}{
-					"enabled": true,
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1528,22 +1528,22 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		},
 		{
 			name: "autopilot enabled with sysctl in priorityDefaults",
-			input: map[string]interface{}{
-				"autopilot": map[string]interface{}{
-					"enabled": true,
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
 				},
-				"priorityDefaults": map[string]interface{}{
-					"nodeSystemConfig": map[string]interface{}{
-						"linuxNodeConfig": map[string]interface{}{
-							"sysctls": map[string]interface{}{
-								"net__dot__ipv4__dot__tcp_congestion_control": "bbr",
+				PriorityDefaults: &PriorityDefaults{
+					NodeSystemConfig: &NodeSystemConfig{
+						LinuxNodeConfig: &LinuxNodeConfig{
+							Sysctls: &SysctlsConfig{
+								Net_ipv4_tcp_congestion_control: ptr("bbr"),
 							},
 						},
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1551,17 +1551,17 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		},
 		{
 			name: "autopilot enabled with sysctl in priorities",
-			input: map[string]interface{}{
-				"autopilot": map[string]interface{}{
-					"enabled": true,
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"nodeSystemConfig": map[string]interface{}{
-							"linuxNodeConfig": map[string]interface{}{
-								"sysctls": map[string]interface{}{
-									"net__dot__ipv4__dot__tcp_congestion_control": "bbr",
+						MachineFamily: ptr("c3"),
+						NodeSystemConfig: &NodeSystemConfig{
+							LinuxNodeConfig: &LinuxNodeConfig{
+								Sysctls: &SysctlsConfig{
+									Net_ipv4_tcp_congestion_control: ptr("bbr"),
 								},
 							},
 						},
@@ -1576,8 +1576,9 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
