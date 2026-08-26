@@ -1293,13 +1293,13 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 
 			tests := []struct {
 				name      string
-				input     map[string]interface{}
+				input     map[string]string
 				prog      cel.Program
 				wantValid bool
 			}{
 				{
 					name: "valid metadata",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"valid-key_1": "valid-value",
 					},
 					prog:      keyFormatProg,
@@ -1307,7 +1307,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "invalid key format (contains space)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"invalid key": "value",
 					},
 					prog:      keyFormatProg,
@@ -1315,7 +1315,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "valid key starting with dash",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"-valid-key": "valid-value",
 					},
 					prog:      keyFormatProg,
@@ -1323,7 +1323,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "invalid key format (contains colon)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"invalid:key": "value",
 					},
 					prog:      keyFormatProg,
@@ -1331,7 +1331,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "invalid key format (contains at sign)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"invalid@key": "value",
 					},
 					prog:      keyFormatProg,
@@ -1339,7 +1339,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "oversized key (128 characters or more)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						strings.Repeat("a", 128): "value",
 					},
 					prog:      keyFormatProg,
@@ -1347,7 +1347,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "valid key size (127 characters)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						strings.Repeat("a", 127): "value",
 					},
 					prog:      keyFormatProg,
@@ -1355,7 +1355,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "oversized value (more than 32768 characters)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"key": strings.Repeat("a", 32769),
 					},
 					prog:      valueSizeProg,
@@ -1363,7 +1363,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "valid value size (exactly 32768 characters)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"key": strings.Repeat("a", 32768),
 					},
 					prog:      valueSizeProg,
@@ -1371,7 +1371,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "reserved key (cluster-location)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"cluster-location": "value",
 					},
 					prog:      reservedKeysProg,
@@ -1379,7 +1379,7 @@ func TestInstanceMetadataValidationRule(t *testing.T) {
 				},
 				{
 					name: "reserved key (windows-startup-script-ps1)",
-					input: map[string]interface{}{
+					input: map[string]string{
 						"windows-startup-script-ps1": "value",
 					},
 					prog:      reservedKeysProg,
