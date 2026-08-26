@@ -37,6 +37,10 @@ import (
 //go:embed types.go
 var typesGoSource []byte
 
+//go:embed types_test.go
+var typesTestGoSource []byte
+
+
 // TestProtobufOrderIsIncreasing automatically checks that for every struct in
 // types.go, the protobuf field numbers are in strictly increasing order.
 // This test works by parsing the source file and inspecting the AST, so it
@@ -1700,7 +1704,6 @@ func TestAcceleratorNetworkProfileValidationRule(t *testing.T) {
 		})
 	}
 }
-
 func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 	rules := getTypeValidationRules(t, "ComputeClassSpec", "microvm")
 	if len(rules) == 0 {
@@ -1969,4 +1972,44 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNoRawMapsInTests(t *testing.T) {
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, "types_test.go", typesTestGoSource, 0)
+	if err != nil {
+		t.Fatalf("Failed to parse types_test.go: %v", err)
+	}
+
+	ast.Inspect(node, func(n ast.Node) bool {
+		// Look for struct definitions in tests
+		structType, ok := n.(*ast.StructType)
+		if !ok {
+			return true
+		}
+
+		for _, field := range structType.Fields.List {
+			// Check if field type is map[string]interface{}
+			mapType, ok := field.Type.(*ast.MapType)
+			if !ok {
+				continue
+			}
+
+			keyIdent, ok := mapType.Key.(*ast.Ident)
+			if !ok || keyIdent.Name != "string" {
+				continue
+			}
+
+			interfaceIdent, ok := mapType.Value.(*ast.InterfaceType)
+			if !ok || len(interfaceIdent.Methods.List) != 0 {
+				continue
+			}
+
+			// Found map[string]interface{}
+			pos := fset.Position(field.Pos())
+			t.Errorf("Found forbidden type 'map[string]interface{}' in struct field at %s. Use concrete Go structs instead.", pos)
+		}
+
+		return true
+	})
 }
