@@ -484,18 +484,18 @@ func TestTDXValidationRule(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "valid:_tdx_with_c3_machine_family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -503,13 +503,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_c4_machine_family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c4",
+						MachineFamily: ptr("c4"),
 					},
 				},
 			},
@@ -517,13 +517,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_c3_standard_machine_type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "c3-standard-4",
+						MachineType: ptr("c3-standard-4"),
 					},
 				},
 			},
@@ -531,13 +531,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_c4_standard_machine_type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "c4-standard-4",
+						MachineType: ptr("c4-standard-4"),
 					},
 				},
 			},
@@ -545,13 +545,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_a3_highgpu_1g_machine_type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "a3-highgpu-1g",
+						MachineType: ptr("a3-highgpu-1g"),
 					},
 				},
 			},
@@ -559,13 +559,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_a4_machine_family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4",
+						MachineFamily: ptr("a4"),
 					},
 				},
 			},
@@ -573,13 +573,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_a4_highgpu_8g_machine_type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "a4-highgpu-8g",
+						MachineType: ptr("a4-highgpu-8g"),
 					},
 				},
 			},
@@ -587,16 +587,16 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_b200_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"gpu": map[string]interface{}{
-							"type": "nvidia-b200",
+						Gpu: &GPU{
+							Type: "nvidia-b200",
 						},
-						"machineFamily": "a4",
+						MachineFamily: ptr("a4"),
 					},
 				},
 			},
@@ -604,15 +604,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_a4_and_b200_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-b200",
+						MachineFamily: ptr("a4"),
+						Gpu: &GPU{
+							Type: "nvidia-b200",
 						},
 					},
 				},
@@ -621,15 +621,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_unsupported_machine_family_and_supported_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n2",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("n2"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -638,15 +638,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_tdx_with_c3_and_h100_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("c3"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -655,15 +655,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_a3_and_b200_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a3",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-b200",
+						MachineFamily: ptr("a3"),
+						Gpu: &GPU{
+							Type: "nvidia-b200",
 						},
 					},
 				},
@@ -672,15 +672,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_a4_and_h100_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("a4"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -689,15 +689,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_a4_and_v100_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "a4",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-tesla-v100",
+						MachineFamily: ptr("a4"),
+						Gpu: &GPU{
+							Type: "nvidia-tesla-v100",
 						},
 					},
 				},
@@ -706,15 +706,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_c3_and_b200_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-b200",
+						MachineFamily: ptr("c3"),
+						Gpu: &GPU{
+							Type: "nvidia-b200",
 						},
 					},
 				},
@@ -723,15 +723,15 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_n2_and_h100_gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n2",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("n2"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -740,13 +740,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_unsupported_machine_family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n2",
+						MachineFamily: ptr("n2"),
 					},
 				},
 			},
@@ -754,13 +754,13 @@ func TestTDXValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_tdx_with_unsupported_machine_type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "TDX",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "n2-standard-4",
+						MachineType: ptr("n2-standard-4"),
 					},
 				},
 			},
@@ -773,8 +773,9 @@ func TestTDXValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
