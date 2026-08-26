@@ -1184,77 +1184,71 @@ func TestNodepoolValidationRule(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     Priority
 		wantValid bool
 	}{
 		{
 			name: "valid:_no_nodepools",
-			input: map[string]interface{}{
-				"machineFamily": "n1",
+			input: Priority{
+				MachineFamily: ptr("n1"),
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_only_nodepools",
-			input: map[string]interface{}{
-				"nodepools": []string{"pool1", "pool2"},
+			input: Priority{
+				Nodepools: []string{"pool1", "pool2"},
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_nodepools_and_allocationStrategy",
-			input: map[string]interface{}{
-				"nodepools": []string{"pool1"},
-				"allocationStrategy": map[string]interface{}{
-					"inSystem": map[string]interface{}{},
-				},
+			input: Priority{
+				Nodepools:          []string{"pool1"},
+				AllocationStrategy: ptr(AllocationStrategy("lowest-cost")),
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_nodepools_and_priorityScore",
-			input: map[string]interface{}{
-				"nodepools":     []string{"pool1"},
-				"priorityScore": 100,
+			input: Priority{
+				Nodepools:     []string{"pool1"},
+				PriorityScore: ptr(100),
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_nodepools_allocationStrategy_and_priorityScore",
-			input: map[string]interface{}{
-				"nodepools": []string{"pool1"},
-				"allocationStrategy": map[string]interface{}{
-					"inSystem": map[string]interface{}{},
-				},
-				"priorityScore": 100,
+			input: Priority{
+				Nodepools:          []string{"pool1"},
+				AllocationStrategy: ptr(AllocationStrategy("lowest-cost")),
+				PriorityScore:     ptr(100),
 			},
 			wantValid: true,
 		},
 		{
 			name: "invalid:_nodepools_and_machineFamily",
-			input: map[string]interface{}{
-				"nodepools":     []string{"pool1"},
-				"machineFamily": "n1",
+			input: Priority{
+				Nodepools:     []string{"pool1"},
+				MachineFamily: ptr("n1"),
 			},
 			wantValid: false,
 		},
 		{
 			name: "invalid:_nodepools_allocationStrategy_and_machineType",
-			input: map[string]interface{}{
-				"nodepools": []string{"pool1"},
-				"allocationStrategy": map[string]interface{}{
-					"inSystem": map[string]interface{}{},
-				},
-				"machineType": "n1-standard-1",
+			input: Priority{
+				Nodepools:          []string{"pool1"},
+				AllocationStrategy: ptr(AllocationStrategy("lowest-cost")),
+				MachineType:        ptr("n1-standard-1"),
 			},
 			wantValid: false,
 		},
 		{
 			name: "invalid:_nodepools_and_gpu",
-			input: map[string]interface{}{
-				"nodepools": []string{"pool1"},
-				"gpu": map[string]interface{}{
-					"type": "nvidia-tesla-t4",
+			input: Priority{
+				Nodepools: []string{"pool1"},
+				Gpu: &GPU{
+					Type: "nvidia-tesla-t4",
 				},
 			},
 			wantValid: false,
@@ -1266,8 +1260,9 @@ func TestNodepoolValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
