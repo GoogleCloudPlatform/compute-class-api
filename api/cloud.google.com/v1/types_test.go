@@ -297,18 +297,18 @@ func TestSEVValidationRule(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "valid: sev with n2d machine family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n2d",
+						MachineFamily: ptr("n2d"),
 					},
 				},
 			},
@@ -316,13 +316,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sev with c2d machine family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c2d",
+						MachineFamily: ptr("c2d"),
 					},
 				},
 			},
@@ -330,13 +330,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sev with c3d machine family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3d",
+						MachineFamily: ptr("c3d"),
 					},
 				},
 			},
@@ -344,13 +344,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sev with c4d machine family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c4d",
+						MachineFamily: ptr("c4d"),
 					},
 				},
 			},
@@ -358,15 +358,15 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: sev with g4 machine family and nvidia-rtx-pro-6000 gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "g4",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-rtx-pro-6000",
+						MachineFamily: ptr("g4"),
+						Gpu: &GPU{
+							Type: "nvidia-rtx-pro-6000",
 						},
 					},
 				},
@@ -375,13 +375,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: sev with g4 machine family and no gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "g4",
+						MachineFamily: ptr("g4"),
 					},
 				},
 			},
@@ -389,15 +389,15 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sev with g4-standard-48 machine type and nvidia-rtx-pro-6000 gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "g4-standard-48",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-rtx-pro-6000",
+						MachineType: ptr("g4-standard-48"),
+						Gpu: &GPU{
+							Type: "nvidia-rtx-pro-6000",
 						},
 					},
 				},
@@ -406,13 +406,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: sev with unsupported machine family",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n2",
+						MachineFamily: ptr("n2"),
 					},
 				},
 			},
@@ -420,15 +420,15 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: sev with g4 machine family but unsupported gpu",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "g4",
-						"gpu": map[string]interface{}{
-							"type": "nvidia-h100-80gb",
+						MachineFamily: ptr("g4"),
+						Gpu: &GPU{
+							Type: "nvidia-h100-80gb",
 						},
 					},
 				},
@@ -437,13 +437,13 @@ func TestSEVValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: sev with g4-standard-16 machine type",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"confidentialNodeType": "SEV",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "SEV",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "g4-standard-16",
+						MachineType: ptr("g4-standard-16"),
 					},
 				},
 			},
@@ -456,8 +456,9 @@ func TestSEVValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
