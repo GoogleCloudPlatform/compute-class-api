@@ -252,7 +252,58 @@ type ActiveMigration struct {
 	//
 	// +optional
 	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty" protobuf:"bytes,2,name=ensureAllDaemonSetPodsRunning"`
+
+	// ConfigDrift describes whether drifted nodes should be replaced to match the ComputeClass config.
+	// A node is considered "drifted" if its current state diverges from the ComputeClass's configuration
+	// within `nodePoolConfig` (e.g., nodeVersion, labels, taints, instanceMetadata).
+	// When disabled, drift is ignored.
+	//
+	// +optional
+	ConfigDrift *bool `json:"configDrift,omitempty" protobuf:"bytes,3,opt,name=configDrift"`
+
+	// ReconciliationPolicy defines how nodes should be migrated.
+	//
+	// +optional
+	ReconciliationPolicy *ReconciliationPolicy `json:"reconciliationPolicy,omitempty" protobuf:"bytes,4,opt,name=reconciliationPolicy"`
 }
+
+// ReconciliationPolicy describes how nodes should be migrated.
+type ReconciliationPolicy struct {
+	// Strategy defines the migration strategy to use.
+	// It is only applicable to config drift active migration.
+	// Optimize rule priority and ensure all daemon set pods running always use CreateBeforeDelete.
+	// Supported values:
+	// * CreateBeforeDelete
+	// * DeleteBeforeCreate
+	//
+	// +optional
+	// +kubebuilder:default=CreateBeforeDelete
+	Strategy MigrationStrategy `json:"strategy,omitempty" protobuf:"bytes,1,opt,name=strategy"`
+
+	// MaxNodeDisruption defines the maximum number of nodes that can be deleted at the same time during drift migration.
+	//
+	// +optional
+	// +kubebuilder:validation:Minimum=1
+	MaxNodeDisruption *int32 `json:"maxNodeDisruption,omitempty" protobuf:"bytes,2,opt,name=maxNodeDisruption"`
+
+	// AtomicGroupLabels defines a list of node label keys used to group drifted nodes.
+	// Nodes are only grouped together if they share the exact same values for ALL specified labels.
+	//
+	// +optional
+	AtomicGroupLabels []string `json:"atomicGroupLabels,omitempty" protobuf:"bytes,3,rep,name=atomicGroupLabels"`
+}
+
+// MigrationStrategy defines the strategy used for active migration.
+//
+// +kubebuilder:validation:Enum=CreateBeforeDelete;DeleteBeforeCreate
+type MigrationStrategy string
+
+const (
+	// MigrationStrategyCreateBeforeDelete creates new nodes before deleting old ones.
+	MigrationStrategyCreateBeforeDelete MigrationStrategy = "CreateBeforeDelete"
+	// MigrationStrategyDeleteBeforeCreate deletes old nodes before creating new ones.
+	MigrationStrategyDeleteBeforeCreate MigrationStrategy = "DeleteBeforeCreate"
+)
 
 // ShieldedInstanceConfig defines the shielded instance configuration for auto-created node pools.
 type ShieldedInstanceConfig struct {

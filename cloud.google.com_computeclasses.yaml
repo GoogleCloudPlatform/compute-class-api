@@ -58,6 +58,13 @@ spec:
                   ActiveMigration describes settings related to active reconciliation of
                   a given ComputeClass.
                 properties:
+                  configDrift:
+                    description: |-
+                      ConfigDrift describes whether drifted nodes should be replaced to match the ComputeClass config.
+                      A node is considered "drifted" if its current state diverges from the ComputeClass's configuration
+                      within `nodePoolConfig` (e.g., nodeVersion, labels, taints, instanceMetadata).
+                      When disabled, drift is ignored.
+                    type: boolean
                   ensureAllDaemonSetPodsRunning:
                     description: |-
                       EnsureAllDaemonSetPodsRunning defines whether node pools should be migrated
@@ -69,6 +76,38 @@ spec:
                       OptimizeRulePriority defines whether workloads affected by given
                       ComputeClass should be migrated to nodepool defined by higher priority rule, if possible.
                     type: boolean
+                  reconciliationPolicy:
+                    description: ReconciliationPolicy defines how nodes should be
+                      migrated.
+                    properties:
+                      atomicGroupLabels:
+                        description: |-
+                          AtomicGroupLabels defines a list of node label keys used to group drifted nodes.
+                          Nodes are only grouped together if they share the exact same values for ALL specified labels.
+                        items:
+                          type: string
+                        type: array
+                      maxNodeDisruption:
+                        description: MaxNodeDisruption defines the maximum number
+                          of nodes that can be deleted at the same time during drift
+                          migration.
+                        format: int32
+                        minimum: 1
+                        type: integer
+                      strategy:
+                        default: CreateBeforeDelete
+                        description: |-
+                          Strategy defines the migration strategy to use.
+                          It is only applicable to config drift active migration.
+                          Optimize rule priority and ensure all daemon set pods running always use CreateBeforeDelete.
+                          Supported values:
+                          * CreateBeforeDelete
+                          * DeleteBeforeCreate
+                        enum:
+                        - CreateBeforeDelete
+                        - DeleteBeforeCreate
+                        type: string
+                    type: object
                 required:
                 - optimizeRulePriority
                 type: object

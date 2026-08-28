@@ -30,6 +30,13 @@ type ActiveMigrationApplyConfiguration struct {
 	// EnsureAllDaemonSetPodsRunning defines whether node pools should be migrated
 	// to larger ones to ensure that all daemon sets are schedulable.
 	EnsureAllDaemonSetPodsRunning *bool `json:"ensureAllDaemonSetPodsRunning,omitempty"`
+	// ConfigDrift describes whether drifted nodes should be replaced to match the ComputeClass config.
+	// A node is considered "drifted" if its current state diverges from the ComputeClass's configuration
+	// within `nodePoolConfig` (e.g., nodeVersion, labels, taints, instanceMetadata).
+	// When disabled, drift is ignored.
+	ConfigDrift *bool `json:"configDrift,omitempty"`
+	// ReconciliationPolicy defines how nodes should be migrated.
+	ReconciliationPolicy *ReconciliationPolicyApplyConfiguration `json:"reconciliationPolicy,omitempty"`
 }
 
 // ActiveMigrationApplyConfiguration constructs a declarative configuration of the ActiveMigration type for use with
@@ -51,5 +58,21 @@ func (b *ActiveMigrationApplyConfiguration) WithOptimizeRulePriority(value bool)
 // If called multiple times, the EnsureAllDaemonSetPodsRunning field is set to the value of the last call.
 func (b *ActiveMigrationApplyConfiguration) WithEnsureAllDaemonSetPodsRunning(value bool) *ActiveMigrationApplyConfiguration {
 	b.EnsureAllDaemonSetPodsRunning = &value
+	return b
+}
+
+// WithConfigDrift sets the ConfigDrift field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ConfigDrift field is set to the value of the last call.
+func (b *ActiveMigrationApplyConfiguration) WithConfigDrift(value bool) *ActiveMigrationApplyConfiguration {
+	b.ConfigDrift = &value
+	return b
+}
+
+// WithReconciliationPolicy sets the ReconciliationPolicy field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ReconciliationPolicy field is set to the value of the last call.
+func (b *ActiveMigrationApplyConfiguration) WithReconciliationPolicy(value *ReconciliationPolicyApplyConfiguration) *ActiveMigrationApplyConfiguration {
+	b.ReconciliationPolicy = value
 	return b
 }

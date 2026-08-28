@@ -130,6 +130,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.PriorityDefaultsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("PriorityStatus"):
 		return &cloudgooglecomv1.PriorityStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ReconciliationPolicy"):
+		return &cloudgooglecomv1.ReconciliationPolicyApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationBlock"):
 		return &cloudgooglecomv1.ReservationBlockApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Reservations"):
