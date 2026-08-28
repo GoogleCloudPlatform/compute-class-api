@@ -198,6 +198,30 @@ spec:
                       Cluster Autoscaler will proactively provision capacity to satisfy the requirement.
                     type: integer
                 type: object
+              networkConfig:
+                description: NetworkConfig defines network-related settings for the
+                  ComputeClass.
+                properties:
+                  subnetPriorities:
+                    description: SubnetPriorities is an ordered list of subnets to
+                      fall back through.
+                    items:
+                      description: SubnetPriority defines a priority for a subnet
+                        to be used for the primary network interface.
+                      properties:
+                        name:
+                          description: Name defines the name of the subnetwork.
+                          maxLength: 63
+                          minLength: 1
+                          pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    maxItems: 1
+                    minItems: 1
+                    type: array
+                type: object
               nodePoolAutoCreation:
                 default:
                   enabled: false

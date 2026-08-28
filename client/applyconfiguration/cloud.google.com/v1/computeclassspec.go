@@ -64,6 +64,8 @@ type ComputeClassSpecApplyConfiguration struct {
 	MinimumCapacity *MinimumCapacityApplyConfiguration `json:"minimumCapacity,omitempty"`
 	// AllocationStrategyDefaults define the default allocation strategies for different provisioning models.
 	AllocationStrategyDefaults *AllocationStrategyDefaultsApplyConfiguration `json:"allocationStrategyDefaults,omitempty"`
+	// NetworkConfig defines network-related settings for the ComputeClass.
+	NetworkConfig *NetworkConfigApplyConfiguration `json:"networkConfig,omitempty"`
 }
 
 // ComputeClassSpecApplyConfiguration constructs a declarative configuration of the ComputeClassSpec type for use with
@@ -170,5 +172,13 @@ func (b *ComputeClassSpecApplyConfiguration) WithMinimumCapacity(value *MinimumC
 // If called multiple times, the AllocationStrategyDefaults field is set to the value of the last call.
 func (b *ComputeClassSpecApplyConfiguration) WithAllocationStrategyDefaults(value *AllocationStrategyDefaultsApplyConfiguration) *ComputeClassSpecApplyConfiguration {
 	b.AllocationStrategyDefaults = value
+	return b
+}
+
+// WithNetworkConfig sets the NetworkConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the NetworkConfig field is set to the value of the last call.
+func (b *ComputeClassSpecApplyConfiguration) WithNetworkConfig(value *NetworkConfigApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	b.NetworkConfig = value
 	return b
 }

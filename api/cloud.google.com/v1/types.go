@@ -66,6 +66,29 @@ type ComputeClassList struct {
 	Items []ComputeClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
+// SubnetPriority defines a priority for a subnet to be used for the primary network interface.
+type SubnetPriority struct {
+	// Name defines the name of the subnetwork.
+	//
+	// +required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=63
+	// +kubebuilder:validation:Pattern=`^[a-z]([-a-z0-9]*[a-z0-9])?$`
+	Name string `json:"name" protobuf:"bytes,1,name=name"`
+}
+
+// NetworkConfig defines network-related settings for the ComputeClass.
+type NetworkConfig struct {
+	// SubnetPriorities is an ordered list of subnets to fall back through.
+	// TODO(b/552484145): Increase the max items to 5 once the API is updated to support multiple subnets.
+	//
+	// +kubebuilder:listType=atomic
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=1
+	// +optional
+	SubnetPriorities []SubnetPriority `json:"subnetPriorities,omitempty" protobuf:"bytes,1,rep,name=subnetPriorities"`
+}
+
 // MinimumCapacity defines the minimum capacity required for a given
 // compute class or priority. It allows managing statically sized infrastructure.
 type MinimumCapacity struct {
@@ -178,6 +201,11 @@ type ComputeClassSpec struct {
 	//
 	// +optional
 	AllocationStrategyDefaults *AllocationStrategyDefaults `json:"allocationStrategyDefaults,omitempty" protobuf:"bytes,12,opt,name=allocationStrategyDefaults"`
+
+	// NetworkConfig defines network-related settings for the ComputeClass.
+	//
+	// +optional
+	NetworkConfig *NetworkConfig `json:"networkConfig,omitempty" protobuf:"bytes,13,opt,name=networkConfig"`
 }
 
 type NetworkingDra struct {

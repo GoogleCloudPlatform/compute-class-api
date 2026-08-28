@@ -102,6 +102,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.MemoryManagerApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MinimumCapacity"):
 		return &cloudgooglecomv1.MinimumCapacityApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("NetworkConfig"):
+		return &cloudgooglecomv1.NetworkConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NetworkingDra"):
 		return &cloudgooglecomv1.NetworkingDraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeDrainConfig"):
@@ -156,6 +158,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.SpecificReservationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Storage"):
 		return &cloudgooglecomv1.StorageApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("SubnetPriority"):
+		return &cloudgooglecomv1.SubnetPriorityApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SwapConfig"):
 		return &cloudgooglecomv1.SwapConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("SwapConfigBootDiskProfile"):
