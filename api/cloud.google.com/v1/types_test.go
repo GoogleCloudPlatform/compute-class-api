@@ -1713,15 +1713,15 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "valid: no nodePoolConfig",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1729,13 +1729,13 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: nodePoolConfig without sandbox",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"imageType": "cos_containerd",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ImageType: "cos_containerd",
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1743,15 +1743,15 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sandbox type gvisor without enableNestedVirtualization",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "gvisor",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "gvisor",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1759,16 +1759,16 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: sandbox type gvisor with enableNestedVirtualization false",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "gvisor",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "gvisor",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": false,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(false),
 					},
 				},
 			},
@@ -1776,21 +1776,21 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: microvm sandbox with enableNestedVirtualization true in priorityDefaults",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorityDefaults": map[string]interface{}{
-					"enableNestedVirtualization": true,
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(true),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 					{
-						"machineFamily": "c4",
+						MachineFamily: ptr("c4"),
 					},
 				},
 			},
@@ -1798,20 +1798,20 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: microvm sandbox with enableNestedVirtualization true in each priority",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": true,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(true),
 					},
 					{
-						"machineFamily":              "n2",
-						"enableNestedVirtualization": true,
+						MachineFamily:              ptr("n2"),
+						EnableNestedVirtualization: ptr(true),
 					},
 				},
 			},
@@ -1819,19 +1819,19 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: microvm sandbox with enableNestedVirtualization true in priorityDefaults and explicitly true in priority",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorityDefaults": map[string]interface{}{
-					"enableNestedVirtualization": true,
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(true),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": true,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(true),
 					},
 				},
 			},
@@ -1839,27 +1839,27 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid: microvm sandbox with empty priorities",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorities": []map[string]interface{}{},
+				Priorities: []Priority{},
 			},
 			wantValid: true,
 		},
 		{
 			name: "invalid: microvm sandbox without enableNestedVirtualization",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1867,16 +1867,16 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: microvm sandbox with enableNestedVirtualization false in priority",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": false,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(false),
 					},
 				},
 			},
@@ -1884,18 +1884,18 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: microvm sandbox with enableNestedVirtualization false in priorityDefaults",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorityDefaults": map[string]interface{}{
-					"enableNestedVirtualization": false,
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(false),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "c3",
+						MachineFamily: ptr("c3"),
 					},
 				},
 			},
@@ -1903,19 +1903,19 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: microvm sandbox with enableNestedVirtualization true in one priority but missing in another",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": true,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(true),
 					},
 					{
-						"machineFamily": "c4",
+						MachineFamily: ptr("c4"),
 					},
 				},
 			},
@@ -1923,23 +1923,23 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid: microvm sandbox with enableNestedVirtualization true in priorityDefaults but overridden to false in one priority",
-			input: map[string]interface{}{
-				"nodePoolConfig": map[string]interface{}{
-					"sandbox": map[string]interface{}{
-						"type": "microvm",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
 					},
 				},
-				"priorityDefaults": map[string]interface{}{
-					"enableNestedVirtualization": true,
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(true),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily":              "c3",
-						"enableNestedVirtualization": true,
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(true),
 					},
 					{
-						"machineFamily":              "c4",
-						"enableNestedVirtualization": false,
+						MachineFamily:              ptr("c4"),
+						EnableNestedVirtualization: ptr(false),
 					},
 				},
 			},
@@ -1952,8 +1952,9 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range programs {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
+
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}
