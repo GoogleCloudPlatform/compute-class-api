@@ -885,6 +885,54 @@ func createCELProgram(t *testing.T, rule string) cel.Program {
 	return program
 }
 
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func mustConvertToMap(t *testing.T, obj interface{}) map[string]interface{} {
+	t.Helper()
+	data, err := json.Marshal(obj)
+	if err != nil {
+		t.Fatalf("Failed to marshal object to JSON: %v", err)
+	}
+	var res map[string]interface{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal JSON to map: %v", err)
+	}
+	return escapeMapKeys(res)
+}
+
+func escapeMapKeys(m map[string]interface{}) map[string]interface{} {
+	res := make(map[string]interface{})
+	for k, v := range m {
+		newK := strings.ReplaceAll(k, ".", "__dot__")
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			res[newK] = escapeMapKeys(nestedMap)
+		} else if slice, ok := v.([]interface{}); ok {
+			res[newK] = escapeSliceElements(slice)
+		} else {
+			res[newK] = v
+		}
+	}
+	return res
+}
+
+func escapeSliceElements(s []interface{}) []interface{} {
+	res := make([]interface{}, len(s))
+	for i, v := range s {
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			res[i] = escapeMapKeys(nestedMap)
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			res[i] = escapeSliceElements(nestedSlice)
+		} else {
+			res[i] = v
+		}
+	}
+	return res
+}
+
+
 func TestMinimumCapacityValidationRule(t *testing.T) {
 	specRules := getTypeValidationRules(t, "ComputeClassSpec", "Spec-level MinimumCapacity")
 	priorityRules := getTypeValidationRules(t, "Priority", "Priority-level MinimumCapacity")
@@ -901,15 +949,15 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 
 	specTests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     ComputeClassSpec
 		wantValid bool
 	}{
 		{
 			name: "valid:_no_spec_level_min_capacity",
-			input: map[string]interface{}{
-				"priorities": []map[string]interface{}{
+			input: ComputeClassSpec{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n1",
+						MachineFamily: ptr("n1"),
 					},
 				},
 			},
@@ -917,13 +965,13 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_spec_level_min_capacity_with_machineType",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineType": "n1-standard-1",
+						MachineType: ptr("n1-standard-1"),
 					},
 				},
 			},
@@ -931,14 +979,14 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_spec_level_min_capacity_with_gpu",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"gpu": map[string]interface{}{
-							"type": "nvidia-tesla-t4",
+						Gpu: &GPU{
+							Type: "nvidia-tesla-t4",
 						},
 					},
 				},
@@ -947,14 +995,14 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_spec_level_min_capacity_with_tpu",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"tpu": map[string]interface{}{
-							"type": "v3-8",
+						Tpu: &TPU{
+							Type: "v3-8",
 						},
 					},
 				},
@@ -963,14 +1011,14 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "valid:_spec_level_min_capacity_with_specific_reservation",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"reservations": map[string]interface{}{
-							"affinity": "Specific",
+						Reservations: &Reservations{
+							Affinity: ReservationAffinity("Specific"),
 						},
 					},
 				},
@@ -979,13 +1027,13 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_spec_level_min_capacity_with_missing_machine_spec",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"machineFamily": "n1",
+						MachineFamily: ptr("n1"),
 					},
 				},
 			},
@@ -993,14 +1041,14 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 		},
 		{
 			name: "invalid:_spec_level_min_capacity_with_none_reservation",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: ComputeClassSpec{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"priorities": []map[string]interface{}{
+				Priorities: []Priority{
 					{
-						"reservations": map[string]interface{}{
-							"affinity": "None",
+						Reservations: &Reservations{
+							Affinity: ReservationAffinity("None"),
 						},
 					},
 				},
@@ -1011,69 +1059,69 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 
 	priorityTests := []struct {
 		name      string
-		input     map[string]interface{}
+		input     Priority
 		wantValid bool
 	}{
 		{
 			name: "valid:_no_priority_level_min_capacity",
-			input: map[string]interface{}{
-				"machineFamily": "n1",
+			input: Priority{
+				MachineFamily: ptr("n1"),
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_priority_level_min_capacity_with_machineType",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: Priority{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"machineType": "n1-standard-1",
+				MachineType: ptr("n1-standard-1"),
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_priority_level_min_capacity_with_gpu",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: Priority{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"gpu": map[string]interface{}{
-					"type": "nvidia-tesla-t4",
+				Gpu: &GPU{
+					Type: "nvidia-tesla-t4",
 				},
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_priority_level_min_capacity_with_tpu",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: Priority{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"tpu": map[string]interface{}{
-					"type": "v3-8",
+				Tpu: &TPU{
+					Type: "v3-8",
 				},
 			},
 			wantValid: true,
 		},
 		{
 			name: "valid:_priority_level_min_capacity_with_specific_reservation",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: Priority{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"reservations": map[string]interface{}{
-					"affinity": "Specific",
+				Reservations: &Reservations{
+					Affinity: ReservationAffinity("Specific"),
 				},
 			},
 			wantValid: true,
 		},
 		{
 			name: "invalid:_priority_level_min_capacity_with_missing_machine_spec",
-			input: map[string]interface{}{
-				"minimumCapacity": map[string]interface{}{
-					"targetNodeCount": 1,
+			input: Priority{
+				MinimumCapacity: &MinimumCapacity{
+					TargetNodeCount: ptr(1),
 				},
-				"machineFamily": "n1",
+				MachineFamily: ptr("n1"),
 			},
 			wantValid: false,
 		},
@@ -1084,7 +1132,7 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range specPrograms {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
@@ -1105,7 +1153,7 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 			isValid := true
 			for _, program := range priorityPrograms {
 				out, _, err := program.Eval(map[string]interface{}{
-					"self": tc.input,
+					"self": mustConvertToMap(t, tc.input),
 				})
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
@@ -1120,6 +1168,7 @@ func TestMinimumCapacityValidationRule(t *testing.T) {
 			}
 		})
 	}
+
 }
 
 func TestNodepoolValidationRule(t *testing.T) {
