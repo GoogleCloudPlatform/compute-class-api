@@ -2109,6 +2109,11 @@ type PriorityStatus struct {
 	// ScalingEventsHistory represents the aggregated information about scaling events.
 	// +optional
 	ScalingEventsHistory *ScalingEventsHistory `json:"scalingEventsHistory,omitempty" protobuf:"bytes,4,opt,name=scalingEventsHistory"`
+
+	// ConfigHash represents the combined hash of the global configuration and this specific priority.
+	// This hash is also applied to node pools, enabling comparison to determine whether a node pool was created with the current configuration.
+	// +optional
+	ConfigHash string `json:"configHash,omitempty" protobuf:"bytes,5,opt,name=configHash"`
 }
 
 // ResourceName represents the resource a given ResourceInfo applies to. Can be one of "cpu", "memory", "ephemeral-storage", "nvidia.com/gpu", or "google.com/tpu".

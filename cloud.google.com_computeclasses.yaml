@@ -3861,6 +3861,11 @@ spec:
                         - type
                         type: object
                       type: array
+                    configHash:
+                      description: |-
+                        ConfigHash represents the combined hash of the global configuration and this specific priority.
+                        This hash is also applied to node pools, enabling comparison to determine whether a node pool was created with the current configuration.
+                      type: string
                     identifier:
                       description: |-
                         Identifier represents the identifier of priority this PriorityStatus refers to.

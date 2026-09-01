@@ -37,6 +37,9 @@ type PriorityStatusApplyConfiguration struct {
 	ResourceInfo []ResourceInfoApplyConfiguration `json:"resourceInfo,omitempty"`
 	// ScalingEventsHistory represents the aggregated information about scaling events.
 	ScalingEventsHistory *ScalingEventsHistoryApplyConfiguration `json:"scalingEventsHistory,omitempty"`
+	// ConfigHash represents the combined hash of the global configuration and this specific priority.
+	// This hash is also applied to node pools, enabling comparison to determine whether a node pool was created with the current configuration.
+	ConfigHash *string `json:"configHash,omitempty"`
 }
 
 // PriorityStatusApplyConfiguration constructs a declarative configuration of the PriorityStatus type for use with
@@ -84,5 +87,13 @@ func (b *PriorityStatusApplyConfiguration) WithResourceInfo(values ...*ResourceI
 // If called multiple times, the ScalingEventsHistory field is set to the value of the last call.
 func (b *PriorityStatusApplyConfiguration) WithScalingEventsHistory(value *ScalingEventsHistoryApplyConfiguration) *PriorityStatusApplyConfiguration {
 	b.ScalingEventsHistory = value
+	return b
+}
+
+// WithConfigHash sets the ConfigHash field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ConfigHash field is set to the value of the last call.
+func (b *PriorityStatusApplyConfiguration) WithConfigHash(value string) *PriorityStatusApplyConfiguration {
+	b.ConfigHash = &value
 	return b
 }
