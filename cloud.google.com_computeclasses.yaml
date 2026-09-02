@@ -3727,14 +3727,20 @@ spec:
                 && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.linuxNodeConfig)
                 || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls.net__dot__ipv4__dot__tcp_congestion_control)))
                 : true'
-            - message: ComputeClass with sandbox type 'microvm' requires enableNestedVirtualization
-                to be true for all priorities
+            - message: ComputeClass with sandbox type 'microvm' requires at least
+                one priority to be specified
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox)
                 && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type
-                == ''microvm'') ? self.priorities.all(p, has(p.enableNestedVirtualization)
-                ? p.enableNestedVirtualization == true : (has(self.priorityDefaults)
-                && has(self.priorityDefaults.enableNestedVirtualization) && self.priorityDefaults.enableNestedVirtualization
-                == true)) : true'
+                == ''microvm'') ? (has(self.priorities) && size(self.priorities) >
+                0) : true'
+            - message: ComputeClass with sandbox type 'microvm' requires enableNestedVirtualization
+                to be true for all priorities that are not preexisting nodepools
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox)
+                && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type
+                == ''microvm'') ? (has(self.priorities) ? self.priorities.all(p, has(p.nodepools)
+                || (has(p.enableNestedVirtualization) ? p.enableNestedVirtualization
+                : (has(self.priorityDefaults) && has(self.priorityDefaults.enableNestedVirtualization)
+                && self.priorityDefaults.enableNestedVirtualization))) : true) : true'
           status:
             description: Status of the ComputeClass.
             properties:

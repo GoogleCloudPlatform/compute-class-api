@@ -40,7 +40,6 @@ var typesGoSource []byte
 //go:embed types_test.go
 var typesTestGoSource []byte
 
-
 // TestProtobufOrderIsIncreasing automatically checks that for every struct in
 // types.go, the protobuf field numbers are in strictly increasing order.
 // This test works by parsing the source file and inspecting the AST, so it
@@ -266,7 +265,6 @@ func TestGpuTopologyValidationRule(t *testing.T) {
 			wantValid: true,
 		},
 	}
-
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -914,6 +912,9 @@ func mustConvertToMap(t *testing.T, obj interface{}) map[string]interface{} {
 func escapeMapKeys(m map[string]interface{}) map[string]interface{} {
 	res := make(map[string]interface{})
 	for k, v := range m {
+		if v == nil {
+			continue
+		}
 		newK := strings.ReplaceAll(k, ".", "__dot__")
 		if nestedMap, ok := v.(map[string]interface{}); ok {
 			res[newK] = escapeMapKeys(nestedMap)
@@ -939,7 +940,6 @@ func escapeSliceElements(s []interface{}) []interface{} {
 	}
 	return res
 }
-
 
 func TestMinimumCapacityValidationRule(t *testing.T) {
 	specRules := getTypeValidationRules(t, "ComputeClassSpec", "Spec-level MinimumCapacity")
@@ -1226,7 +1226,7 @@ func TestNodepoolValidationRule(t *testing.T) {
 			input: Priority{
 				Nodepools:          []string{"pool1"},
 				AllocationStrategy: ptr(AllocationStrategy("lowest-cost")),
-				PriorityScore:     ptr(100),
+				PriorityScore:      ptr(100),
 			},
 			wantValid: true,
 		},
@@ -1841,7 +1841,72 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 			wantValid: true,
 		},
 		{
-			name: "valid: microvm sandbox with empty priorities",
+			name: "invalid: microvm sandbox with empty priorities and enableNestedVirtualization true in priorityDefaults",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(true),
+				},
+				Priorities: []Priority{},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: microvm sandbox with omitted priorities",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(true),
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid: microvm sandbox with nodepools priority and no enableNestedVirtualization",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				Priorities: []Priority{
+					{
+						Nodepools: []string{"existing-microvm-pool"},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: microvm sandbox with nodepools priority and valid autoprovisioning priority",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				Priorities: []Priority{
+					{
+						Nodepools: []string{"existing-microvm-pool"},
+					},
+					{
+						MachineFamily:              ptr("c3"),
+						EnableNestedVirtualization: ptr(true),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: microvm sandbox with empty priorities without priorityDefaults",
 			input: ComputeClassSpec{
 				NodePoolConfig: &NodePoolConfig{
 					Sandbox: &Sandbox{
@@ -1850,7 +1915,22 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 				},
 				Priorities: []Priority{},
 			},
-			wantValid: true,
+			wantValid: false,
+		},
+		{
+			name: "invalid: microvm sandbox with empty priorities and enableNestedVirtualization false in priorityDefaults",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				PriorityDefaults: &PriorityDefaults{
+					EnableNestedVirtualization: ptr(false),
+				},
+				Priorities: []Priority{},
+			},
+			wantValid: false,
 		},
 		{
 			name: "invalid: microvm sandbox without enableNestedVirtualization",
@@ -1861,6 +1941,25 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 					},
 				},
 				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: microvm sandbox with nodepools priority and invalid autoprovisioning priority",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					Sandbox: &Sandbox{
+						Type: "microvm",
+					},
+				},
+				Priorities: []Priority{
+					{
+						Nodepools: []string{"existing-microvm-pool"},
+					},
 					{
 						MachineFamily: ptr("c3"),
 					},
