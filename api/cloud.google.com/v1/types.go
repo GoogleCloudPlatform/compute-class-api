@@ -663,7 +663,8 @@ type NodePoolGroup struct {
 // Storage defines storage config per priority rule.
 //
 // +kubebuilder:validation:XValidation:rule="!has(self.bootDiskStoragePools) || !has(self.bootDiskType) || self.bootDiskType == 'hyperdisk-balanced'", message="bootDiskStoragePools requires bootDiskType to be 'hyperdisk-balanced' or omitted"
-// +kubebuilder:validation:XValidation:rule="has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput) && (!has(self.bootDiskProvisionedIops) || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced'))", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together on a Hyperdisk bootDiskType"
+// +kubebuilder:validation:XValidation:rule="has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput)", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together"
+// +kubebuilder:validation:XValidation:rule="(!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput)) || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput can only be specified for a Hyperdisk bootDiskType"
 type Storage struct {
 	// BootDiskSize defines the size of a disk attached to node, specified in GB.
 	//

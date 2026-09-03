@@ -2073,6 +2073,179 @@ func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 	}
 }
 
+func TestStorageValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "Storage", "bootDisk")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     Storage
+		wantValid bool
+	}{
+		{
+			name: "valid: hyperdisk-balanced with both provisioned iops and throughput",
+			input: Storage{
+				BootDiskType:                  ptr("hyperdisk-balanced"),
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: hyperdisk-balanced without provisioned iops or throughput",
+			input: Storage{
+				BootDiskType: ptr("hyperdisk-balanced"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: pd-balanced without provisioned iops or throughput",
+			input: Storage{
+				BootDiskType: ptr("pd-balanced"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: omitted disk type without provisioned iops or throughput",
+			input: Storage{
+				BootDiskSize: ptr(100),
+			},
+			wantValid: true,
+		},
+		{
+			name:      "valid: empty storage",
+			input:     Storage{},
+			wantValid: true,
+		},
+		{
+			name: "valid: storage pools with hyperdisk-balanced",
+			input: Storage{
+				BootDiskType: ptr("hyperdisk-balanced"),
+				BootDiskStoragePools: []BootDiskStoragePool{
+					{
+						Name: "pool-1",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: storage pools with omitted disk type",
+			input: Storage{
+				BootDiskStoragePools: []BootDiskStoragePool{
+					{
+						Name: "pool-1",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: storage pools with hyperdisk-balanced and provisioned iops and throughput",
+			input: Storage{
+				BootDiskType:                  ptr("hyperdisk-balanced"),
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+				BootDiskStoragePools: []BootDiskStoragePool{
+					{
+						Name: "pool-1",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: partial pair with iops but missing throughput",
+			input: Storage{
+				BootDiskType:            ptr("hyperdisk-balanced"),
+				BootDiskProvisionedIops: ptr[int64](4321),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: partial pair with throughput but missing iops",
+			input: Storage{
+				BootDiskType:                  ptr("hyperdisk-balanced"),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: pd-balanced with provisioned iops and throughput",
+			input: Storage{
+				BootDiskType:                  ptr("pd-balanced"),
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: pd-standard with provisioned iops and throughput",
+			input: Storage{
+				BootDiskType:                  ptr("pd-standard"),
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: pd-ssd with provisioned iops and throughput",
+			input: Storage{
+				BootDiskType:                  ptr("pd-ssd"),
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: omitted disk type with provisioned iops and throughput",
+			input: Storage{
+				BootDiskProvisionedIops:       ptr[int64](4321),
+				BootDiskProvisionedThroughput: ptr[int64](234),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: storage pools with pd-balanced",
+			input: Storage{
+				BootDiskType: ptr("pd-balanced"),
+				BootDiskStoragePools: []BootDiskStoragePool{
+					{
+						Name: "pool-1",
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
 func TestNoRawMapsInTests(t *testing.T) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, "types_test.go", typesTestGoSource, 0)

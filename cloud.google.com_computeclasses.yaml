@@ -2274,10 +2274,12 @@ spec:
                         rule: '!has(self.bootDiskStoragePools) || !has(self.bootDiskType)
                           || self.bootDiskType == ''hyperdisk-balanced'''
                       - message: bootDiskProvisionedIops and bootDiskProvisionedThroughput
-                          must be specified together on a Hyperdisk bootDiskType
+                          must be specified together
                         rule: has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput)
-                          && (!has(self.bootDiskProvisionedIops) || (has(self.bootDiskType)
-                          && self.bootDiskType == 'hyperdisk-balanced'))
+                      - message: bootDiskProvisionedIops and bootDiskProvisionedThroughput
+                          can only be specified for a Hyperdisk bootDiskType
+                        rule: (!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput))
+                          || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')
                     taints:
                       description: |-
                         Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.
