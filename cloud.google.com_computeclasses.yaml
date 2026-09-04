@@ -215,8 +215,16 @@ spec:
                           minLength: 1
                           pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
                           type: string
+                        podRange:
+                          description: PodRange defines the name of the secondary
+                            subnet range reserved for pod IPs.
+                          maxLength: 63
+                          minLength: 1
+                          pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
+                          type: string
                       required:
                       - name
+                      - podRange
                       type: object
                     maxItems: 1
                     minItems: 1

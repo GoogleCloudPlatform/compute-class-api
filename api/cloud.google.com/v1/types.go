@@ -75,6 +75,14 @@ type SubnetPriority struct {
 	// +kubebuilder:validation:MaxLength=63
 	// +kubebuilder:validation:Pattern=`^[a-z]([-a-z0-9]*[a-z0-9])?$`
 	Name string `json:"name" protobuf:"bytes,1,name=name"`
+
+	// PodRange defines the name of the secondary subnet range reserved for pod IPs.
+	//
+	// +required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=63
+	// +kubebuilder:validation:Pattern=`^[a-z]([-a-z0-9]*[a-z0-9])?$`
+	PodRange string `json:"podRange" protobuf:"bytes,2,name=podRange"`
 }
 
 // NetworkConfig defines network-related settings for the ComputeClass.

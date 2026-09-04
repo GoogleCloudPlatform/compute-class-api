@@ -63,6 +63,14 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 			name: "valid-comprehensive-smoke",
 			spec: ComputeClassSpec{
 				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					SubnetPriorities: []SubnetPriority{
+						{
+							Name:     "subnet-a",
+							PodRange: "pod-range-a",
+						},
+					},
+				},
 				Priorities: []Priority{
 					{
 						PriorityScore:            k8sptr.To(1),
@@ -94,6 +102,24 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 						AcceleratorNetworkProfile: k8sptr.To("1profile"),
 						MachineFamily:            k8sptr.To("c3"),
 					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid-subnet-priority-bad-pod-range-smoke",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					SubnetPriorities: []SubnetPriority{
+						{
+							Name:     "subnet-a",
+							PodRange: "123-bad-pod-range",
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
 				},
 			},
 			wantValid: false,

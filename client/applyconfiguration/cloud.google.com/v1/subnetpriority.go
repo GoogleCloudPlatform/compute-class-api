@@ -25,6 +25,8 @@ package v1
 type SubnetPriorityApplyConfiguration struct {
 	// Name defines the name of the subnetwork.
 	Name *string `json:"name,omitempty"`
+	// PodRange defines the name of the secondary subnet range reserved for pod IPs.
+	PodRange *string `json:"podRange,omitempty"`
 }
 
 // SubnetPriorityApplyConfiguration constructs a declarative configuration of the SubnetPriority type for use with
@@ -38,5 +40,13 @@ func SubnetPriority() *SubnetPriorityApplyConfiguration {
 // If called multiple times, the Name field is set to the value of the last call.
 func (b *SubnetPriorityApplyConfiguration) WithName(value string) *SubnetPriorityApplyConfiguration {
 	b.Name = &value
+	return b
+}
+
+// WithPodRange sets the PodRange field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PodRange field is set to the value of the last call.
+func (b *SubnetPriorityApplyConfiguration) WithPodRange(value string) *SubnetPriorityApplyConfiguration {
+	b.PodRange = &value
 	return b
 }
