@@ -49,6 +49,11 @@ type StorageApplyConfiguration struct {
 	// Only supported when bootDiskType is a Hyperdisk type (e.g. hyperdisk-balanced).
 	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
 	BootDiskProvisionedThroughput *int64 `json:"bootDiskProvisionedThroughput,omitempty"`
+	// LocalSSDEncryptionMode specifies the encryption strategy for local SSD storage attached to instances in the priority level.
+	// Currently supported modes:
+	// * STANDARD_ENCRYPTION
+	// * EPHEMERAL_KEY_ENCRYPTION
+	LocalSSDEncryptionMode *string `json:"localSsdEncryptionMode,omitempty"`
 }
 
 // StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
@@ -128,5 +133,13 @@ func (b *StorageApplyConfiguration) WithBootDiskProvisionedIops(value int64) *St
 // If called multiple times, the BootDiskProvisionedThroughput field is set to the value of the last call.
 func (b *StorageApplyConfiguration) WithBootDiskProvisionedThroughput(value int64) *StorageApplyConfiguration {
 	b.BootDiskProvisionedThroughput = &value
+	return b
+}
+
+// WithLocalSSDEncryptionMode sets the LocalSSDEncryptionMode field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the LocalSSDEncryptionMode field is set to the value of the last call.
+func (b *StorageApplyConfiguration) WithLocalSSDEncryptionMode(value string) *StorageApplyConfiguration {
+	b.LocalSSDEncryptionMode = &value
 	return b
 }

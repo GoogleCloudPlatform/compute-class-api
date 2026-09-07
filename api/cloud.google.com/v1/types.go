@@ -673,6 +673,7 @@ type NodePoolGroup struct {
 // +kubebuilder:validation:XValidation:rule="!has(self.bootDiskStoragePools) || !has(self.bootDiskType) || self.bootDiskType == 'hyperdisk-balanced'", message="bootDiskStoragePools requires bootDiskType to be 'hyperdisk-balanced' or omitted"
 // +kubebuilder:validation:XValidation:rule="has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput)", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together"
 // +kubebuilder:validation:XValidation:rule="(!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput)) || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput can only be specified for a Hyperdisk bootDiskType"
+// +kubebuilder:validation:XValidation:rule="!has(self.localSsdEncryptionMode) || (has(self.localSSDCount) && self.localSSDCount > 0)", message="localSsdEncryptionMode can only be specified when localSSDCount is greater than 0"
 type Storage struct {
 	// BootDiskSize defines the size of a disk attached to node, specified in GB.
 	//
@@ -733,6 +734,15 @@ type Storage struct {
 	// +kubebuilder:validation:Minimum=140
 	// +kubebuilder:validation:Maximum=2400
 	BootDiskProvisionedThroughput *int64 `json:"bootDiskProvisionedThroughput,omitempty" protobuf:"varint,8,opt,name=bootDiskProvisionedThroughput"`
+
+	// LocalSSDEncryptionMode specifies the encryption strategy for local SSD storage attached to instances in the priority level.
+	// Currently supported modes:
+	// * STANDARD_ENCRYPTION
+	// * EPHEMERAL_KEY_ENCRYPTION
+	//
+	// +kubebuilder:validation:Enum=STANDARD_ENCRYPTION;EPHEMERAL_KEY_ENCRYPTION
+	// +optional
+	LocalSSDEncryptionMode *string `json:"localSsdEncryptionMode,omitempty" protobuf:"bytes,9,opt,name=localSsdEncryptionMode"`
 }
 
 // BootDiskStoragePool represents a storage pool configuration for a boot disk.

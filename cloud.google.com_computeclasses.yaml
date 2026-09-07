@@ -2246,6 +2246,16 @@ spec:
                             attached to node.
                           minimum: 1
                           type: integer
+                        localSsdEncryptionMode:
+                          description: |-
+                            LocalSSDEncryptionMode specifies the encryption strategy for local SSD storage attached to instances in the priority level.
+                            Currently supported modes:
+                            * STANDARD_ENCRYPTION
+                            * EPHEMERAL_KEY_ENCRYPTION
+                          enum:
+                          - STANDARD_ENCRYPTION
+                          - EPHEMERAL_KEY_ENCRYPTION
+                          type: string
                         secondaryBootDisks:
                           description: SecondaryBootDisks represent persistent disks
                             attached to a node with special configurations based on
@@ -2288,6 +2298,10 @@ spec:
                           can only be specified for a Hyperdisk bootDiskType
                         rule: (!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput))
                           || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')
+                      - message: localSsdEncryptionMode can only be specified when
+                          localSSDCount is greater than 0
+                        rule: '!has(self.localSsdEncryptionMode) || (has(self.localSSDCount)
+                          && self.localSSDCount > 0)'
                     taints:
                       description: |-
                         Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.

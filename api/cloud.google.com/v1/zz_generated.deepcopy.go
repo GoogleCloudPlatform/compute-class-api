@@ -2078,6 +2078,11 @@ func (in *Storage) DeepCopyInto(out *Storage) {
 		*out = new(int64)
 		**out = **in
 	}
+	if in.LocalSSDEncryptionMode != nil {
+		in, out := &in.LocalSSDEncryptionMode, &out.LocalSSDEncryptionMode
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

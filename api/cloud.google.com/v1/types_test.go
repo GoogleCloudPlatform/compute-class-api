@@ -2285,3 +2285,86 @@ func TestNoRawMapsInTests(t *testing.T) {
 		return true
 	})
 }
+
+func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "Storage", "localSsdEncryptionMode")
+	if len(rules) == 0 {
+		t.Fatal("Expected at least one validation rule for localSsdEncryptionMode in Storage struct")
+	}
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     Storage
+		wantValid bool
+	}{
+		{
+			name:      "valid: empty storage",
+			input:     Storage{},
+			wantValid: true,
+		},
+		{
+			name: "valid: localSSDCount with localSsdEncryptionMode STANDARD_ENCRYPTION",
+			input: Storage{
+				LocalSSDCount:          ptr(1),
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: localSSDCount with localSsdEncryptionMode EPHEMERAL_KEY_ENCRYPTION",
+			input: Storage{
+				LocalSSDCount:          ptr(2),
+				LocalSSDEncryptionMode: ptr("EPHEMERAL_KEY_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: localSSDCount without localSsdEncryptionMode",
+			input: Storage{
+				LocalSSDCount: ptr(1),
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: localSsdEncryptionMode without localSSDCount",
+			input: Storage{
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: localSsdEncryptionMode with localSSDCount = 0",
+			input: Storage{
+				LocalSSDCount:          ptr(0),
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
