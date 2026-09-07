@@ -108,6 +108,9 @@ type NodePoolConfigApplyConfiguration struct {
 	CustomImageConfig *CustomImageConfigApplyConfiguration `json:"customImageConfig,omitempty"`
 	// ContainerdConfig defines customization for containerd.
 	ContainerdConfig *ContainerdConfigApplyConfiguration `json:"containerdConfig,omitempty"`
+	// NetworkTags specifies network firewall tags assigned to all nodes created within the pool.
+	// Note: Network tags are legacy and will be deprecated. It is recommended to use spec.nodePoolConfig.resourceManagerTags instead.
+	NetworkTags []string `json:"networkTags,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -327,5 +330,15 @@ func (b *NodePoolConfigApplyConfiguration) WithCustomImageConfig(value *CustomIm
 // If called multiple times, the ContainerdConfig field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithContainerdConfig(value *ContainerdConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.ContainerdConfig = value
+	return b
+}
+
+// WithNetworkTags adds the given value to the NetworkTags field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the NetworkTags field.
+func (b *NodePoolConfigApplyConfiguration) WithNetworkTags(values ...string) *NodePoolConfigApplyConfiguration {
+	for i := range values {
+		b.NetworkTags = append(b.NetworkTags, values[i])
+	}
 	return b
 }

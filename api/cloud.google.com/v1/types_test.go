@@ -13,6 +13,18 @@
 *     See the License for the specific language governing permissions and
 *     limitations under the License.
  */
+
+// Package v1 contains unit tests for ComputeClass API validation and serialization.
+//
+// types_test.go implements Layer 1 (Unit Test) validation for ComputeClass API.
+//
+// Scope & Design:
+//   - Directly validates custom CEL rules (+kubebuilder:validation:XValidation:rule) defined in types.go
+//     using AST parsing and the cel-go evaluation engine for rapid, isolated testing without an API server.
+//   - Validates Protobuf tag ordering and serialization integrity across all structs.
+//   - Standard OpenAPI schema annotations (e.g., +kubebuilder:validation:Enum, Minimum, Pattern, MaxItems)
+//     are validated by controller-gen / CRD generation and should not be tested with synthetic Go struct tests here.
+//   - When adding new custom CEL rules, add focused boundary test cases (valid, invalid, omitted/nil) here.
 package v1
 
 import (
@@ -2199,6 +2211,119 @@ func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
 			input: Storage{
 				LocalSSDCount:          ptr(0),
 				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestNetworkTagsAutopilotValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "nodePoolConfig.networkTags")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "valid: networkTags with autopilot disabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: false,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					NetworkTags: []string{"secure-firewall", "allow-ssh"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: networkTags without autopilot specified",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					NetworkTags: []string{"secure-firewall", "allow-ssh"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled without networkTags",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled with nil nodePoolConfig",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled with empty networkTags",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					NetworkTags: []string{},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot disabled with empty networkTags",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: false,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					NetworkTags: []string{},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: networkTags with autopilot enabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					NetworkTags: []string{"secure-firewall", "allow-ssh"},
+				},
 			},
 			wantValid: false,
 		},

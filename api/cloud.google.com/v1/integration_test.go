@@ -12,7 +12,20 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-*/
+ */
+
+// Package v1 contains integration tests for ComputeClass API validation.
+//
+// integration_test.go implements Layer 2 (Integration/envtest) validation for ComputeClass API.
+// This layer loads the generated CRD YAML into an in-memory Kubernetes control plane to verify
+// structural validity and resource budget compliance.
+//
+// Why limited test cases are added here vs exhaustive unit tests in Layer 1:
+//   - This layer functions as a smoke test suite to verify integration with real Kubernetes API server machinery.
+//   - It verifies that custom CEL rules are correctly compiled and executed by the real runtime.
+//   - It validates budget cost estimation limits (catching concerns where CRDs fail to apply due to complexity).
+//   - Exhaustive permutation testing belongs in Layer 1 (Unit Tests, types_test.go) for execution speed and lower overhead.
+//     Do not add redundant test cases here unless introducing a new class of validation mechanism.
 package v1
 
 import (
@@ -73,10 +86,10 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 				},
 				Priorities: []Priority{
 					{
-						PriorityScore:            k8sptr.To(1),
+						PriorityScore:             k8sptr.To(1),
 						AcceleratorNetworkProfile: k8sptr.To("auto-profile"),
-						MachineFamily:            k8sptr.To("c3"),
-						GpuDirect:                "rdma", // Valid with ANP
+						MachineFamily:             k8sptr.To("c3"),
+						GpuDirect:                 "rdma", // Valid with ANP
 					},
 					{
 						PriorityScore: k8sptr.To(2),
@@ -100,7 +113,7 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 				Priorities: []Priority{
 					{
 						AcceleratorNetworkProfile: k8sptr.To("1profile"),
-						MachineFamily:            k8sptr.To("c3"),
+						MachineFamily:             k8sptr.To("c3"),
 					},
 				},
 			},
@@ -176,7 +189,7 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			cc := &ComputeClass{
 				ObjectMeta: metav1.ObjectMeta{Name: tc.name},
-				Spec:      tc.spec,
+				Spec:       tc.spec,
 			}
 			err := k8sClient.Create(context.Background(), cc)
 			if tc.wantValid {

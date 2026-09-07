@@ -592,6 +592,14 @@ spec:
                       MaintenanceExclusion defines the type of exclusion policy applied to node pools.
                       UNTIL_END_OF_SUPPORT - will not be upgraded until end of support of the nodepool's minor version
                     type: string
+                  networkTags:
+                    description: |-
+                      NetworkTags specifies network firewall tags assigned to all nodes created within the pool.
+                      Note: Network tags are legacy and will be deprecated. It is recommended to use spec.nodePoolConfig.resourceManagerTags instead.
+                    items:
+                      type: string
+                    maxItems: 64
+                    type: array
                   nodeDrainConfig:
                     description: NodeDrainConfig contains node drain related configurations
                       for node pool.
@@ -3931,6 +3939,10 @@ spec:
                 && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.linuxNodeConfig)
                 || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls.net__dot__ipv4__dot__tcp_congestion_control)))
                 : true'
+            - message: networkTags cannot be used when Autopilot is enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
+                || !has(self.nodePoolConfig.networkTags) || size(self.nodePoolConfig.networkTags)
+                == 0) : true'
             - message: ComputeClass with sandbox type 'microvm' requires at least
                 one priority to be specified
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox)

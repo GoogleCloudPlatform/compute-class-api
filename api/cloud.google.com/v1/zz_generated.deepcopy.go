@@ -1525,6 +1525,11 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = new(ContainerdConfig)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.NetworkTags != nil {
+		in, out := &in.NetworkTags, &out.NetworkTags
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
