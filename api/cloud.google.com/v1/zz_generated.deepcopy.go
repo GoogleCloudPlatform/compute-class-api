@@ -1822,6 +1822,11 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.PerformanceMonitoringUnit != nil {
+		in, out := &in.PerformanceMonitoringUnit, &out.PerformanceMonitoringUnit
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

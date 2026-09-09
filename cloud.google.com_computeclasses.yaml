@@ -2243,6 +2243,18 @@ spec:
                       items:
                         type: string
                       type: array
+                    performanceMonitoringUnit:
+                      description: |-
+                        PerformanceMonitoringUnit defines the virtualized performance monitoring unit configuration for hardware execution profiling.
+                        Currently supported values:
+                        * ARCHITECTURAL
+                        * ENHANCED
+                        * STANDARD
+                      enum:
+                      - ARCHITECTURAL
+                      - ENHANCED
+                      - STANDARD
+                      type: string
                     placement:
                       description: Placement defines resource policy used for BYOPP
                         and BYOWP

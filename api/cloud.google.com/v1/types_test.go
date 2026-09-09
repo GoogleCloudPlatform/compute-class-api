@@ -30,6 +30,7 @@ package v1
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -161,6 +162,42 @@ func extractRuleFromComment(t *testing.T, commentText string, ruleSubString stri
 		return nil
 	}
 	return &rule
+}
+
+func getFieldEnumValidationRule(t *testing.T, structName string, jsonFieldName string) string {
+	t.Helper()
+	node := parseFile(t, "types.go", typesGoSource)
+	_, _, structType := findStructTypeSpec(t, node, structName)
+	field := findFieldByJSONTag(structType, jsonFieldName)
+	if field == nil || field.Doc == nil {
+		t.Fatalf("Could not find field %q in struct %s", jsonFieldName, structName)
+		return ""
+	}
+
+	for _, comment := range field.Doc.List {
+		if strings.Contains(comment.Text, "+kubebuilder:validation:Enum=") {
+			return parseEnumCommentToCEL(jsonFieldName, comment.Text)
+		}
+	}
+	t.Fatalf("Could not find Enum validation rule for field %q in struct %s", jsonFieldName, structName)
+	return ""
+}
+
+// parseEnumCommentToCEL converts a +kubebuilder:validation:Enum marker into a synthetic
+// CEL expression. In Kubernetes OpenAPI validation, enums are validated via schema validation
+// rather than CEL, but synthesizing a CEL expression here allows unit tests to reuse the
+// existing CEL evaluation test harness.
+func parseEnumCommentToCEL(jsonFieldName, commentText string) string {
+	idx := strings.Index(commentText, "+kubebuilder:validation:Enum=")
+	enumStr := strings.TrimSpace(commentText[idx+len("+kubebuilder:validation:Enum="):])
+	enumStr = strings.TrimPrefix(enumStr, "{")
+	enumStr = strings.TrimSuffix(enumStr, "}")
+	values := strings.Split(enumStr, ";")
+	var quotedValues []string
+	for _, v := range values {
+		quotedValues = append(quotedValues, fmt.Sprintf("'%s'", strings.TrimSpace(v)))
+	}
+	return fmt.Sprintf("!has(self.%s) || self.%s in [%s]", jsonFieldName, jsonFieldName, strings.Join(quotedValues, ", "))
 }
 
 func createCELProgram(t *testing.T, rule string) cel.Program {
@@ -2382,6 +2419,80 @@ func TestNetworkTagsAutopilotValidationRule(t *testing.T) {
 				}
 			}
 
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestPriorityPerformanceMonitoringUnitValidationRule(t *testing.T) {
+	rule := getFieldEnumValidationRule(t, "Priority", "performanceMonitoringUnit")
+	program := createCELProgram(t, rule)
+
+	tests := []struct {
+		name      string
+		input     Priority
+		wantValid bool
+	}{
+		{
+			name:      "valid: empty priority",
+			input:     Priority{},
+			wantValid: true,
+		},
+		{
+			name: "valid: ARCHITECTURAL performanceMonitoringUnit",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr("ARCHITECTURAL"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: ENHANCED performanceMonitoringUnit",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr("ENHANCED"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: STANDARD performanceMonitoringUnit",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr("STANDARD"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: inadmissible value INVALID_MODE",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr("INVALID_MODE"),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: inadmissible lowercase value architectural",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr("architectural"),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: inadmissible empty string value",
+			input: Priority{
+				PerformanceMonitoringUnit: ptr(""),
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			out, _, err := program.Eval(map[string]interface{}{
+				"self": mustConvertToMap(t, tc.input),
+			})
+			if err != nil {
+				t.Fatalf("CEL evaluation failed: %v", err)
+			}
+			isValid := out.Value() == true
 			if isValid != tc.wantValid {
 				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
 			}

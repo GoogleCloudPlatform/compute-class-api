@@ -1061,6 +1061,16 @@ type Priority struct {
 	//
 	// +optional
 	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty" protobuf:"bytes,29,opt,name=enableNestedVirtualization"`
+
+	// PerformanceMonitoringUnit defines the virtualized performance monitoring unit configuration for hardware execution profiling.
+	// Currently supported values:
+	// * ARCHITECTURAL
+	// * ENHANCED
+	// * STANDARD
+	//
+	// +kubebuilder:validation:Enum=ARCHITECTURAL;ENHANCED;STANDARD
+	// +optional
+	PerformanceMonitoringUnit *string `json:"performanceMonitoringUnit,omitempty" protobuf:"bytes,30,opt,name=performanceMonitoringUnit"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP

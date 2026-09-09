@@ -98,6 +98,12 @@ type PriorityApplyConfiguration struct {
 	AllocationStrategy *cloudgooglecomv1.AllocationStrategy `json:"allocationStrategy,omitempty"`
 	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
 	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty"`
+	// PerformanceMonitoringUnit defines the virtualized performance monitoring unit configuration for hardware execution profiling.
+	// Currently supported values:
+	// * ARCHITECTURAL
+	// * ENHANCED
+	// * STANDARD
+	PerformanceMonitoringUnit *string `json:"performanceMonitoringUnit,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs a declarative configuration of the Priority type for use with
@@ -346,5 +352,13 @@ func (b *PriorityApplyConfiguration) WithAllocationStrategy(value cloudgooglecom
 // If called multiple times, the EnableNestedVirtualization field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithEnableNestedVirtualization(value bool) *PriorityApplyConfiguration {
 	b.EnableNestedVirtualization = &value
+	return b
+}
+
+// WithPerformanceMonitoringUnit sets the PerformanceMonitoringUnit field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the PerformanceMonitoringUnit field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithPerformanceMonitoringUnit(value string) *PriorityApplyConfiguration {
+	b.PerformanceMonitoringUnit = &value
 	return b
 }
