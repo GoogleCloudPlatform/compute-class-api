@@ -559,6 +559,11 @@ type NodePoolConfig struct {
 	//
 	// +optional
 	CustomImageConfig *CustomImageConfig `json:"customImageConfig,omitempty" protobuf:"string,23,name=customImageConfig"`
+
+	// ContainerdConfig defines customization for containerd.
+	//
+	// +optional
+	ContainerdConfig *ContainerdConfig `json:"containerdConfig,omitempty" protobuf:"bytes,24,opt,name=containerdConfig"`
 }
 
 type CustomImageConfig struct {
@@ -2364,3 +2369,147 @@ type LRUGen struct {
 	// +optional
 	MinTtlMs *int32 `json:"minTtlMs,omitempty" protobuf:"varint,2,opt,name=minTtlMs"`
 }
+
+// ContainerdConfig defines customization for containerd.
+type ContainerdConfig struct {
+	// PrivateRegistryAccessConfig defines access configuration for private container registries.
+	// +optional
+	PrivateRegistryAccessConfig *PrivateRegistryAccessConfig `json:"privateRegistryAccessConfig,omitempty" protobuf:"bytes,1,opt,name=privateRegistryAccessConfig"`
+
+	// WritableCgroups defines writable cgroups configuration for the node pool.
+	// +optional
+	WritableCgroups *WritableCgroups `json:"writableCgroups,omitempty" protobuf:"bytes,2,opt,name=writableCgroups"`
+
+	// RegistryHosts defines containerd registry host configuration.
+	// +kubebuilder:validation:MaxItems=25
+	// +optional
+	RegistryHosts []*RegistryHostConfig `json:"registryHosts,omitempty" protobuf:"bytes,3,rep,name=registryHosts"`
+}
+
+// PrivateRegistryAccessConfig defines access configuration for private container registries.
+type PrivateRegistryAccessConfig struct {
+	// Enabled is a boolean flag to enable or disable private registry access.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,1,opt,name=enabled"`
+
+	// CertificateAuthorityDomainConfig configures domain-specific certificate authorities for secure communication with private registries.
+	// +optional
+	CertificateAuthorityDomainConfig []*CertificateAuthorityDomainConfig `json:"certificateAuthorityDomainConfig,omitempty" protobuf:"bytes,2,rep,name=certificateAuthorityDomainConfig"`
+}
+
+// CertificateAuthorityDomainConfig configures domain-specific certificate authorities for secure communication with private registries.
+type CertificateAuthorityDomainConfig struct {
+	// FQDNs is a list of fully qualified domain names associated with the certificate authority.
+	// +optional
+	FQDNs []string `json:"fqdns,omitempty" protobuf:"bytes,1,rep,name=fqdns"`
+
+	// GCPSecretManagerCertificateConfig specifies the location of CA certificates stored in Google Cloud Secret Manager.
+	// +optional
+	GCPSecretManagerCertificateConfig *GCPSecretManagerCertificateConfig `json:"gcpSecretManagerCertificateConfig,omitempty" protobuf:"bytes,2,opt,name=gcpSecretManagerCertificateConfig"`
+}
+
+// GCPSecretManagerCertificateConfig specifies the location of CA certificates stored in Google Cloud Secret Manager.
+type GCPSecretManagerCertificateConfig struct {
+	// SecretURI specifies the location of the secret in Google Cloud Secret Manager.
+	//
+	// +optional
+	// +kubebuilder:validation:Pattern=`^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$`
+	SecretURI *string `json:"secretURI,omitempty" protobuf:"bytes,1,opt,name=secretURI"`
+}
+
+// WritableCgroups defines writable cgroups configuration.
+type WritableCgroups struct {
+	// Enabled is a boolean flag to enable writable cgroups for the containerd runtime.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,1,opt,name=enabled"`
+}
+
+// RegistryHostConfig defines containerd registry host configuration.
+type RegistryHostConfig struct {
+	// Server is the FQDN of the primary registry server.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=256
+	Server string `json:"server,omitempty" protobuf:"bytes,1,opt,name=server"`
+
+	// Hosts is the list of host configs for the registry server.
+	// +kubebuilder:validation:MaxItems=10
+	// +optional
+	Hosts []*HostConfig `json:"hosts,omitempty" protobuf:"bytes,2,rep,name=hosts"`
+}
+
+// HostConfig defines mirror configurations for the primary registry server.
+type HostConfig struct {
+	// Host is the FQDN of the mirror host.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=256
+	Host string `json:"host,omitempty" protobuf:"bytes,1,opt,name=host"`
+
+	// Capabilities are permissions for the mirror (e.g., HOST_CAPABILITY_PULL, HOST_CAPABILITY_RESOLVE, HOST_CAPABILITY_PUSH).
+	// +kubebuilder:validation:MaxItems=3
+	// +optional
+	// +kubebuilder:validation:items:Enum=HOST_CAPABILITY_PULL;HOST_CAPABILITY_RESOLVE;HOST_CAPABILITY_PUSH
+	Capabilities []string `json:"capabilities,omitempty" protobuf:"bytes,2,rep,name=capabilities"`
+
+	// OverridePath determines if the default path should be overridden.
+	// +optional
+	OverridePath *bool `json:"overridePath,omitempty" protobuf:"varint,3,opt,name=overridePath"`
+
+	// Header is a list of custom HTTP headers for registry requests.
+	// +kubebuilder:validation:MaxItems=5
+	// +optional
+	Header []*HostHeader `json:"header,omitempty" protobuf:"bytes,4,rep,name=header"`
+
+	// CA is the list of certificate authorities to use for the registry.
+	// +kubebuilder:validation:MaxItems=5
+	// +optional
+	CA []*RegistryHostCertificateConfig `json:"ca,omitempty" protobuf:"bytes,5,rep,name=ca"`
+
+	// Client is the list of client-side TLS configurations (certificate and key).
+	// +kubebuilder:validation:MaxItems=5
+	// +optional
+	Client []*RegistryHostClientCertificateConfig `json:"client,omitempty" protobuf:"bytes,6,rep,name=client"`
+
+	// DialTimeout is the maximum amount of time a dial will wait for a connect to complete.
+	// +optional
+	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	DialTimeout *string `json:"dialTimeout,omitempty" protobuf:"bytes,7,opt,name=dialTimeout"`
+}
+
+// HostHeader defines custom HTTP headers for registry requests.
+type HostHeader struct {
+	// Key is the header key.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=256
+	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
+
+	// Value is the list of header values.
+	// +kubebuilder:validation:MaxItems=5
+	// +kubebuilder:validation:items:MaxLength=256
+	// +optional
+	Value []string `json:"value,omitempty" protobuf:"bytes,2,rep,name=value"`
+}
+
+// RegistryHostCertificateConfig configures certificate for the registry.
+type RegistryHostCertificateConfig struct {
+	// GcpSecretManagerSecretUri specifies the secret in Google Cloud Secret Manager.
+	//
+	// +optional
+	// +kubebuilder:validation:Pattern=`^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$`
+	// +kubebuilder:validation:MaxLength=256
+	GcpSecretManagerSecretUri *string `json:"gcpSecretManagerSecretUri,omitempty" protobuf:"bytes,1,opt,name=gcpSecretManagerSecretUri"`
+}
+
+// RegistryHostClientCertificateConfig configures pairs of certificates and keys for the registry client.
+type RegistryHostClientCertificateConfig struct {
+	// Cert specifies the client certificate.
+	// +optional
+	Cert *RegistryHostCertificateConfig `json:"cert,omitempty" protobuf:"bytes,1,opt,name=cert"`
+
+	// Key specifies the client key.
+	// +optional
+	Key *RegistryHostCertificateConfig `json:"key,omitempty" protobuf:"bytes,2,opt,name=key"`
+}
+

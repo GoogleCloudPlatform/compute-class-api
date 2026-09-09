@@ -306,6 +306,186 @@ spec:
                     - SEV_SNP
                     - TDX
                     type: string
+                  containerdConfig:
+                    description: ContainerdConfig defines customization for containerd.
+                    properties:
+                      privateRegistryAccessConfig:
+                        description: PrivateRegistryAccessConfig defines access configuration
+                          for private container registries.
+                        properties:
+                          certificateAuthorityDomainConfig:
+                            description: CertificateAuthorityDomainConfig configures
+                              domain-specific certificate authorities for secure communication
+                              with private registries.
+                            items:
+                              description: CertificateAuthorityDomainConfig configures
+                                domain-specific certificate authorities for secure
+                                communication with private registries.
+                              properties:
+                                fqdns:
+                                  description: FQDNs is a list of fully qualified
+                                    domain names associated with the certificate authority.
+                                  items:
+                                    type: string
+                                  type: array
+                                gcpSecretManagerCertificateConfig:
+                                  description: GCPSecretManagerCertificateConfig specifies
+                                    the location of CA certificates stored in Google
+                                    Cloud Secret Manager.
+                                  properties:
+                                    secretURI:
+                                      description: SecretURI specifies the location
+                                        of the secret in Google Cloud Secret Manager.
+                                      pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                      type: string
+                                  type: object
+                              type: object
+                            type: array
+                          enabled:
+                            description: Enabled is a boolean flag to enable or disable
+                              private registry access.
+                            type: boolean
+                        type: object
+                      registryHosts:
+                        description: RegistryHosts defines containerd registry host
+                          configuration.
+                        items:
+                          description: RegistryHostConfig defines containerd registry
+                            host configuration.
+                          properties:
+                            hosts:
+                              description: Hosts is the list of host configs for the
+                                registry server.
+                              items:
+                                description: HostConfig defines mirror configurations
+                                  for the primary registry server.
+                                properties:
+                                  ca:
+                                    description: CA is the list of certificate authorities
+                                      to use for the registry.
+                                    items:
+                                      description: RegistryHostCertificateConfig configures
+                                        certificate for the registry.
+                                      properties:
+                                        gcpSecretManagerSecretUri:
+                                          description: GcpSecretManagerSecretUri specifies
+                                            the secret in Google Cloud Secret Manager.
+                                          maxLength: 256
+                                          pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                          type: string
+                                      type: object
+                                    maxItems: 5
+                                    type: array
+                                  capabilities:
+                                    description: Capabilities are permissions for
+                                      the mirror (e.g., HOST_CAPABILITY_PULL, HOST_CAPABILITY_RESOLVE,
+                                      HOST_CAPABILITY_PUSH).
+                                    items:
+                                      enum:
+                                      - HOST_CAPABILITY_PULL
+                                      - HOST_CAPABILITY_RESOLVE
+                                      - HOST_CAPABILITY_PUSH
+                                      type: string
+                                    maxItems: 3
+                                    type: array
+                                  client:
+                                    description: Client is the list of client-side
+                                      TLS configurations (certificate and key).
+                                    items:
+                                      description: RegistryHostClientCertificateConfig
+                                        configures pairs of certificates and keys
+                                        for the registry client.
+                                      properties:
+                                        cert:
+                                          description: Cert specifies the client certificate.
+                                          properties:
+                                            gcpSecretManagerSecretUri:
+                                              description: GcpSecretManagerSecretUri
+                                                specifies the secret in Google Cloud
+                                                Secret Manager.
+                                              maxLength: 256
+                                              pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                              type: string
+                                          type: object
+                                        key:
+                                          description: Key specifies the client key.
+                                          properties:
+                                            gcpSecretManagerSecretUri:
+                                              description: GcpSecretManagerSecretUri
+                                                specifies the secret in Google Cloud
+                                                Secret Manager.
+                                              maxLength: 256
+                                              pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                              type: string
+                                          type: object
+                                      type: object
+                                    maxItems: 5
+                                    type: array
+                                  dialTimeout:
+                                    description: DialTimeout is the maximum amount
+                                      of time a dial will wait for a connect to complete.
+                                    pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                    type: string
+                                  header:
+                                    description: Header is a list of custom HTTP headers
+                                      for registry requests.
+                                    items:
+                                      description: HostHeader defines custom HTTP
+                                        headers for registry requests.
+                                      properties:
+                                        key:
+                                          description: Key is the header key.
+                                          maxLength: 256
+                                          minLength: 1
+                                          type: string
+                                        value:
+                                          description: Value is the list of header
+                                            values.
+                                          items:
+                                            maxLength: 256
+                                            type: string
+                                          maxItems: 5
+                                          type: array
+                                      required:
+                                      - key
+                                      type: object
+                                    maxItems: 5
+                                    type: array
+                                  host:
+                                    description: Host is the FQDN of the mirror host.
+                                    maxLength: 256
+                                    minLength: 1
+                                    type: string
+                                  overridePath:
+                                    description: OverridePath determines if the default
+                                      path should be overridden.
+                                    type: boolean
+                                required:
+                                - host
+                                type: object
+                              maxItems: 10
+                              type: array
+                            server:
+                              description: Server is the FQDN of the primary registry
+                                server.
+                              maxLength: 256
+                              minLength: 1
+                              type: string
+                          required:
+                          - server
+                          type: object
+                        maxItems: 25
+                        type: array
+                      writableCgroups:
+                        description: WritableCgroups defines writable cgroups configuration
+                          for the node pool.
+                        properties:
+                          enabled:
+                            description: Enabled is a boolean flag to enable writable
+                              cgroups for the containerd runtime.
+                            type: boolean
+                        type: object
+                    type: object
                   customImageConfig:
                     description: Custom node image configuration used by nodes in
                       the node pool.

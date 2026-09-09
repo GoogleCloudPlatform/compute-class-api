@@ -1704,6 +1704,7 @@ func TestAcceleratorNetworkProfileValidationRule(t *testing.T) {
 		})
 	}
 }
+
 func TestSandboxMicrovmNestedVirtualizationValidationRule(t *testing.T) {
 	rules := getTypeValidationRules(t, "ComputeClassSpec", "microvm")
 	if len(rules) == 0 {
@@ -2229,7 +2230,6 @@ func TestStorageValidationRules(t *testing.T) {
 				out, _, err := program.Eval(map[string]interface{}{
 					"self": mustConvertToMap(t, tc.input),
 				})
-
 				if err != nil {
 					t.Fatalf("CEL evaluation failed: %v", err)
 				}

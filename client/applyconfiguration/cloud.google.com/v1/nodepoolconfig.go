@@ -106,6 +106,8 @@ type NodePoolConfigApplyConfiguration struct {
 	NodeDrainConfig *NodeDrainConfigApplyConfiguration `json:"nodeDrainConfig,omitempty"`
 	// Custom node image configuration used by nodes in the node pool.
 	CustomImageConfig *CustomImageConfigApplyConfiguration `json:"customImageConfig,omitempty"`
+	// ContainerdConfig defines customization for containerd.
+	ContainerdConfig *ContainerdConfigApplyConfiguration `json:"containerdConfig,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -317,5 +319,13 @@ func (b *NodePoolConfigApplyConfiguration) WithNodeDrainConfig(value *NodeDrainC
 // If called multiple times, the CustomImageConfig field is set to the value of the last call.
 func (b *NodePoolConfigApplyConfiguration) WithCustomImageConfig(value *CustomImageConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
 	b.CustomImageConfig = value
+	return b
+}
+
+// WithContainerdConfig sets the ContainerdConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ContainerdConfig field is set to the value of the last call.
+func (b *NodePoolConfigApplyConfiguration) WithContainerdConfig(value *ContainerdConfigApplyConfiguration) *NodePoolConfigApplyConfiguration {
+	b.ContainerdConfig = value
 	return b
 }

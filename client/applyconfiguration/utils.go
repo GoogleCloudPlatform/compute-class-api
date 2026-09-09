@@ -44,12 +44,16 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.AutoscalingPolicyApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("BootDiskStoragePool"):
 		return &cloudgooglecomv1.BootDiskStoragePoolApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("CertificateAuthorityDomainConfig"):
+		return &cloudgooglecomv1.CertificateAuthorityDomainConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClass"):
 		return &cloudgooglecomv1.ComputeClassApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassSpec"):
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ContainerdConfig"):
+		return &cloudgooglecomv1.ContainerdConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
 		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CustomImageConfig"):
@@ -70,6 +74,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.EvictionSoftGracePeriodApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("FlexStart"):
 		return &cloudgooglecomv1.FlexStartApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("GCPSecretManagerCertificateConfig"):
+		return &cloudgooglecomv1.GCPSecretManagerCertificateConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GoogleTpu"):
 		return &cloudgooglecomv1.GoogleTpuApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("GPU"):
@@ -78,6 +84,10 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.GpuSharingApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Gvnic"):
 		return &cloudgooglecomv1.GvnicApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("HostConfig"):
+		return &cloudgooglecomv1.HostConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("HostHeader"):
+		return &cloudgooglecomv1.HostHeaderApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("HugepagesConfig"):
 		return &cloudgooglecomv1.HugepagesConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ImageStreaming"):
@@ -132,8 +142,16 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.PriorityDefaultsApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("PriorityStatus"):
 		return &cloudgooglecomv1.PriorityStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("PrivateRegistryAccessConfig"):
+		return &cloudgooglecomv1.PrivateRegistryAccessConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReconciliationPolicy"):
 		return &cloudgooglecomv1.ReconciliationPolicyApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("RegistryHostCertificateConfig"):
+		return &cloudgooglecomv1.RegistryHostCertificateConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("RegistryHostClientCertificateConfig"):
+		return &cloudgooglecomv1.RegistryHostClientCertificateConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("RegistryHostConfig"):
+		return &cloudgooglecomv1.RegistryHostConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ReservationBlock"):
 		return &cloudgooglecomv1.ReservationBlockApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Reservations"):
@@ -180,6 +198,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.TopologyManagerApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("TPU"):
 		return &cloudgooglecomv1.TPUApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("WritableCgroups"):
+		return &cloudgooglecomv1.WritableCgroupsApplyConfiguration{}
 
 	}
 	return nil
