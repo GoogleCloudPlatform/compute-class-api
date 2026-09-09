@@ -1343,6 +1343,10 @@ spec:
                                 Default is "2m" if unspecified.
                               pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
                               type: string
+                            insecureKubeletReadonlyPortEnabled:
+                              description: InsecureKubeletReadonlyPortEnabled controls
+                                whether the insecure kubelet read-only port is enabled.
+                              type: boolean
                             maxParallelImagePulls:
                               description: This setting sets the maximum number of
                                 image pulls in parallel. Default is 2 or 3 depending
@@ -2916,6 +2920,10 @@ spec:
                               Default is "2m" if unspecified.
                             pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
                             type: string
+                          insecureKubeletReadonlyPortEnabled:
+                            description: InsecureKubeletReadonlyPortEnabled controls
+                              whether the insecure kubelet read-only port is enabled.
+                            type: boolean
                           maxParallelImagePulls:
                             description: This setting sets the maximum number of image
                               pulls in parallel. Default is 2 or 3 depending on boot

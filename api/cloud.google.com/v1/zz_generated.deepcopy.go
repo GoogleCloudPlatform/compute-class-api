@@ -1105,6 +1105,11 @@ func (in *KubeletConfig) DeepCopyInto(out *KubeletConfig) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.InsecureKubeletReadonlyPortEnabled != nil {
+		in, out := &in.InsecureKubeletReadonlyPortEnabled, &out.InsecureKubeletReadonlyPortEnabled
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 

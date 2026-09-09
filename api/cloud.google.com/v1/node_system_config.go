@@ -458,6 +458,10 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:XValidation:rule="duration(self) <= duration('300s')",message="containerLogMonitorInterval must be less than or equal to 300s"
 	// +kubebuilder:validation:Optional
 	ContainerLogMonitorInterval *string `json:"containerLogMonitorInterval,omitempty" protobuf:"bytes,25,opt,name=containerLogMonitorInterval"`
+	// InsecureKubeletReadonlyPortEnabled controls whether the insecure kubelet read-only port is enabled.
+	//
+	// +kubebuilder:validation:Optional
+	InsecureKubeletReadonlyPortEnabled *bool `json:"insecureKubeletReadonlyPortEnabled,omitempty" protobuf:"bytes,26,opt,name=insecureKubeletReadonlyPortEnabled"`
 }
 
 // CrashLoopBackOff contains the configuration to modify node level parameters
