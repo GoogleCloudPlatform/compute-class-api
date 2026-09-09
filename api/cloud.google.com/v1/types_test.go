@@ -52,6 +52,190 @@ var typesGoSource []byte
 //go:embed types_test.go
 var typesTestGoSource []byte
 
+func parseFile(t *testing.T, filename string, src any) *ast.File {
+	t.Helper()
+	fset := token.NewFileSet()
+	node, err := parser.ParseFile(fset, filename, src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse %s: %v", filename, err)
+	}
+	return node
+}
+
+func findStructTypeSpec(t *testing.T, file *ast.File, structName string) (*ast.GenDecl, *ast.TypeSpec, *ast.StructType) {
+	t.Helper()
+	for _, decl := range file.Decls {
+		gd, ok := decl.(*ast.GenDecl)
+		if !ok || gd.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range gd.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name != structName {
+				continue
+			}
+			structType, _ := typeSpec.Type.(*ast.StructType)
+			return gd, typeSpec, structType
+		}
+	}
+	t.Fatalf("Could not find struct %s in types.go", structName)
+	return nil, nil, nil
+}
+
+func findFieldByJSONTag(structType *ast.StructType, jsonFieldName string) *ast.Field {
+	if structType == nil {
+		return nil
+	}
+	for _, field := range structType.Fields.List {
+		if field.Tag == nil {
+			continue
+		}
+		tagString, err := strconv.Unquote(field.Tag.Value)
+		if err != nil {
+			continue
+		}
+		tag := reflect.StructTag(tagString)
+		jsonTag := strings.Split(tag.Get("json"), ",")[0]
+		if jsonTag == jsonFieldName {
+			return field
+		}
+	}
+	return nil
+}
+
+func collectCommentGroups(gd *ast.GenDecl, typeSpec *ast.TypeSpec, structType *ast.StructType) []*ast.CommentGroup {
+	var comments []*ast.CommentGroup
+	if typeSpec != nil && typeSpec.Doc != nil {
+		comments = append(comments, typeSpec.Doc)
+	}
+	if gd != nil && gd.Doc != nil {
+		comments = append(comments, gd.Doc)
+	}
+	if structType != nil {
+		for _, field := range structType.Fields.List {
+			if field.Doc != nil {
+				comments = append(comments, field.Doc)
+			}
+		}
+	}
+	return comments
+}
+
+func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []string {
+	t.Helper()
+	node := parseFile(t, "types.go", typesGoSource)
+	gd, typeSpec, structType := findStructTypeSpec(t, node, structName)
+
+	var rules []string
+	for _, cg := range collectCommentGroups(gd, typeSpec, structType) {
+		for _, comment := range cg.List {
+			if rule := extractRuleFromComment(t, comment.Text, ruleSubString); rule != nil {
+				rules = append(rules, *rule)
+			}
+		}
+	}
+	if len(rules) == 0 {
+		t.Fatalf("Could not find validation rules with %q at struct %s in types.go", ruleSubString, structName)
+	}
+	return rules
+}
+
+func extractRuleFromComment(t *testing.T, commentText string, ruleSubString string) *string {
+	if !strings.Contains(commentText, "+kubebuilder:validation:XValidation:rule") || !strings.Contains(commentText, ruleSubString) {
+		return nil
+	}
+	idx := strings.Index(commentText, "rule=")
+	if idx == -1 {
+		return nil
+	}
+	rest := commentText[idx+len("rule="):]
+	quotedRule, err := strconv.QuotedPrefix(rest)
+	if err != nil {
+		t.Logf("Failed to parse quoted rule from comment: %v", err)
+		return nil
+	}
+	var rule string
+	rule, err = strconv.Unquote(quotedRule)
+	if err != nil {
+		t.Logf("Failed to unquote rule: %v", err)
+		return nil
+	}
+	return &rule
+}
+
+func createCELProgram(t *testing.T, rule string) cel.Program {
+	t.Helper()
+	env, err := cel.NewEnv(
+		cel.Variable("self", cel.DynType),
+		ext.Strings(),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create CEL environment: %v", err)
+	}
+
+	ast, issues := env.Compile(rule)
+	if issues != nil && issues.Err() != nil {
+		t.Fatalf("Failed to compile CEL rule: %v", issues.Err())
+	}
+
+	program, err := env.Program(ast)
+	if err != nil {
+		t.Fatalf("Failed to create CEL program: %v", err)
+	}
+
+	return program
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func mustConvertToMap(t *testing.T, obj interface{}) map[string]interface{} {
+	t.Helper()
+	data, err := json.Marshal(obj)
+	if err != nil {
+		t.Fatalf("Failed to marshal object to JSON: %v", err)
+	}
+	var res map[string]interface{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal JSON to map: %v", err)
+	}
+	return escapeMapKeys(res)
+}
+
+func escapeMapKeys(m map[string]interface{}) map[string]interface{} {
+	res := make(map[string]interface{})
+	for k, v := range m {
+		if v == nil {
+			continue
+		}
+		newK := strings.ReplaceAll(k, ".", "__dot__")
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			res[newK] = escapeMapKeys(nestedMap)
+		} else if slice, ok := v.([]interface{}); ok {
+			res[newK] = escapeSliceElements(slice)
+		} else {
+			res[newK] = v
+		}
+	}
+	return res
+}
+
+func escapeSliceElements(s []interface{}) []interface{} {
+	res := make([]interface{}, len(s))
+	for i, v := range s {
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			res[i] = escapeMapKeys(nestedMap)
+		} else if nestedSlice, ok := v.([]interface{}); ok {
+			res[i] = escapeSliceElements(nestedSlice)
+		} else {
+			res[i] = v
+		}
+	}
+	return res
+}
+
 // TestProtobufOrderIsIncreasing automatically checks that for every struct in
 // types.go, the protobuf field numbers are in strictly increasing order.
 // This test works by parsing the source file and inspecting the AST, so it
@@ -804,153 +988,6 @@ func TestTDXValidationRule(t *testing.T) {
 			}
 		})
 	}
-}
-
-func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []string {
-	t.Helper()
-	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "types.go", typesGoSource, parser.ParseComments)
-	if err != nil {
-		t.Fatalf("Failed to parse types.go: %v", err)
-	}
-
-	var rules []string
-	for _, decl := range node.Decls {
-		gd, ok := decl.(*ast.GenDecl)
-		if !ok || gd.Tok != token.TYPE {
-			continue
-		}
-		for _, spec := range gd.Specs {
-			typeSpec, ok := spec.(*ast.TypeSpec)
-			if !ok || typeSpec.Name.Name != structName {
-				continue
-			}
-			comments := []*ast.CommentGroup{typeSpec.Doc, gd.Doc}
-			for _, cg := range comments {
-				if cg == nil {
-					continue
-				}
-				for _, comment := range cg.List {
-					rule := extractRuleFromComment(t, comment.Text, ruleSubString)
-					if rule != nil {
-						rules = append(rules, *rule)
-					}
-				}
-			}
-			if structType, ok := typeSpec.Type.(*ast.StructType); ok {
-				for _, field := range structType.Fields.List {
-					if field.Doc != nil {
-						for _, comment := range field.Doc.List {
-							rule := extractRuleFromComment(t, comment.Text, ruleSubString)
-							if rule != nil {
-								rules = append(rules, *rule)
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	if len(rules) == 0 {
-		t.Fatalf("Could not find validation rules with %q at struct %s in types.go", ruleSubString, structName)
-	}
-	return rules
-}
-
-func extractRuleFromComment(t *testing.T, commentText string, ruleSubString string) *string {
-	if !strings.Contains(commentText, "+kubebuilder:validation:XValidation:rule") || !strings.Contains(commentText, ruleSubString) {
-		return nil
-	}
-	idx := strings.Index(commentText, "rule=")
-	if idx == -1 {
-		return nil
-	}
-	rest := commentText[idx+len("rule="):]
-	quotedRule, err := strconv.QuotedPrefix(rest)
-	if err != nil {
-		t.Logf("Failed to parse quoted rule from comment: %v", err)
-		return nil
-	}
-	var rule string
-	rule, err = strconv.Unquote(quotedRule)
-	if err != nil {
-		t.Logf("Failed to unquote rule: %v", err)
-		return nil
-	}
-	return &rule
-}
-
-func createCELProgram(t *testing.T, rule string) cel.Program {
-	t.Helper()
-	env, err := cel.NewEnv(
-		cel.Variable("self", cel.DynType),
-		ext.Strings(),
-	)
-	if err != nil {
-		t.Fatalf("Failed to create CEL environment: %v", err)
-	}
-
-	ast, issues := env.Compile(rule)
-	if issues != nil && issues.Err() != nil {
-		t.Fatalf("Failed to compile CEL rule: %v", issues.Err())
-	}
-
-	program, err := env.Program(ast)
-	if err != nil {
-		t.Fatalf("Failed to create CEL program: %v", err)
-	}
-
-	return program
-}
-
-func ptr[T any](v T) *T {
-	return &v
-}
-
-func mustConvertToMap(t *testing.T, obj interface{}) map[string]interface{} {
-	t.Helper()
-	data, err := json.Marshal(obj)
-	if err != nil {
-		t.Fatalf("Failed to marshal object to JSON: %v", err)
-	}
-	var res map[string]interface{}
-	err = json.Unmarshal(data, &res)
-	if err != nil {
-		t.Fatalf("Failed to unmarshal JSON to map: %v", err)
-	}
-	return escapeMapKeys(res)
-}
-
-func escapeMapKeys(m map[string]interface{}) map[string]interface{} {
-	res := make(map[string]interface{})
-	for k, v := range m {
-		if v == nil {
-			continue
-		}
-		newK := strings.ReplaceAll(k, ".", "__dot__")
-		if nestedMap, ok := v.(map[string]interface{}); ok {
-			res[newK] = escapeMapKeys(nestedMap)
-		} else if slice, ok := v.([]interface{}); ok {
-			res[newK] = escapeSliceElements(slice)
-		} else {
-			res[newK] = v
-		}
-	}
-	return res
-}
-
-func escapeSliceElements(s []interface{}) []interface{} {
-	res := make([]interface{}, len(s))
-	for i, v := range s {
-		if nestedMap, ok := v.(map[string]interface{}); ok {
-			res[i] = escapeMapKeys(nestedMap)
-		} else if nestedSlice, ok := v.([]interface{}); ok {
-			res[i] = escapeSliceElements(nestedSlice)
-		} else {
-			res[i] = v
-		}
-	}
-	return res
 }
 
 func TestMinimumCapacityValidationRule(t *testing.T) {
