@@ -657,6 +657,24 @@ spec:
                     items:
                       type: string
                     type: array
+                  resourceLabels:
+                    additionalProperties:
+                      description: ResourceLabelValue represents the value of a resource
+                        label.
+                      maxLength: 63
+                      pattern: ^[a-z0-9_-]{0,63}$
+                      type: string
+                    description: ResourceLabels defines key-value pairs applied to
+                      underlying GCE instances for billing and resource tracking.
+                    maxProperties: 64
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Resource label keys must start with a lowercase letter,
+                        contain only lowercase letters, numbers, underscores, and
+                        hyphens, be up to 63 characters long, and cannot start with
+                        'goog-' or 'gke-'
+                      rule: self.all(k, k.matches('^[a-z][a-z0-9_-]{0,62}$') && !k.startsWith('goog-')
+                        && !k.startsWith('gke-'))
                   resourceManagerTags:
                     description: |-
                       ResourceManagerTags defines what existing GCE resource manager tag key/value pairs

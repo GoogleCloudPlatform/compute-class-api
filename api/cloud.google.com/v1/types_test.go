@@ -2737,3 +2737,132 @@ func TestOauthScopesAutopilotValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestResourceLabelsValidationRule(t *testing.T) {
+	rules := getFieldValidationRules(t, "NodePoolConfig", "resourceLabels")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     NodePoolConfig
+		wantValid bool
+	}{
+		{
+			name:      "valid: empty NodePoolConfig",
+			input:     NodePoolConfig{},
+			wantValid: true,
+		},
+		{
+			name: "valid: standard resource labels",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"billing": "marketing",
+					"env":     "production",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: key and value with numbers, underscores and hyphens",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"env-prod_1": "valid-val_1",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: max size key (63 characters)",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"a" + strings.Repeat("b", 62): "value",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: max size value (63 characters)",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"billing": ResourceLabelValue(strings.Repeat("a", 63)),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: empty value",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"billing": "",
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: key starting with number",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"1env": "prod",
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: key starting with hyphen",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"-env": "prod",
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: key starting with goog-",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"goog-reserved": "val",
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: key starting with gke-",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"gke-reserved": "val",
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: key with uppercase characters",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"Billing": "marketing",
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: oversized key (64 characters)",
+			input: NodePoolConfig{
+				ResourceLabels: map[string]ResourceLabelValue{
+					"a" + strings.Repeat("b", 63): "value",
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := evalFieldValidationRules(t, programs, tc.input, "resourceLabels")
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

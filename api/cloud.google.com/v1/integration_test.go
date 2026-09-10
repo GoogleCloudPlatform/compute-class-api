@@ -84,6 +84,12 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 						},
 					},
 				},
+				NodePoolConfig: &NodePoolConfig{
+					ResourceLabels: map[string]ResourceLabelValue{
+						"billing":    "marketing",
+						"env-prod_1": "valid-val_1",
+					},
+				},
 				Priorities: []Priority{
 					{
 						PriorityScore:             k8sptr.To(1),
@@ -179,6 +185,32 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 				Priorities: []Priority{
 					{PriorityScore: k8sptr.To(1)},
 					{PriorityScore: nil}, // Mismatch
+				},
+			},
+			wantValid: false,
+		},
+		// 6. Representative of ResourceLabels Validations
+		// Proves that resourceLabels key regex and value pattern validation work in Kubernetes runtime.
+		{
+			name: "invalid-resource-labels-key-format",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NodePoolConfig: &NodePoolConfig{
+					ResourceLabels: map[string]ResourceLabelValue{
+						"1billing": "marketing",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid-resource-labels-value-format",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NodePoolConfig: &NodePoolConfig{
+					ResourceLabels: map[string]ResourceLabelValue{
+						"billing": "Marketing",
+					},
 				},
 			},
 			wantValid: false,

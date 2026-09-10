@@ -1622,6 +1622,13 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.ResourceLabels != nil {
+		in, out := &in.ResourceLabels, &out.ResourceLabels
+		*out = make(map[string]ResourceLabelValue, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	return
 }
 

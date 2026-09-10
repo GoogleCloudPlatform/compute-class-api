@@ -113,6 +113,8 @@ type NodePoolConfigApplyConfiguration struct {
 	NetworkTags []string `json:"networkTags,omitempty"`
 	// OAuthScopes sets the set of GCP API access scopes assigned to node service accounts.
 	OAuthScopes []string `json:"oauthScopes,omitempty"`
+	// ResourceLabels defines key-value pairs applied to underlying GCE instances for billing and resource tracking.
+	ResourceLabels map[string]cloudgooglecomv1.ResourceLabelValue `json:"resourceLabels,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -351,6 +353,20 @@ func (b *NodePoolConfigApplyConfiguration) WithNetworkTags(values ...string) *No
 func (b *NodePoolConfigApplyConfiguration) WithOAuthScopes(values ...string) *NodePoolConfigApplyConfiguration {
 	for i := range values {
 		b.OAuthScopes = append(b.OAuthScopes, values[i])
+	}
+	return b
+}
+
+// WithResourceLabels puts the entries into the ResourceLabels field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, the entries provided by each call will be put on the ResourceLabels field,
+// overwriting an existing map entries in ResourceLabels field with the same key.
+func (b *NodePoolConfigApplyConfiguration) WithResourceLabels(entries map[string]cloudgooglecomv1.ResourceLabelValue) *NodePoolConfigApplyConfiguration {
+	if b.ResourceLabels == nil && len(entries) > 0 {
+		b.ResourceLabels = make(map[string]cloudgooglecomv1.ResourceLabelValue, len(entries))
+	}
+	for k, v := range entries {
+		b.ResourceLabels[k] = v
 	}
 	return b
 }

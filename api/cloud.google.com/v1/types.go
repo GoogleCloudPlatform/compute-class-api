@@ -580,7 +580,19 @@ type NodePoolConfig struct {
 	// +optional
 	// +kubebuilder:listType=atomic
 	OAuthScopes []string `json:"oauthScopes,omitempty" protobuf:"bytes,26,rep,name=oauthScopes"`
+
+	// ResourceLabels defines key-value pairs applied to underlying GCE instances for billing and resource tracking.
+	//
+	// +optional
+	// +kubebuilder:validation:MaxProperties=64
+	// +kubebuilder:validation:XValidation:rule="self.all(k, k.matches('^[a-z][a-z0-9_-]{0,62}$') && !k.startsWith('goog-') && !k.startsWith('gke-'))", message="Resource label keys must start with a lowercase letter, contain only lowercase letters, numbers, underscores, and hyphens, be up to 63 characters long, and cannot start with 'goog-' or 'gke-'"
+	ResourceLabels map[string]ResourceLabelValue `json:"resourceLabels,omitempty" protobuf:"bytes,27,rep,name=resourceLabels"`
 }
+
+// ResourceLabelValue represents the value of a resource label.
+// +kubebuilder:validation:MaxLength=63
+// +kubebuilder:validation:Pattern=`^[a-z0-9_-]{0,63}$`
+type ResourceLabelValue string
 
 type CustomImageConfig struct {
 	// Image used by nodes in the node pool.
