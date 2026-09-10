@@ -202,6 +202,10 @@ spec:
                 description: NetworkConfig defines network-related settings for the
                   ComputeClass.
                 properties:
+                  disablePodCidrOverprovisionConfig:
+                    description: DisablePodCidrOverprovisionConfig allows disabling
+                      the default overprovisioning allocation of Pod CIDR ranges.
+                    type: boolean
                   subnetPriorities:
                     description: SubnetPriorities is an ordered list of subnets to
                       fall back through.

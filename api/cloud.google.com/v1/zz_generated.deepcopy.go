@@ -1432,6 +1432,11 @@ func (in *NetworkConfig) DeepCopyInto(out *NetworkConfig) {
 		*out = make([]SubnetPriority, len(*in))
 		copy(*out, *in)
 	}
+	if in.DisablePodCidrOverprovisionConfig != nil {
+		in, out := &in.DisablePodCidrOverprovisionConfig, &out.DisablePodCidrOverprovisionConfig
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 

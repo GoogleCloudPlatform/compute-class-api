@@ -26,6 +26,8 @@ type NetworkConfigApplyConfiguration struct {
 	// SubnetPriorities is an ordered list of subnets to fall back through.
 	// TODO(b/552484145): Increase the max items to 5 once the API is updated to support multiple subnets.
 	SubnetPriorities []SubnetPriorityApplyConfiguration `json:"subnetPriorities,omitempty"`
+	// DisablePodCidrOverprovisionConfig allows disabling the default overprovisioning allocation of Pod CIDR ranges.
+	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty"`
 }
 
 // NetworkConfigApplyConfiguration constructs a declarative configuration of the NetworkConfig type for use with
@@ -44,5 +46,13 @@ func (b *NetworkConfigApplyConfiguration) WithSubnetPriorities(values ...*Subnet
 		}
 		b.SubnetPriorities = append(b.SubnetPriorities, *values[i])
 	}
+	return b
+}
+
+// WithDisablePodCidrOverprovisionConfig sets the DisablePodCidrOverprovisionConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the DisablePodCidrOverprovisionConfig field is set to the value of the last call.
+func (b *NetworkConfigApplyConfiguration) WithDisablePodCidrOverprovisionConfig(value bool) *NetworkConfigApplyConfiguration {
+	b.DisablePodCidrOverprovisionConfig = &value
 	return b
 }

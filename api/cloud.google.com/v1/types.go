@@ -95,6 +95,11 @@ type NetworkConfig struct {
 	// +kubebuilder:validation:MaxItems=1
 	// +optional
 	SubnetPriorities []SubnetPriority `json:"subnetPriorities,omitempty" protobuf:"bytes,1,rep,name=subnetPriorities"`
+
+	// DisablePodCidrOverprovisionConfig allows disabling the default overprovisioning allocation of Pod CIDR ranges.
+	//
+	// +optional
+	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty" protobuf:"varint,2,opt,name=disablePodCidrOverprovisionConfig"`
 }
 
 // MinimumCapacity defines the minimum capacity required for a given
