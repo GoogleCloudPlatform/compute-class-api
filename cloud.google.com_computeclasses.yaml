@@ -3959,6 +3959,16 @@ spec:
                 && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.linuxNodeConfig)
                 || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls.net__dot__ipv4__dot__tcp_congestion_control)))
                 : true'
+            - message: insecureKubeletReadonlyPortEnabled cannot be enabled when Autopilot
+                is enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? ((!has(self.priorityDefaults)
+                || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig)
+                || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled)
+                || !self.priorityDefaults.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled)
+                && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.kubeletConfig)
+                || !has(p.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled)
+                || !p.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled))
+                : true'
             - message: networkTags cannot be used when Autopilot is enabled
               rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
                 || !has(self.nodePoolConfig.networkTags) || size(self.nodePoolConfig.networkTags)

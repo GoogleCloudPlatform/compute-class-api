@@ -281,3 +281,177 @@ func TestSysctlNetIpv4TcpCongestionControlValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestKubeletInsecureKubeletReadonlyPortEnabledValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "insecureKubeletReadonlyPortEnabled")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "autopilot disabled without insecureKubeletReadonlyPortEnabled",
+			input: ComputeClassSpec{
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot disabled with insecureKubeletReadonlyPortEnabled true in priorityDefaults",
+			input: ComputeClassSpec{
+				PriorityDefaults: &PriorityDefaults{
+					NodeSystemConfig: &NodeSystemConfig{
+						KubeletConfig: &KubeletConfig{
+							InsecureKubeletReadonlyPortEnabled: ptr(true),
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot disabled with insecureKubeletReadonlyPortEnabled true in priorities",
+			input: ComputeClassSpec{
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+						NodeSystemConfig: &NodeSystemConfig{
+							KubeletConfig: &KubeletConfig{
+								InsecureKubeletReadonlyPortEnabled: ptr(true),
+							},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot enabled without insecureKubeletReadonlyPortEnabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot enabled with insecureKubeletReadonlyPortEnabled false in priorityDefaults",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				PriorityDefaults: &PriorityDefaults{
+					NodeSystemConfig: &NodeSystemConfig{
+						KubeletConfig: &KubeletConfig{
+							InsecureKubeletReadonlyPortEnabled: ptr(false),
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot enabled with insecureKubeletReadonlyPortEnabled false in priorities",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+						NodeSystemConfig: &NodeSystemConfig{
+							KubeletConfig: &KubeletConfig{
+								InsecureKubeletReadonlyPortEnabled: ptr(false),
+							},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "autopilot enabled with insecureKubeletReadonlyPortEnabled true in priorityDefaults",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				PriorityDefaults: &PriorityDefaults{
+					NodeSystemConfig: &NodeSystemConfig{
+						KubeletConfig: &KubeletConfig{
+							InsecureKubeletReadonlyPortEnabled: ptr(true),
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "autopilot enabled with insecureKubeletReadonlyPortEnabled true in priorities",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				Priorities: []Priority{
+					{
+						MachineFamily: ptr("c3"),
+						NodeSystemConfig: &NodeSystemConfig{
+							KubeletConfig: &KubeletConfig{
+								InsecureKubeletReadonlyPortEnabled: ptr(true),
+							},
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
