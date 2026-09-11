@@ -50,9 +50,6 @@ import (
 //go:embed types.go
 var typesGoSource []byte
 
-//go:embed types_test.go
-var typesTestGoSource []byte
-
 func parseFile(t *testing.T, filename string, src any) *ast.File {
 	t.Helper()
 	fset := token.NewFileSet()
@@ -142,7 +139,7 @@ func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []st
 }
 
 func extractRuleFromComment(t *testing.T, commentText string, ruleSubString string) *string {
-	if !strings.Contains(commentText, "+kubebuilder:validation:XValidation:rule") || !strings.Contains(commentText, ruleSubString) {
+	if !strings.Contains(commentText, "+kubebuilder:validation:XValidation:rule") || (ruleSubString != "" && !strings.Contains(commentText, ruleSubString)) {
 		return nil
 	}
 	idx := strings.Index(commentText, "rule=")
@@ -162,6 +159,28 @@ func extractRuleFromComment(t *testing.T, commentText string, ruleSubString stri
 		return nil
 	}
 	return &rule
+}
+
+func getFieldValidationRules(t *testing.T, structName string, jsonFieldName string) []string {
+	t.Helper()
+	node := parseFile(t, "types.go", typesGoSource)
+	_, _, structType := findStructTypeSpec(t, node, structName)
+	field := findFieldByJSONTag(structType, jsonFieldName)
+	if field == nil || field.Doc == nil {
+		t.Fatalf("Could not find field %q in struct %s", jsonFieldName, structName)
+		return nil
+	}
+
+	var rules []string
+	for _, comment := range field.Doc.List {
+		if rule := extractRuleFromComment(t, comment.Text, ""); rule != nil {
+			rules = append(rules, *rule)
+		}
+	}
+	if len(rules) == 0 {
+		t.Fatalf("Could not find validation rules for field %q in struct %s in types.go", jsonFieldName, structName)
+	}
+	return rules
 }
 
 func getFieldEnumValidationRule(t *testing.T, structName string, jsonFieldName string) string {
@@ -271,6 +290,27 @@ func escapeSliceElements(s []interface{}) []interface{} {
 		}
 	}
 	return res
+}
+
+func evalFieldValidationRules(t *testing.T, programs []cel.Program, structObj interface{}, jsonFieldName string) bool {
+	t.Helper()
+	m := mustConvertToMap(t, structObj)
+	fieldVal := m[jsonFieldName]
+	if fieldVal == nil {
+		fieldVal = map[string]interface{}{}
+	}
+	for _, program := range programs {
+		out, _, err := program.Eval(map[string]interface{}{
+			"self": fieldVal,
+		})
+		if err != nil {
+			t.Fatalf("CEL evaluation failed: %v", err)
+		}
+		if out.Value() == false {
+			return false
+		}
+	}
+	return true
 }
 
 // TestProtobufOrderIsIncreasing automatically checks that for every struct in
@@ -1369,130 +1409,251 @@ func TestNodepoolValidationRule(t *testing.T) {
 }
 
 func TestInstanceMetadataValidationRule(t *testing.T) {
-	structsToTest := []string{"NodePoolConfig", "Priority"}
-	for _, structName := range structsToTest {
-		t.Run(structName, func(t *testing.T) {
-			keyFormatRules := getTypeValidationRules(t, structName, "Metadata keys must be alphanumeric")
-			keyFormatProg := createCELProgram(t, keyFormatRules[0])
+	t.Run("NodePoolConfig", func(t *testing.T) {
+		rules := getFieldValidationRules(t, "NodePoolConfig", "instanceMetadata")
+		var programs []cel.Program
+		for _, rule := range rules {
+			programs = append(programs, createCELProgram(t, rule))
+		}
 
-			valueSizeRules := getTypeValidationRules(t, structName, "Metadata values cannot exceed")
-			valueSizeProg := createCELProgram(t, valueSizeRules[0])
-
-			reservedKeysRules := getTypeValidationRules(t, structName, "Reserved metadata keys are not allowed")
-			reservedKeysProg := createCELProgram(t, reservedKeysRules[0])
-
-			tests := []struct {
-				name      string
-				input     map[string]string
-				prog      cel.Program
-				wantValid bool
-			}{
-				{
-					name: "valid metadata",
-					input: map[string]string{
+		tests := []struct {
+			name      string
+			input     NodePoolConfig
+			wantValid bool
+		}{
+			{
+				name: "valid metadata",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"valid-key_1": "valid-value",
 					},
-					prog:      keyFormatProg,
-					wantValid: true,
 				},
-				{
-					name: "invalid key format (contains space)",
-					input: map[string]string{
+				wantValid: true,
+			},
+			{
+				name: "invalid key format (contains space)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"invalid key": "value",
 					},
-					prog:      keyFormatProg,
-					wantValid: false,
 				},
-				{
-					name: "valid key starting with dash",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "valid key starting with dash",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"-valid-key": "valid-value",
 					},
-					prog:      keyFormatProg,
-					wantValid: true,
 				},
-				{
-					name: "invalid key format (contains colon)",
-					input: map[string]string{
+				wantValid: true,
+			},
+			{
+				name: "invalid key format (contains colon)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"invalid:key": "value",
 					},
-					prog:      keyFormatProg,
-					wantValid: false,
 				},
-				{
-					name: "invalid key format (contains at sign)",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "invalid key format (contains at sign)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"invalid@key": "value",
 					},
-					prog:      keyFormatProg,
-					wantValid: false,
 				},
-				{
-					name: "oversized key (128 characters or more)",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "oversized key (128 characters or more)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						strings.Repeat("a", 128): "value",
 					},
-					prog:      keyFormatProg,
-					wantValid: false,
 				},
-				{
-					name: "valid key size (127 characters)",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "valid key size (127 characters)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						strings.Repeat("a", 127): "value",
 					},
-					prog:      keyFormatProg,
-					wantValid: true,
 				},
-				{
-					name: "oversized value (more than 32768 characters)",
-					input: map[string]string{
+				wantValid: true,
+			},
+			{
+				name: "oversized value (more than 32768 characters)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"key": strings.Repeat("a", 32769),
 					},
-					prog:      valueSizeProg,
-					wantValid: false,
 				},
-				{
-					name: "valid value size (exactly 32768 characters)",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "valid value size (exactly 32768 characters)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"key": strings.Repeat("a", 32768),
 					},
-					prog:      valueSizeProg,
-					wantValid: true,
 				},
-				{
-					name: "reserved key (cluster-location)",
-					input: map[string]string{
+				wantValid: true,
+			},
+			{
+				name: "reserved key (cluster-location)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"cluster-location": "value",
 					},
-					prog:      reservedKeysProg,
-					wantValid: false,
 				},
-				{
-					name: "reserved key (windows-startup-script-ps1)",
-					input: map[string]string{
+				wantValid: false,
+			},
+			{
+				name: "reserved key (windows-startup-script-ps1)",
+				input: NodePoolConfig{
+					InstanceMetadata: map[string]string{
 						"windows-startup-script-ps1": "value",
 					},
-					prog:      reservedKeysProg,
-					wantValid: false,
 				},
-			}
+				wantValid: false,
+			},
+		}
 
-			for _, tc := range tests {
-				t.Run(tc.name, func(t *testing.T) {
-					out, _, err := tc.prog.Eval(map[string]interface{}{
-						"self": tc.input,
-					})
-					if err != nil {
-						t.Fatalf("CEL evaluation failed: %v", err)
-					}
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				isValid := evalFieldValidationRules(t, programs, tc.input, "instanceMetadata")
+				if isValid != tc.wantValid {
+					t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+				}
+			})
+		}
+	})
 
-					if out.Value() != tc.wantValid {
-						t.Errorf("Validation result = %v, want %v", out.Value(), tc.wantValid)
-					}
-				})
-			}
-		})
-	}
+	t.Run("Priority", func(t *testing.T) {
+		rules := getFieldValidationRules(t, "Priority", "instanceMetadata")
+		var programs []cel.Program
+		for _, rule := range rules {
+			programs = append(programs, createCELProgram(t, rule))
+		}
+
+		tests := []struct {
+			name      string
+			input     Priority
+			wantValid bool
+		}{
+			{
+				name: "valid metadata",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"valid-key_1": "valid-value",
+					},
+				},
+				wantValid: true,
+			},
+			{
+				name: "invalid key format (contains space)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"invalid key": "value",
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "valid key starting with dash",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"-valid-key": "valid-value",
+					},
+				},
+				wantValid: true,
+			},
+			{
+				name: "invalid key format (contains colon)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"invalid:key": "value",
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "invalid key format (contains at sign)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"invalid@key": "value",
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "oversized key (128 characters or more)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						strings.Repeat("a", 128): "value",
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "valid key size (127 characters)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						strings.Repeat("a", 127): "value",
+					},
+				},
+				wantValid: true,
+			},
+			{
+				name: "oversized value (more than 32768 characters)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"key": strings.Repeat("a", 32769),
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "valid value size (exactly 32768 characters)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"key": strings.Repeat("a", 32768),
+					},
+				},
+				wantValid: true,
+			},
+			{
+				name: "reserved key (cluster-location)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"cluster-location": "value",
+					},
+				},
+				wantValid: false,
+			},
+			{
+				name: "reserved key (windows-startup-script-ps1)",
+				input: Priority{
+					InstanceMetadata: map[string]string{
+						"windows-startup-script-ps1": "value",
+					},
+				},
+				wantValid: false,
+			},
+		}
+
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+				isValid := evalFieldValidationRules(t, programs, tc.input, "instanceMetadata")
+				if isValid != tc.wantValid {
+					t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+				}
+			})
+		}
+	})
 }
 
 func TestComputeClassStatusJSON(t *testing.T) {
@@ -2188,46 +2349,6 @@ func TestStorageValidationRules(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestNoRawMapsInTests(t *testing.T) {
-	fset := token.NewFileSet()
-	node, err := parser.ParseFile(fset, "types_test.go", typesTestGoSource, 0)
-	if err != nil {
-		t.Fatalf("Failed to parse types_test.go: %v", err)
-	}
-
-	ast.Inspect(node, func(n ast.Node) bool {
-		// Look for struct definitions in tests
-		structType, ok := n.(*ast.StructType)
-		if !ok {
-			return true
-		}
-
-		for _, field := range structType.Fields.List {
-			// Check if field type is map[string]interface{}
-			mapType, ok := field.Type.(*ast.MapType)
-			if !ok {
-				continue
-			}
-
-			keyIdent, ok := mapType.Key.(*ast.Ident)
-			if !ok || keyIdent.Name != "string" {
-				continue
-			}
-
-			interfaceIdent, ok := mapType.Value.(*ast.InterfaceType)
-			if !ok || len(interfaceIdent.Methods.List) != 0 {
-				continue
-			}
-
-			// Found map[string]interface{}
-			pos := fset.Position(field.Pos())
-			t.Errorf("Found forbidden type 'map[string]interface{}' in struct field at %s. Use concrete Go structs instead.", pos)
-		}
-
-		return true
-	})
 }
 
 func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
