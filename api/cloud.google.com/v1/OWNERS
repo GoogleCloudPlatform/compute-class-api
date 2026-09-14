@@ -2,9 +2,9 @@
 # This allows the GKE Node team to self-approve CLs that add or modify
 # fields in LinuxNodeConfig, KubeletConfig, and their associated helper structs
 # without requiring cross-timezone review from the GKE CCC team.
-per-file node_system_config*.go = file:/owners/node/OWNERS
+per-file node_system_config*.go = file:/NODE_OWNERS
 
 # Co-ownership for auto-generated helper files (zz_generated.deepcopy.go, zz_generated.defaults.go).
 # When the GKE Node team runs `make gen-client` after modifying node system config,
 # these files are updated mechanically; co-ownership allows self-approval of the generated diffs.
-per-file zz_generated.*.go = file:/owners/node/OWNERS
+per-file zz_generated.*.go = file:/NODE_OWNERS

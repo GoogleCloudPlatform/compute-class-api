@@ -1,0 +1,8 @@
+# GKE Node team code owners for Node System Config and related areas.
+#
+# NOTE: This file intentionally lives at the repository root and is not named
+# OWNERS. A top-level "owners/" directory collides case-insensitively with the
+# root "OWNERS" file, which makes Go module zip creation fail with
+# "case-insensitive file name collision" and breaks `go mod tidy` for every
+# consumer of this module. Do not move this file into an "owners/" directory.
+vqin@google.com
