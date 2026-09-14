@@ -42,6 +42,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.AutopilotApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("AutoscalingPolicy"):
 		return &cloudgooglecomv1.AutoscalingPolicyApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("BlockedNodesInfo"):
+		return &cloudgooglecomv1.BlockedNodesInfoApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("BootDiskStoragePool"):
 		return &cloudgooglecomv1.BootDiskStoragePoolApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CertificateAuthorityDomainConfig"):
@@ -52,6 +54,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ConfigDriftStatus"):
+		return &cloudgooglecomv1.ConfigDriftStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ContainerdConfig"):
 		return &cloudgooglecomv1.ContainerdConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
@@ -110,6 +114,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.LRUGenApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MemoryManager"):
 		return &cloudgooglecomv1.MemoryManagerApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("MigrationStatus"):
+		return &cloudgooglecomv1.MigrationStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("MinimumCapacity"):
 		return &cloudgooglecomv1.MinimumCapacityApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NetworkConfig"):

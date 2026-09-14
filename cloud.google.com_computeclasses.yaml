@@ -4048,6 +4048,116 @@ spec:
                   - type
                   type: object
                 type: array
+              migration:
+                description: |-
+                  Migration represents the current progress of migrating existing nodes to the
+                  configuration desired by this ComputeClass, as requested in `spec.activeMigration`.
+                properties:
+                  configDrift:
+                    description: |-
+                      ConfigDrift represents the progress of migrating nodes whose configuration no longer
+                      matches the configuration desired by this ComputeClass.
+                      It is only reported when `spec.activeMigration.configDrift` is enabled.
+
+                      Every node belonging to this ComputeClass is counted in exactly one of `currentNodes`,
+                      `driftedNodes`, `migratingNodes`, or a single entry of `blockedNodes`. Their sum is therefore
+                      the total number of nodes belonging to this ComputeClass at the `measuredAt` timestamp.
+                    properties:
+                      blockedNodes:
+                        description: |-
+                          BlockedNodes represents the number of nodes running on an outdated configuration whose
+                          migration cannot proceed, grouped by the reason that blocks them. Each node is reported
+                          under at most one reason. Reasons with no blocked nodes are not reported.
+                        items:
+                          description: BlockedNodesInfo describes how many nodes are
+                            blocked from being migrated by a single reason.
+                          properties:
+                            count:
+                              description: Count represents the number of nodes blocked
+                                by this reason. It is always at least 1.
+                              minimum: 1
+                              type: integer
+                            reason:
+                              description: |-
+                                Reason identifies why the migration of the reported nodes cannot proceed.
+                                Possible values:
+                                * NodeNotReady - the node is not ready, so it is not safe to migrate it.
+                                * Cordoned - the node was manually marked as unschedulable.
+                                * NodeConsolidationDisabled - the node opted out of removal, for example with the
+                                  "cluster-autoscaler.kubernetes.io/scale-down-disabled" annotation.
+                                * NodePoolOperationInProgress - another operation on the node pool is in progress.
+                                * MinCapacityReached - removing the node would violate a configured minimum, such as the
+                                  node pool minimum size or a resource limit.
+                                * MaxNodeDisruptionReached - migrating the node would exceed the disruption budget
+                                  configured in `spec.activeMigration`.
+                                * BlockingPods - a pod running on the node prevents it from being drained, for example a
+                                  pod that is not backed by a controller or that uses local storage.
+                                * PodDisruptionBudget - draining the node would violate a PodDisruptionBudget.
+                                * ReplacementUnavailable - replacement capacity matching the desired configuration could
+                                  not be provisioned, so the migration attempt was abandoned. A node still waiting for
+                                  capacity that is expected to arrive is reported in `migratingNodes` instead.
+                                * RecentMigrationFailure - a recent attempt to migrate the node failed and it is backed off.
+                                * AtomicGroupBlocked - the node belongs to an atomically scheduled group in which another
+                                  node is blocked, so the whole group cannot be migrated.
+                                * MigrationBlocked - the node cannot be removed for a reason that is not reported more
+                                  specifically.
+                              enum:
+                              - NodeNotReady
+                              - Cordoned
+                              - NodeConsolidationDisabled
+                              - NodePoolOperationInProgress
+                              - MinCapacityReached
+                              - MaxNodeDisruptionReached
+                              - BlockingPods
+                              - PodDisruptionBudget
+                              - ReplacementUnavailable
+                              - RecentMigrationFailure
+                              - AtomicGroupBlocked
+                              - MigrationBlocked
+                              type: string
+                          required:
+                          - count
+                          - reason
+                          type: object
+                        maxItems: 32
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - reason
+                        x-kubernetes-list-type: map
+                      currentNodes:
+                        description: |-
+                          CurrentNodes represents the number of nodes that match the current ComputeClass
+                          configuration. These nodes are fully up-to-date and require no action.
+                        minimum: 0
+                        type: integer
+                      driftedNodes:
+                        description: |-
+                          DriftedNodes represents the number of nodes that are running on an outdated configuration.
+                          These nodes are eligible for migration, but their migration has not started yet, for example
+                          because they are waiting for their turn.
+                        minimum: 0
+                        type: integer
+                      measuredAt:
+                        description: MeasuredAt represents the timestamp at which
+                          the reported information was measured.
+                        format: date-time
+                        type: string
+                      migratingNodes:
+                        description: |-
+                          MigratingNodes represents the number of nodes that are currently being migrated. This
+                          includes nodes waiting for replacement capacity to be provisioned, as well as nodes that
+                          are already cordoned, being drained, or being deleted.
+
+                          A node waiting for replacement capacity is reported here for as long as the attempt to
+                          obtain that capacity is still in progress. It moves to `blockedNodes` under the
+                          `ReplacementUnavailable` reason only once the attempt has been given up on, because no
+                          configuration allowed by this ComputeClass could supply the replacement. In short,
+                          `migratingNodes` means the capacity is still expected to arrive, whereas
+                          `ReplacementUnavailable` means it was asked for and could not be obtained.
+                        minimum: 0
+                        type: integer
+                    type: object
+                type: object
               priorityStatuses:
                 description: PriorityStatuses represent the statuses of Priorities
                   within a given ComputeClass.

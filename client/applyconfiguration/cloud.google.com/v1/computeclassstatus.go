@@ -33,6 +33,9 @@ type ComputeClassStatusApplyConfiguration struct {
 	PriorityStatuses []PriorityStatusApplyConfiguration `json:"priorityStatuses,omitempty"`
 	// ResourceInfo represents the current information about resource allocation and usage within the Compute Class.
 	ResourceInfo []ResourceInfoApplyConfiguration `json:"resourceInfo,omitempty"`
+	// Migration represents the current progress of migrating existing nodes to the
+	// configuration desired by this ComputeClass, as requested in `spec.activeMigration`.
+	Migration *MigrationStatusApplyConfiguration `json:"migration,omitempty"`
 }
 
 // ComputeClassStatusApplyConfiguration constructs a declarative configuration of the ComputeClassStatus type for use with
@@ -77,5 +80,13 @@ func (b *ComputeClassStatusApplyConfiguration) WithResourceInfo(values ...*Resou
 		}
 		b.ResourceInfo = append(b.ResourceInfo, *values[i])
 	}
+	return b
+}
+
+// WithMigration sets the Migration field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Migration field is set to the value of the last call.
+func (b *ComputeClassStatusApplyConfiguration) WithMigration(value *MigrationStatusApplyConfiguration) *ComputeClassStatusApplyConfiguration {
+	b.Migration = value
 	return b
 }
