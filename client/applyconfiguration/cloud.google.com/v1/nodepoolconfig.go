@@ -111,6 +111,8 @@ type NodePoolConfigApplyConfiguration struct {
 	// NetworkTags specifies network firewall tags assigned to all nodes created within the pool.
 	// Note: Network tags are legacy and will be deprecated. It is recommended to use spec.nodePoolConfig.resourceManagerTags instead.
 	NetworkTags []string `json:"networkTags,omitempty"`
+	// OAuthScopes sets the set of GCP API access scopes assigned to node service accounts.
+	OAuthScopes []string `json:"oauthScopes,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -339,6 +341,16 @@ func (b *NodePoolConfigApplyConfiguration) WithContainerdConfig(value *Container
 func (b *NodePoolConfigApplyConfiguration) WithNetworkTags(values ...string) *NodePoolConfigApplyConfiguration {
 	for i := range values {
 		b.NetworkTags = append(b.NetworkTags, values[i])
+	}
+	return b
+}
+
+// WithOAuthScopes adds the given value to the OAuthScopes field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the OAuthScopes field.
+func (b *NodePoolConfigApplyConfiguration) WithOAuthScopes(values ...string) *NodePoolConfigApplyConfiguration {
+	for i := range values {
+		b.OAuthScopes = append(b.OAuthScopes, values[i])
 	}
 	return b
 }

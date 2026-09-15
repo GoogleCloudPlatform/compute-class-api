@@ -1617,6 +1617,11 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.OAuthScopes != nil {
+		in, out := &in.OAuthScopes, &out.OAuthScopes
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

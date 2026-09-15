@@ -135,6 +135,7 @@ type MinimumCapacity struct {
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? ((!has(self.priorityDefaults) || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig) || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(self.priorityDefaults.nodeSystemConfig.linuxNodeConfig.sysctls.net__dot__ipv4__dot__tcp_congestion_control)) && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.linuxNodeConfig) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls) || !has(p.nodeSystemConfig.linuxNodeConfig.sysctls.net__dot__ipv4__dot__tcp_congestion_control))) : true", message="Sysctl config net.ipv4.tcp_congestion_control cannot be set when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? ((!has(self.priorityDefaults) || !has(self.priorityDefaults.nodeSystemConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig) || !has(self.priorityDefaults.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled) || !self.priorityDefaults.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled) && self.priorities.all(p, !has(p.nodeSystemConfig) || !has(p.nodeSystemConfig.kubeletConfig) || !has(p.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled) || !p.nodeSystemConfig.kubeletConfig.insecureKubeletReadonlyPortEnabled)) : true", message="insecureKubeletReadonlyPortEnabled cannot be enabled when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig) || !has(self.nodePoolConfig.networkTags) || size(self.nodePoolConfig.networkTags) == 0) : true", message="networkTags cannot be used when Autopilot is enabled"
+// +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig) || !has(self.nodePoolConfig.oauthScopes) || size(self.nodePoolConfig.oauthScopes) == 0) : true", message="oauthScopes cannot be used when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) && size(self.priorities) > 0) : true", message="ComputeClass with sandbox type 'microvm' requires at least one priority to be specified"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) ? self.priorities.all(p, has(p.nodepools) || (has(p.enableNestedVirtualization) ? p.enableNestedVirtualization : (has(self.priorityDefaults) && has(self.priorityDefaults.enableNestedVirtualization) && self.priorityDefaults.enableNestedVirtualization))) : true) : true", message="ComputeClass with sandbox type 'microvm' requires enableNestedVirtualization to be true for all priorities that are not preexisting nodepools"
 type ComputeClassSpec struct {
@@ -573,6 +574,12 @@ type NodePoolConfig struct {
 	// +kubebuilder:validation:MaxItems=64
 	// +optional
 	NetworkTags []string `json:"networkTags,omitempty" protobuf:"bytes,25,rep,name=networkTags"`
+
+	// OAuthScopes sets the set of GCP API access scopes assigned to node service accounts.
+	//
+	// +optional
+	// +kubebuilder:listType=atomic
+	OAuthScopes []string `json:"oauthScopes,omitempty" protobuf:"bytes,26,rep,name=oauthScopes"`
 }
 
 type CustomImageConfig struct {

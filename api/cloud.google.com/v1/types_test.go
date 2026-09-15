@@ -2620,3 +2620,120 @@ func TestPriorityPerformanceMonitoringUnitValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestOauthScopesAutopilotValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "oauthScopes cannot be used when Autopilot is enabled")
+	if len(rules) == 0 {
+		t.Fatalf("Could not find oauthScopes Autopilot validation rule in ComputeClassSpec")
+	}
+
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "valid: oauthScopes with autopilot disabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: false,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					OAuthScopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: oauthScopes without autopilot specified",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					OAuthScopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled without oauthScopes",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled with nil nodePoolConfig",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled with empty oauthScopes",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					OAuthScopes: []string{},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot disabled with empty oauthScopes",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: false,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					OAuthScopes: []string{},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: oauthScopes with autopilot enabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					OAuthScopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

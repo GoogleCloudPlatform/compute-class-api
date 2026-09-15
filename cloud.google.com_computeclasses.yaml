@@ -651,6 +651,12 @@ spec:
                       If unspecified, the GKE cluster server will automatically pick a version
                       as per https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version.
                     type: string
+                  oauthScopes:
+                    description: OAuthScopes sets the set of GCP API access scopes
+                      assigned to node service accounts.
+                    items:
+                      type: string
+                    type: array
                   resourceManagerTags:
                     description: |-
                       ResourceManagerTags defines what existing GCE resource manager tag key/value pairs
@@ -3972,6 +3978,10 @@ spec:
             - message: networkTags cannot be used when Autopilot is enabled
               rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
                 || !has(self.nodePoolConfig.networkTags) || size(self.nodePoolConfig.networkTags)
+                == 0) : true'
+            - message: oauthScopes cannot be used when Autopilot is enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
+                || !has(self.nodePoolConfig.oauthScopes) || size(self.nodePoolConfig.oauthScopes)
                 == 0) : true'
             - message: ComputeClass with sandbox type 'microvm' requires at least
                 one priority to be specified
