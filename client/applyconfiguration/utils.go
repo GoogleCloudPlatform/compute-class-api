@@ -66,6 +66,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.CustomNodeInitApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("DiskIoScheduler"):
 		return &cloudgooglecomv1.DiskIoSchedulerApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("DisruptionBudget"):
+		return &cloudgooglecomv1.DisruptionBudgetApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Dra"):
 		return &cloudgooglecomv1.DraApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EtcHostsEntry"):

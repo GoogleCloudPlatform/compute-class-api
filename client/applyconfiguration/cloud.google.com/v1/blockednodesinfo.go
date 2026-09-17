@@ -32,8 +32,8 @@ type BlockedNodesInfoApplyConfiguration struct {
 	// * NodePoolOperationInProgress - another operation on the node pool is in progress.
 	// * MinCapacityReached - removing the node would violate a configured minimum, such as the
 	// node pool minimum size or a resource limit.
-	// * MaxNodeDisruptionReached - migrating the node would exceed the disruption budget
-	// configured in `spec.activeMigration`.
+	// * DisruptionBudgetReached - migrating the node would exceed a disruption budget
+	// configured in `spec.activeMigration.reconciliationPolicy.disruptionBudgets`.
 	// * BlockingPods - a pod running on the node prevents it from being drained, for example a
 	// pod that is not backed by a controller or that uses local storage.
 	// * PodDisruptionBudget - draining the node would violate a PodDisruptionBudget.

@@ -87,13 +87,28 @@ spec:
                         items:
                           type: string
                         type: array
-                      maxNodeDisruption:
-                        description: MaxNodeDisruption defines the maximum number
-                          of nodes that can be deleted at the same time during drift
-                          migration.
-                        format: int32
-                        minimum: 1
-                        type: integer
+                      disruptionBudgets:
+                        description: |-
+                          DisruptionBudgets defines limits on how many nodes may be concurrently migrated.
+                          This limits the blast radius when a large configuration change, such as changing the labels
+                          for an entire pool, causes many nodes to drift simultaneously.
+
+                          Currently at most one budget may be specified, and it applies to all types of migrations.
+                        items:
+                          description: DisruptionBudget limits the number of nodes
+                            that can be concurrently migrated.
+                          properties:
+                            maxNodes:
+                              description: MaxNodes defines the maximum number of
+                                nodes that can be concurrently migrated.
+                              format: int32
+                              minimum: 1
+                              type: integer
+                          required:
+                          - maxNodes
+                          type: object
+                        maxItems: 1
+                        type: array
                       strategy:
                         default: CreateBeforeDelete
                         description: |-
@@ -4120,8 +4135,8 @@ spec:
                                 * NodePoolOperationInProgress - another operation on the node pool is in progress.
                                 * MinCapacityReached - removing the node would violate a configured minimum, such as the
                                   node pool minimum size or a resource limit.
-                                * MaxNodeDisruptionReached - migrating the node would exceed the disruption budget
-                                  configured in `spec.activeMigration`.
+                                * DisruptionBudgetReached - migrating the node would exceed a disruption budget
+                                  configured in `spec.activeMigration.reconciliationPolicy.disruptionBudgets`.
                                 * BlockingPods - a pod running on the node prevents it from being drained, for example a
                                   pod that is not backed by a controller or that uses local storage.
                                 * PodDisruptionBudget - draining the node would violate a PodDisruptionBudget.
@@ -4139,7 +4154,7 @@ spec:
                               - NodeConsolidationDisabled
                               - NodePoolOperationInProgress
                               - MinCapacityReached
-                              - MaxNodeDisruptionReached
+                              - DisruptionBudgetReached
                               - BlockingPods
                               - PodDisruptionBudget
                               - ReplacementUnavailable

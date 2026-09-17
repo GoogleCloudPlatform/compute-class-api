@@ -34,11 +34,15 @@ type ReconciliationPolicyApplyConfiguration struct {
 	// * CreateBeforeDelete
 	// * DeleteBeforeCreate
 	Strategy *cloudgooglecomv1.MigrationStrategy `json:"strategy,omitempty"`
-	// MaxNodeDisruption defines the maximum number of nodes that can be deleted at the same time during drift migration.
-	MaxNodeDisruption *int32 `json:"maxNodeDisruption,omitempty"`
 	// AtomicGroupLabels defines a list of node label keys used to group drifted nodes.
 	// Nodes are only grouped together if they share the exact same values for ALL specified labels.
 	AtomicGroupLabels []string `json:"atomicGroupLabels,omitempty"`
+	// DisruptionBudgets defines limits on how many nodes may be concurrently migrated.
+	// This limits the blast radius when a large configuration change, such as changing the labels
+	// for an entire pool, causes many nodes to drift simultaneously.
+	//
+	// Currently at most one budget may be specified, and it applies to all types of migrations.
+	DisruptionBudgets []DisruptionBudgetApplyConfiguration `json:"disruptionBudgets,omitempty"`
 }
 
 // ReconciliationPolicyApplyConfiguration constructs a declarative configuration of the ReconciliationPolicy type for use with
@@ -55,20 +59,25 @@ func (b *ReconciliationPolicyApplyConfiguration) WithStrategy(value cloudgooglec
 	return b
 }
 
-// WithMaxNodeDisruption sets the MaxNodeDisruption field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the MaxNodeDisruption field is set to the value of the last call.
-func (b *ReconciliationPolicyApplyConfiguration) WithMaxNodeDisruption(value int32) *ReconciliationPolicyApplyConfiguration {
-	b.MaxNodeDisruption = &value
-	return b
-}
-
 // WithAtomicGroupLabels adds the given value to the AtomicGroupLabels field in the declarative configuration
 // and returns the receiver, so that objects can be build by chaining "With" function invocations.
 // If called multiple times, values provided by each call will be appended to the AtomicGroupLabels field.
 func (b *ReconciliationPolicyApplyConfiguration) WithAtomicGroupLabels(values ...string) *ReconciliationPolicyApplyConfiguration {
 	for i := range values {
 		b.AtomicGroupLabels = append(b.AtomicGroupLabels, values[i])
+	}
+	return b
+}
+
+// WithDisruptionBudgets adds the given value to the DisruptionBudgets field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the DisruptionBudgets field.
+func (b *ReconciliationPolicyApplyConfiguration) WithDisruptionBudgets(values ...*DisruptionBudgetApplyConfiguration) *ReconciliationPolicyApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithDisruptionBudgets")
+		}
+		b.DisruptionBudgets = append(b.DisruptionBudgets, *values[i])
 	}
 	return b
 }

@@ -325,17 +325,30 @@ type ReconciliationPolicy struct {
 	// +kubebuilder:default=CreateBeforeDelete
 	Strategy MigrationStrategy `json:"strategy,omitempty" protobuf:"bytes,1,opt,name=strategy"`
 
-	// MaxNodeDisruption defines the maximum number of nodes that can be deleted at the same time during drift migration.
-	//
-	// +optional
-	// +kubebuilder:validation:Minimum=1
-	MaxNodeDisruption *int32 `json:"maxNodeDisruption,omitempty" protobuf:"bytes,2,opt,name=maxNodeDisruption"`
-
 	// AtomicGroupLabels defines a list of node label keys used to group drifted nodes.
 	// Nodes are only grouped together if they share the exact same values for ALL specified labels.
 	//
 	// +optional
 	AtomicGroupLabels []string `json:"atomicGroupLabels,omitempty" protobuf:"bytes,3,rep,name=atomicGroupLabels"`
+
+	// DisruptionBudgets defines limits on how many nodes may be concurrently migrated.
+	// This limits the blast radius when a large configuration change, such as changing the labels
+	// for an entire pool, causes many nodes to drift simultaneously.
+	//
+	// Currently at most one budget may be specified, and it applies to all types of migrations.
+	//
+	// +optional
+	// +kubebuilder:validation:MaxItems=1
+	DisruptionBudgets []DisruptionBudget `json:"disruptionBudgets,omitempty" protobuf:"bytes,4,rep,name=disruptionBudgets"`
+}
+
+// DisruptionBudget limits the number of nodes that can be concurrently migrated.
+type DisruptionBudget struct {
+	// MaxNodes defines the maximum number of nodes that can be concurrently migrated.
+	//
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Minimum=1
+	MaxNodes int32 `json:"maxNodes" protobuf:"bytes,1,opt,name=maxNodes"`
 }
 
 // MigrationStrategy defines the strategy used for active migration.
@@ -1373,8 +1386,8 @@ type BlockedNodesInfo struct {
 	// * NodePoolOperationInProgress - another operation on the node pool is in progress.
 	// * MinCapacityReached - removing the node would violate a configured minimum, such as the
 	//   node pool minimum size or a resource limit.
-	// * MaxNodeDisruptionReached - migrating the node would exceed the disruption budget
-	//   configured in `spec.activeMigration`.
+	// * DisruptionBudgetReached - migrating the node would exceed a disruption budget
+	//   configured in `spec.activeMigration.reconciliationPolicy.disruptionBudgets`.
 	// * BlockingPods - a pod running on the node prevents it from being drained, for example a
 	//   pod that is not backed by a controller or that uses local storage.
 	// * PodDisruptionBudget - draining the node would violate a PodDisruptionBudget.
@@ -1387,7 +1400,7 @@ type BlockedNodesInfo struct {
 	// * MigrationBlocked - the node cannot be removed for a reason that is not reported more
 	//   specifically.
 	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Enum=NodeNotReady;Cordoned;NodeConsolidationDisabled;NodePoolOperationInProgress;MinCapacityReached;MaxNodeDisruptionReached;BlockingPods;PodDisruptionBudget;ReplacementUnavailable;RecentMigrationFailure;AtomicGroupBlocked;MigrationBlocked
+	// +kubebuilder:validation:Enum=NodeNotReady;Cordoned;NodeConsolidationDisabled;NodePoolOperationInProgress;MinCapacityReached;DisruptionBudgetReached;BlockingPods;PodDisruptionBudget;ReplacementUnavailable;RecentMigrationFailure;AtomicGroupBlocked;MigrationBlocked
 	Reason string `json:"reason" protobuf:"bytes,1,opt,name=reason"`
 
 	// Count represents the number of nodes blocked by this reason. It is always at least 1.
