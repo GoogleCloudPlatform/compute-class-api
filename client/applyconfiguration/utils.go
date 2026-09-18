@@ -56,6 +56,10 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ComputeClassStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ConfigDriftStatus"):
 		return &cloudgooglecomv1.ConfigDriftStatusApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ConsolidationBlockedNodesInfo"):
+		return &cloudgooglecomv1.ConsolidationBlockedNodesInfoApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ConsolidationStatus"):
+		return &cloudgooglecomv1.ConsolidationStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ContainerdConfig"):
 		return &cloudgooglecomv1.ContainerdConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):

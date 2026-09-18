@@ -40,6 +40,10 @@ type PriorityStatusApplyConfiguration struct {
 	// ConfigHash represents the combined hash of the global configuration and this specific priority.
 	// This hash is also applied to node pools, enabling comparison to determine whether a node pool was created with the current configuration.
 	ConfigHash *string `json:"configHash,omitempty"`
+	// Consolidation represents the aggregated consolidation (scale-down) status for this priority:
+	// how many nodes are currently being removed, how many were not evaluated in the last pass, and
+	// how many cannot be consolidated, grouped by the reason that blocks them.
+	Consolidation *ConsolidationStatusApplyConfiguration `json:"consolidation,omitempty"`
 }
 
 // PriorityStatusApplyConfiguration constructs a declarative configuration of the PriorityStatus type for use with
@@ -95,5 +99,13 @@ func (b *PriorityStatusApplyConfiguration) WithScalingEventsHistory(value *Scali
 // If called multiple times, the ConfigHash field is set to the value of the last call.
 func (b *PriorityStatusApplyConfiguration) WithConfigHash(value string) *PriorityStatusApplyConfiguration {
 	b.ConfigHash = &value
+	return b
+}
+
+// WithConsolidation sets the Consolidation field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the Consolidation field is set to the value of the last call.
+func (b *PriorityStatusApplyConfiguration) WithConsolidation(value *ConsolidationStatusApplyConfiguration) *PriorityStatusApplyConfiguration {
+	b.Consolidation = value
 	return b
 }

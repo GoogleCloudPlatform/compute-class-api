@@ -1432,6 +1432,12 @@ type PriorityStatus struct {
 	// This hash is also applied to node pools, enabling comparison to determine whether a node pool was created with the current configuration.
 	// +optional
 	ConfigHash string `json:"configHash,omitempty" protobuf:"bytes,5,opt,name=configHash"`
+
+	// Consolidation represents the aggregated consolidation (scale-down) status for this priority:
+	// how many nodes are currently being removed, how many were not evaluated in the last pass, and
+	// how many cannot be consolidated, grouped by the reason that blocks them.
+	// +optional
+	Consolidation *ConsolidationStatus `json:"consolidation,omitempty" protobuf:"bytes,6,opt,name=consolidation"`
 }
 
 // ResourceName represents the resource a given ResourceInfo applies to. Can be one of "cpu", "memory", "ephemeral-storage", "nvidia.com/gpu", or "google.com/tpu".
@@ -1439,7 +1445,7 @@ type PriorityStatus struct {
 type ResourceName string
 
 // ResourceUnit specifies the unit used to measure a resource.
-// +kubebuilder:validation:Enum=Cores;GiB;Cards
+// +kubebuilder:validation:Enum=Cores;GiB;Cards;Chips
 type ResourceUnit string
 
 // ResourceInfo describes current usage of resources.
@@ -1481,6 +1487,82 @@ type ScalingEventsHistory struct {
 
 	// MeasuredSince represents a timestamp at which data started being collected.
 	MeasuredSince *metav1.Time `json:"measuredSince,omitempty" protobuf:"bytes,5,opt,name=measuredSince"`
+}
+
+// ConsolidationStatus describes the progress of consolidating (scaling down) the nodes of a
+// priority. It reports why spare capacity in the priority is not being reclaimed, without
+// requiring the user to inspect individual nodes.
+//
+// Every node in the priority is accounted for in exactly one of `actuationInProgress`,
+// `notProcessed` or `blockedNodes`, so the three together sum to the number of nodes in the
+// priority. A node that is simply in use is reported under `blockedNodes` with reason
+// `AboveUtilizationThreshold`; a node the autoscaler reached no verdict on in the last pass is
+// reported under `notProcessed`.
+type ConsolidationStatus struct {
+	// ActuationInProgress represents the number of nodes that are currently being removed. This
+	// includes nodes that are cordoned, being drained, or being deleted.
+	// +optional
+	// +kubebuilder:validation:Minimum=0
+	ActuationInProgress *int `json:"actuationInProgress,omitempty" protobuf:"bytes,1,opt,name=actuationInProgress"`
+
+	// NotProcessed represents the number of nodes the autoscaler reached no verdict on in the
+	// last pass, for example because a limit on how many nodes may be considered at once was
+	// reached, or because the node was never evaluated as a removal candidate. These nodes are
+	// neither known to be removable nor known to be blocked; they are expected to be evaluated
+	// in a subsequent pass.
+	// +optional
+	// +kubebuilder:validation:Minimum=0
+	NotProcessed *int `json:"notProcessed,omitempty" protobuf:"bytes,2,opt,name=notProcessed"`
+
+	// BlockedNodes represents the number of nodes that could be removed but cannot, grouped by the
+	// reason that blocks them. Each node is reported under at most one reason. Reasons with no
+	// blocked nodes are not reported.
+	// +optional
+	// +listType=map
+	// +listMapKey=reason
+	// +kubebuilder:validation:MaxItems=32
+	BlockedNodes []ConsolidationBlockedNodesInfo `json:"blockedNodes,omitempty" protobuf:"bytes,3,rep,name=blockedNodes"`
+
+	// MeasuredAt represents the timestamp at which the reported information was measured.
+	// +optional
+	MeasuredAt *metav1.Time `json:"measuredAt,omitempty" protobuf:"bytes,4,opt,name=measuredAt"`
+}
+
+// ConsolidationBlockedNodesInfo describes how many nodes are blocked from being consolidated by a
+// single reason.
+type ConsolidationBlockedNodesInfo struct {
+	// Reason identifies why the reported nodes cannot be consolidated.
+	// Possible values:
+	// * NodeNotReady - the node is not ready, and consolidation of unready nodes is disabled or the
+	//   node has not been unready for long enough.
+	// * NodeConsolidationDisabled - the node opted out of removal, for example with the
+	//   "cluster-autoscaler.kubernetes.io/scale-down-disabled" annotation.
+	// * AboveUtilizationThreshold - the node is too well utilized to be considered unneeded.
+	// * NotUnneededLongEnough - the node is unneeded but has not been unneeded for long enough to
+	//   be removed yet.
+	// * MinCapacityReached - removing the node would take the priority below a configured minimum,
+	//   such as the minimum capacity required by the compute class or the node pool minimum size.
+	// * BlockingPods - a pod running on the node prevents it from being drained, for example a pod
+	//   that is not backed by a controller, one that uses local storage, or one that opted out of
+	//   eviction with the "cluster-autoscaler.kubernetes.io/safe-to-evict" annotation.
+	// * PodDisruptionBudget - draining the node would violate a PodDisruptionBudget.
+	// * NoPlaceToMovePods - the pods running on the node are evictable, but there is nowhere else
+	//   in the cluster to reschedule them.
+	// * UsedByFormedSlice - the node belongs to a multi-host accelerator slice that is currently
+	//   formed, so it cannot be removed independently of that slice.
+	// * AtomicGroupBlocked - the node belongs to an atomically scaled group in which another node
+	//   is blocked, so the whole group must be kept.
+	// * RecentConsolidationFailure - a recent attempt to remove the node failed and it is backed off.
+	// * ConsolidationBlocked - the node cannot be removed for a reason that is not reported more
+	//   specifically.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=NodeNotReady;NodeConsolidationDisabled;AboveUtilizationThreshold;NotUnneededLongEnough;MinCapacityReached;BlockingPods;PodDisruptionBudget;NoPlaceToMovePods;UsedByFormedSlice;AtomicGroupBlocked;RecentConsolidationFailure;ConsolidationBlocked
+	Reason string `json:"reason" protobuf:"bytes,1,opt,name=reason"`
+
+	// Count represents the number of nodes blocked by this reason. It is always at least 1.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Minimum=1
+	Count int `json:"count" protobuf:"bytes,2,opt,name=count"`
 }
 
 // GpuSharing represents the GPU sharing configuration for
