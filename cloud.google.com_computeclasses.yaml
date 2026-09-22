@@ -1438,6 +1438,14 @@ spec:
                                   format: int64
                                   type: integer
                               type: object
+                            reservedSystemCpus:
+                              description: |-
+                                ReservedSystemCpus specifies the CPU list reserved for the host system services.
+                                Format: a list of CPU IDs (e.g. "0-3", "0,1") that can be parsed as a cpuset.
+                                Empty string "" is not allowed (omit the field to leave it unset).
+                              maxLength: 1024
+                              pattern: ^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$
+                              type: string
                             shutdownGracePeriodCriticalPodsSeconds:
                               description: |-
                                 ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
@@ -1508,6 +1516,12 @@ spec:
                             rule: '!has(self.shutdownGracePeriodCriticalPodsSeconds)
                               || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds
                               <= self.shutdownGracePeriodSeconds)'
+                          - message: reservedSystemCpus and reservedResourcesConfig.cpuReservedMillicore
+                              cannot be set at the same time
+                            rule: '!has(self.reservedSystemCpus) || !has(self.reservedResourcesConfig)
+                              || !has(self.reservedResourcesConfig.cpuReservedMillicore)
+                              || self.reservedResourcesConfig.cpuReservedMillicore
+                              == 0'
                         linuxNodeConfig:
                           description: LinuxNodeConfig defines linux node config for
                             a node.
@@ -3015,6 +3029,14 @@ spec:
                                 format: int64
                                 type: integer
                             type: object
+                          reservedSystemCpus:
+                            description: |-
+                              ReservedSystemCpus specifies the CPU list reserved for the host system services.
+                              Format: a list of CPU IDs (e.g. "0-3", "0,1") that can be parsed as a cpuset.
+                              Empty string "" is not allowed (omit the field to leave it unset).
+                            maxLength: 1024
+                            pattern: ^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$
+                            type: string
                           shutdownGracePeriodCriticalPodsSeconds:
                             description: |-
                               ShutdownGracePeriodCriticalPodsSeconds is the maximum allowed grace period
@@ -3084,6 +3106,12 @@ spec:
                           rule: '!has(self.shutdownGracePeriodCriticalPodsSeconds)
                             || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds
                             <= self.shutdownGracePeriodSeconds)'
+                        - message: reservedSystemCpus and reservedResourcesConfig.cpuReservedMillicore
+                            cannot be set at the same time
+                          rule: '!has(self.reservedSystemCpus) || !has(self.reservedResourcesConfig)
+                            || !has(self.reservedResourcesConfig.cpuReservedMillicore)
+                            || self.reservedResourcesConfig.cpuReservedMillicore ==
+                            0'
                       linuxNodeConfig:
                         description: LinuxNodeConfig defines linux node config for
                           a node.

@@ -1238,6 +1238,11 @@ func (in *KubeletConfig) DeepCopyInto(out *KubeletConfig) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.ReservedSystemCpus != nil {
+		in, out := &in.ReservedSystemCpus, &out.ReservedSystemCpus
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 

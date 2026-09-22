@@ -109,6 +109,10 @@ type KubeletConfigApplyConfiguration struct {
 	ContainerLogMonitorInterval *string `json:"containerLogMonitorInterval,omitempty"`
 	// InsecureKubeletReadonlyPortEnabled controls whether the insecure kubelet read-only port is enabled.
 	InsecureKubeletReadonlyPortEnabled *bool `json:"insecureKubeletReadonlyPortEnabled,omitempty"`
+	// ReservedSystemCpus specifies the CPU list reserved for the host system services.
+	// Format: a list of CPU IDs (e.g. "0-3", "0,1") that can be parsed as a cpuset.
+	// Empty string "" is not allowed (omit the field to leave it unset).
+	ReservedSystemCpus *string `json:"reservedSystemCpus,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
@@ -324,5 +328,13 @@ func (b *KubeletConfigApplyConfiguration) WithContainerLogMonitorInterval(value 
 // If called multiple times, the InsecureKubeletReadonlyPortEnabled field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithInsecureKubeletReadonlyPortEnabled(value bool) *KubeletConfigApplyConfiguration {
 	b.InsecureKubeletReadonlyPortEnabled = &value
+	return b
+}
+
+// WithReservedSystemCpus sets the ReservedSystemCpus field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the ReservedSystemCpus field is set to the value of the last call.
+func (b *KubeletConfigApplyConfiguration) WithReservedSystemCpus(value string) *KubeletConfigApplyConfiguration {
+	b.ReservedSystemCpus = &value
 	return b
 }

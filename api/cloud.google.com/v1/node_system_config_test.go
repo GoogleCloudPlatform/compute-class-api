@@ -455,3 +455,89 @@ func TestKubeletInsecureKubeletReadonlyPortEnabledValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestKubeletReservedSystemCpusValidationRule(t *testing.T) {
+	rules := getNodeSystemConfigValidationRules(t, "KubeletConfig", "reservedSystemCpus")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name      string
+		input     KubeletConfig
+		wantValid bool
+	}{
+		{
+			name:      "neither reservedSystemCpus nor reservedResourcesConfig set",
+			input:     KubeletConfig{},
+			wantValid: true,
+		},
+		{
+			name: "only reservedSystemCpus set",
+			input: KubeletConfig{
+				ReservedSystemCpus: ptr("0-3"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "only cpuReservedMillicore set",
+			input: KubeletConfig{
+				ReservedResourcesConfig: &ReservedResourcesConfig{
+					CpuReservedMillicore: ptr(int64(100)),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "reservedSystemCpus and memoryReservedMib set without cpuReservedMillicore",
+			input: KubeletConfig{
+				ReservedSystemCpus: ptr("0,1"),
+				ReservedResourcesConfig: &ReservedResourcesConfig{
+					MemoryReservedMib: ptr(int64(1024)),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "reservedSystemCpus and cpuReservedMillicore set to 0",
+			input: KubeletConfig{
+				ReservedSystemCpus: ptr("0,1"),
+				ReservedResourcesConfig: &ReservedResourcesConfig{
+					CpuReservedMillicore: ptr(int64(0)),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid when both reservedSystemCpus and non-zero cpuReservedMillicore are set",
+			input: KubeletConfig{
+				ReservedSystemCpus: ptr("0,1"),
+				ReservedResourcesConfig: &ReservedResourcesConfig{
+					CpuReservedMillicore: ptr(int64(100)),
+				},
+			},
+			wantValid: false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

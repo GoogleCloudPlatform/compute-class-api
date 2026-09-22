@@ -293,6 +293,7 @@ type EvictionMinimumReclaim struct {
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>self.imageGcLowThresholdPercent : true", message="ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent"
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&!has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>80 : true", message="ImageGcHighThresholdPercent must be higher than 80 which is default value of imageGcLowThresholdPercent"
 // +kubebuilder:validation:XValidation:rule="!has(self.shutdownGracePeriodCriticalPodsSeconds) || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds <= self.shutdownGracePeriodSeconds)", message="ShutdownGracePeriodCriticalPodsSeconds must be less than or equal to ShutdownGracePeriodSeconds and requires ShutdownGracePeriodSeconds to be set"
+// +kubebuilder:validation:XValidation:rule="!has(self.reservedSystemCpus) || !has(self.reservedResourcesConfig) || !has(self.reservedResourcesConfig.cpuReservedMillicore) || self.reservedResourcesConfig.cpuReservedMillicore == 0", message="reservedSystemCpus and reservedResourcesConfig.cpuReservedMillicore cannot be set at the same time"
 type KubeletConfig struct {
 	// This setting enforces the Pod's CPU limit. Setting this value to false means that the CPU limits for Pods are ignored.
 	// Ignoring CPU limits might be desirable in certain scenarios where Pods are sensitive to CPU limits.
@@ -462,6 +463,14 @@ type KubeletConfig struct {
 	//
 	// +kubebuilder:validation:Optional
 	InsecureKubeletReadonlyPortEnabled *bool `json:"insecureKubeletReadonlyPortEnabled,omitempty" protobuf:"bytes,26,opt,name=insecureKubeletReadonlyPortEnabled"`
+	// ReservedSystemCpus specifies the CPU list reserved for the host system services.
+	// Format: a list of CPU IDs (e.g. "0-3", "0,1") that can be parsed as a cpuset.
+	// Empty string "" is not allowed (omit the field to leave it unset).
+	//
+	// +kubebuilder:validation:MaxLength=1024
+	// +kubebuilder:validation:Pattern="^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$"
+	// +kubebuilder:validation:Optional
+	ReservedSystemCpus *string `json:"reservedSystemCpus,omitempty" protobuf:"bytes,27,opt,name=reservedSystemCpus"`
 }
 
 // CrashLoopBackOff contains the configuration to modify node level parameters
