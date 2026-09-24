@@ -1808,6 +1808,13 @@ func (in *NodePoolConfig) DeepCopyInto(out *NodePoolConfig) {
 			(*out)[key] = val
 		}
 	}
+	if in.NodeStartupAnnotations != nil {
+		in, out := &in.NodeStartupAnnotations, &out.NodeStartupAnnotations
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	return
 }
 

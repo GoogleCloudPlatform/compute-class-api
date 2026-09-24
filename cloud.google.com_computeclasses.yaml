@@ -695,6 +695,13 @@ spec:
                       More info: https://cloud.google.com/sdk/gcloud/reference/container/node-pools/create#--node-labels
                     maxProperties: 100
                     type: object
+                  nodeStartupAnnotations:
+                    additionalProperties:
+                      type: string
+                    description: NodeStartupAnnotations defines annotations applied
+                      at node startup but not reconciled.
+                    maxProperties: 100
+                    type: object
                   nodeVersion:
                     description: |-
                       NodeVersion defines the GKE version to be used for the node pool.

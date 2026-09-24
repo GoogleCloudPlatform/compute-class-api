@@ -626,6 +626,12 @@ type NodePoolConfig struct {
 	// +kubebuilder:validation:MaxProperties=64
 	// +kubebuilder:validation:XValidation:rule="self.all(k, k.matches('^[a-z][a-z0-9_-]{0,62}$') && !k.startsWith('goog-') && !k.startsWith('gke-'))", message="Resource label keys must start with a lowercase letter, contain only lowercase letters, numbers, underscores, and hyphens, be up to 63 characters long, and cannot start with 'goog-' or 'gke-'"
 	ResourceLabels map[string]ResourceLabelValue `json:"resourceLabels,omitempty" protobuf:"bytes,27,rep,name=resourceLabels"`
+
+	// NodeStartupAnnotations defines annotations applied at node startup but not reconciled.
+	//
+	// +optional
+	// +kubebuilder:validation:MaxProperties=100
+	NodeStartupAnnotations map[string]string `json:"nodeStartupAnnotations,omitempty" protobuf:"bytes,28,rep,name=nodeStartupAnnotations"`
 }
 
 // ResourceLabelValue represents the value of a resource label.

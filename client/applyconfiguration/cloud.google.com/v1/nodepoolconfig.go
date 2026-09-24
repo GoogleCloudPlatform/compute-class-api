@@ -115,6 +115,8 @@ type NodePoolConfigApplyConfiguration struct {
 	OAuthScopes []string `json:"oauthScopes,omitempty"`
 	// ResourceLabels defines key-value pairs applied to underlying GCE instances for billing and resource tracking.
 	ResourceLabels map[string]cloudgooglecomv1.ResourceLabelValue `json:"resourceLabels,omitempty"`
+	// NodeStartupAnnotations defines annotations applied at node startup but not reconciled.
+	NodeStartupAnnotations map[string]string `json:"nodeStartupAnnotations,omitempty"`
 }
 
 // NodePoolConfigApplyConfiguration constructs a declarative configuration of the NodePoolConfig type for use with
@@ -367,6 +369,20 @@ func (b *NodePoolConfigApplyConfiguration) WithResourceLabels(entries map[string
 	}
 	for k, v := range entries {
 		b.ResourceLabels[k] = v
+	}
+	return b
+}
+
+// WithNodeStartupAnnotations puts the entries into the NodeStartupAnnotations field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, the entries provided by each call will be put on the NodeStartupAnnotations field,
+// overwriting an existing map entries in NodeStartupAnnotations field with the same key.
+func (b *NodePoolConfigApplyConfiguration) WithNodeStartupAnnotations(entries map[string]string) *NodePoolConfigApplyConfiguration {
+	if b.NodeStartupAnnotations == nil && len(entries) > 0 {
+		b.NodeStartupAnnotations = make(map[string]string, len(entries))
+	}
+	for k, v := range entries {
+		b.NodeStartupAnnotations[k] = v
 	}
 	return b
 }
