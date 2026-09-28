@@ -724,7 +724,8 @@ type NodePoolGroup struct {
 // +kubebuilder:validation:XValidation:rule="!has(self.bootDiskStoragePools) || !has(self.bootDiskType) || self.bootDiskType == 'hyperdisk-balanced'", message="bootDiskStoragePools requires bootDiskType to be 'hyperdisk-balanced' or omitted"
 // +kubebuilder:validation:XValidation:rule="has(self.bootDiskProvisionedIops) == has(self.bootDiskProvisionedThroughput)", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together"
 // +kubebuilder:validation:XValidation:rule="(!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput)) || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')", message="bootDiskProvisionedIops and bootDiskProvisionedThroughput can only be specified for a Hyperdisk bootDiskType"
-// +kubebuilder:validation:XValidation:rule="!has(self.localSsdEncryptionMode) || (has(self.localSSDCount) && self.localSSDCount > 0)", message="localSsdEncryptionMode can only be specified when localSSDCount is greater than 0"
+// +kubebuilder:validation:XValidation:rule="!has(self.localSsdEncryptionMode) || (has(self.localSSDCount) && self.localSSDCount > 0) || has(self.ephemeralStorageLocalSsdConfig) || has(self.localNvmeSsdBlockConfig)", message="localSsdEncryptionMode can only be specified when Local SSD storage is configured"
+// +kubebuilder:validation:XValidation:rule="(has(self.localSSDCount) ? 1 : 0) + (has(self.ephemeralStorageLocalSsdConfig) ? 1 : 0) + (has(self.localNvmeSsdBlockConfig) ? 1 : 0) <= 1", message="at most one of localSSDCount, ephemeralStorageLocalSsdConfig, or localNvmeSsdBlockConfig may be specified"
 type Storage struct {
 	// BootDiskSize defines the size of a disk attached to node, specified in GB.
 	//
@@ -794,6 +795,64 @@ type Storage struct {
 	// +kubebuilder:validation:Enum=STANDARD_ENCRYPTION;EPHEMERAL_KEY_ENCRYPTION
 	// +optional
 	LocalSSDEncryptionMode *string `json:"localSsdEncryptionMode,omitempty" protobuf:"bytes,9,opt,name=localSsdEncryptionMode"`
+
+	// EphemeralStorageLocalSsdConfig configures local SSDs backing ephemeral storage
+	// and optional raw block partitioning (Mixed Mode).
+	// +optional
+	EphemeralStorageLocalSsdConfig *EphemeralStorageLocalSsdConfig `json:"ephemeralStorageLocalSsdConfig,omitempty" protobuf:"bytes,10,opt,name=ephemeralStorageLocalSsdConfig"`
+
+	// LocalNvmeSsdBlockConfig configures local NVMe SSDs dedicated entirely to raw block
+	// storage access. Kubelet ephemeral storage resides on the boot disk.
+	// +optional
+	LocalNvmeSsdBlockConfig *LocalNvmeSsdBlockConfig `json:"localNvmeSsdBlockConfig,omitempty" protobuf:"bytes,11,opt,name=localNvmeSsdBlockConfig"`
+}
+
+// EphemeralStorageLocalSsdConfig configures Local SSDs for ephemeral storage and mixed mode partitioning.
+//
+// +kubebuilder:validation:MinProperties=1
+// +kubebuilder:validation:XValidation:rule="!has(self.enabled) || self.enabled == true", message="enabled cannot be false; to disable, omit the configuration block"
+type EphemeralStorageLocalSsdConfig struct {
+	// LocalSSDCount specifies the number of physical local SSDs attached to the node.
+	// Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4),
+	// where it defaults to the fixed number of SSDs for that machine type.
+	// Required for machine series with configurable local SSD counts (e.g., N2, C4).
+	// +kubebuilder:validation:Minimum=1
+	// +optional
+	LocalSSDCount *int `json:"localSSDCount,omitempty" protobuf:"bytes,1,opt,name=localSSDCount"`
+
+	// EphemeralCapacityGb specifies the capacity in GB carved out for the
+	// ephemeral storage filesystem. The remaining Local SSD capacity is exposed
+	// as unformatted raw block partitions (/dev/disk/by-id/google-local-ssd-partition*).
+	// If omitted when ephemeralStorageLocalSsdConfig is set, 100% of attached Local SSD capacity is used for ephemeral storage.
+	// +kubebuilder:validation:Minimum=1
+	// +optional
+	EphemeralCapacityGb *int64 `json:"ephemeralCapacityGb,omitempty" protobuf:"varint,2,opt,name=ephemeralCapacityGb"`
+
+	// Enabled enables ephemeral storage local SSD mode.
+	// Optional when localSSDCount or ephemeralCapacityGb is specified; required when both are omitted.
+	// Must be true if set.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,3,opt,name=enabled"`
+}
+
+// LocalNvmeSsdBlockConfig configures Local NVMe SSDs for raw block device access.
+//
+// +kubebuilder:validation:MinProperties=1
+// +kubebuilder:validation:XValidation:rule="!has(self.enabled) || self.enabled == true", message="enabled cannot be false; to disable, omit the configuration block"
+type LocalNvmeSsdBlockConfig struct {
+	// LocalSSDCount specifies the number of physical local SSDs attached to the node as raw block devices.
+	// Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4),
+	// where it defaults to the fixed number of SSDs for that machine type.
+	// Required for machine series with configurable local SSD counts (e.g., N2, C4).
+	// +kubebuilder:validation:Minimum=1
+	// +optional
+	LocalSSDCount *int `json:"localSSDCount,omitempty" protobuf:"bytes,1,opt,name=localSSDCount"`
+
+	// Enabled enables local NVMe SSD block mode.
+	// Optional when localSSDCount is specified; required when localSSDCount is omitted.
+	// Must be true if set.
+	// +optional
+	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,2,opt,name=enabled"`
 }
 
 // BootDiskStoragePool represents a storage pool configuration for a boot disk.

@@ -2502,6 +2502,63 @@ spec:
                           - pd-ssd
                           - hyperdisk-balanced
                           type: string
+                        ephemeralStorageLocalSsdConfig:
+                          description: |-
+                            EphemeralStorageLocalSsdConfig configures local SSDs backing ephemeral storage
+                            and optional raw block partitioning (Mixed Mode).
+                          minProperties: 1
+                          properties:
+                            enabled:
+                              description: |-
+                                Enabled enables ephemeral storage local SSD mode.
+                                Optional when localSSDCount or ephemeralCapacityGb is specified; required when both are omitted.
+                                Must be true if set.
+                              type: boolean
+                            ephemeralCapacityGb:
+                              description: |-
+                                EphemeralCapacityGb specifies the capacity in GB carved out for the
+                                ephemeral storage filesystem. The remaining Local SSD capacity is exposed
+                                as unformatted raw block partitions (/dev/disk/by-id/google-local-ssd-partition*).
+                                If omitted when ephemeralStorageLocalSsdConfig is set, 100% of attached Local SSD capacity is used for ephemeral storage.
+                              format: int64
+                              minimum: 1
+                              type: integer
+                            localSSDCount:
+                              description: |-
+                                LocalSSDCount specifies the number of physical local SSDs attached to the node.
+                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4).
+                                Required for machine series with configurable local SSD counts (e.g., N2, C4).
+                              minimum: 1
+                              type: integer
+                          type: object
+                          x-kubernetes-validations:
+                          - message: enabled cannot be false; to disable, omit the
+                              configuration block
+                            rule: '!has(self.enabled) || self.enabled == true'
+                        localNvmeSsdBlockConfig:
+                          description: |-
+                            LocalNvmeSsdBlockConfig configures local NVMe SSDs dedicated entirely to raw block
+                            storage access. Kubelet ephemeral storage resides on the boot disk.
+                          minProperties: 1
+                          properties:
+                            enabled:
+                              description: |-
+                                Enabled enables local NVMe SSD block mode.
+                                Optional when localSSDCount is specified; required when localSSDCount is omitted.
+                                Must be true if set.
+                              type: boolean
+                            localSSDCount:
+                              description: |-
+                                LocalSSDCount specifies the number of physical local SSDs attached to the node as raw block devices.
+                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4).
+                                Required for machine series with configurable local SSD counts (e.g., N2, C4).
+                              minimum: 1
+                              type: integer
+                          type: object
+                          x-kubernetes-validations:
+                          - message: enabled cannot be false; to disable, omit the
+                              configuration block
+                            rule: '!has(self.enabled) || self.enabled == true'
                         localSSDCount:
                           description: LocalSSDCount defines a number of local SSDs
                             attached to node.
@@ -2560,9 +2617,15 @@ spec:
                         rule: (!has(self.bootDiskProvisionedIops) && !has(self.bootDiskProvisionedThroughput))
                           || (has(self.bootDiskType) && self.bootDiskType == 'hyperdisk-balanced')
                       - message: localSsdEncryptionMode can only be specified when
-                          localSSDCount is greater than 0
+                          Local SSD storage is configured
                         rule: '!has(self.localSsdEncryptionMode) || (has(self.localSSDCount)
-                          && self.localSSDCount > 0)'
+                          && self.localSSDCount > 0) || has(self.ephemeralStorageLocalSsdConfig)
+                          || has(self.localNvmeSsdBlockConfig)'
+                      - message: at most one of localSSDCount, ephemeralStorageLocalSsdConfig,
+                          or localNvmeSsdBlockConfig may be specified
+                        rule: '(has(self.localSSDCount) ? 1 : 0) + (has(self.ephemeralStorageLocalSsdConfig)
+                          ? 1 : 0) + (has(self.localNvmeSsdBlockConfig) ? 1 : 0) <=
+                          1'
                     taints:
                       description: |-
                         Taints is used to add user defined Kubernetes taints to all nodes in the new node pool.

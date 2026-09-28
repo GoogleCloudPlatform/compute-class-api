@@ -74,6 +74,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.DisruptionBudgetApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Dra"):
 		return &cloudgooglecomv1.DraApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("EphemeralStorageLocalSsdConfig"):
+		return &cloudgooglecomv1.EphemeralStorageLocalSsdConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EtcHostsEntry"):
 		return &cloudgooglecomv1.EtcHostsEntryApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("EvictionMinimumReclaim"):
@@ -112,6 +114,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.KubeletConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("LinuxNodeConfig"):
 		return &cloudgooglecomv1.LinuxNodeConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("LocalNvmeSsdBlockConfig"):
+		return &cloudgooglecomv1.LocalNvmeSsdBlockConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Location"):
 		return &cloudgooglecomv1.LocationApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("LoggingVariantConfig"):

@@ -54,6 +54,12 @@ type StorageApplyConfiguration struct {
 	// * STANDARD_ENCRYPTION
 	// * EPHEMERAL_KEY_ENCRYPTION
 	LocalSSDEncryptionMode *string `json:"localSsdEncryptionMode,omitempty"`
+	// EphemeralStorageLocalSsdConfig configures local SSDs backing ephemeral storage
+	// and optional raw block partitioning (Mixed Mode).
+	EphemeralStorageLocalSsdConfig *EphemeralStorageLocalSsdConfigApplyConfiguration `json:"ephemeralStorageLocalSsdConfig,omitempty"`
+	// LocalNvmeSsdBlockConfig configures local NVMe SSDs dedicated entirely to raw block
+	// storage access. Kubelet ephemeral storage resides on the boot disk.
+	LocalNvmeSsdBlockConfig *LocalNvmeSsdBlockConfigApplyConfiguration `json:"localNvmeSsdBlockConfig,omitempty"`
 }
 
 // StorageApplyConfiguration constructs a declarative configuration of the Storage type for use with
@@ -141,5 +147,21 @@ func (b *StorageApplyConfiguration) WithBootDiskProvisionedThroughput(value int6
 // If called multiple times, the LocalSSDEncryptionMode field is set to the value of the last call.
 func (b *StorageApplyConfiguration) WithLocalSSDEncryptionMode(value string) *StorageApplyConfiguration {
 	b.LocalSSDEncryptionMode = &value
+	return b
+}
+
+// WithEphemeralStorageLocalSsdConfig sets the EphemeralStorageLocalSsdConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the EphemeralStorageLocalSsdConfig field is set to the value of the last call.
+func (b *StorageApplyConfiguration) WithEphemeralStorageLocalSsdConfig(value *EphemeralStorageLocalSsdConfigApplyConfiguration) *StorageApplyConfiguration {
+	b.EphemeralStorageLocalSsdConfig = value
+	return b
+}
+
+// WithLocalNvmeSsdBlockConfig sets the LocalNvmeSsdBlockConfig field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the LocalNvmeSsdBlockConfig field is set to the value of the last call.
+func (b *StorageApplyConfiguration) WithLocalNvmeSsdBlockConfig(value *LocalNvmeSsdBlockConfigApplyConfiguration) *StorageApplyConfiguration {
+	b.LocalNvmeSsdBlockConfig = value
 	return b
 }

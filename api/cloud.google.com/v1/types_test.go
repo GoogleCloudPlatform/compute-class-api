@@ -2395,7 +2395,7 @@ func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
 			wantValid: true,
 		},
 		{
-			name: "invalid: localSsdEncryptionMode without localSSDCount",
+			name: "invalid: localSsdEncryptionMode without Local SSD storage configured",
 			input: Storage{
 				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
 			},
@@ -2406,6 +2406,391 @@ func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
 			input: Storage{
 				LocalSSDCount:          ptr(0),
 				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid: ephemeralStorageLocalSsdConfig with localSsdEncryptionMode",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount: ptr(2),
+				},
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: ephemeralStorageLocalSsdConfig without localSSDCount with localSsdEncryptionMode",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					EphemeralCapacityGb: ptr[int64](500),
+				},
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: ephemeralStorageLocalSsdConfig with only enabled with localSsdEncryptionMode",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					Enabled: ptr(true),
+				},
+				LocalSSDEncryptionMode: ptr("STANDARD_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: localNvmeSsdBlockConfig with localSsdEncryptionMode",
+			input: Storage{
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+				LocalSSDEncryptionMode: ptr("EPHEMERAL_KEY_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: localNvmeSsdBlockConfig without localSSDCount with localSsdEncryptionMode",
+			input: Storage{
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					Enabled: ptr(true),
+				},
+				LocalSSDEncryptionMode:  ptr("EPHEMERAL_KEY_ENCRYPTION"),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: ephemeralStorageLocalSsdConfig without localSsdEncryptionMode",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: localNvmeSsdBlockConfig without localSsdEncryptionMode",
+			input: Storage{
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestStorageLocalSsdMutualExclusivityValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "Storage", "at most one of localSSDCount, ephemeralStorageLocalSsdConfig, or localNvmeSsdBlockConfig")
+	if len(rules) == 0 {
+		t.Fatal("Expected validation rule for Local SSD mutual exclusivity in Storage struct")
+	}
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     Storage
+		wantValid bool
+	}{
+		{
+			name:      "valid: empty storage",
+			input:     Storage{},
+			wantValid: true,
+		},
+		{
+			name: "valid: only localSSDCount specified",
+			input: Storage{
+				LocalSSDCount: ptr(2),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: only ephemeralStorageLocalSsdConfig specified",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount:       ptr(2),
+					EphemeralCapacityGb: ptr(int64(200)),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: only ephemeralStorageLocalSsdConfig specified with omitted localSSDCount",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					EphemeralCapacityGb: ptr[int64](500),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: only localNvmeSsdBlockConfig specified",
+			input: Storage{
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: only localNvmeSsdBlockConfig specified with omitted localSSDCount",
+			input: Storage{
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					Enabled: ptr(true),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: only ephemeralStorageLocalSsdConfig specified with only enabled",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					Enabled: ptr(true),
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: both localSSDCount and ephemeralStorageLocalSsdConfig specified",
+			input: Storage{
+				LocalSSDCount: ptr(2),
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: localSSDCount and ephemeralStorageLocalSsdConfig with omitted localSSDCount",
+			input: Storage{
+				LocalSSDCount: ptr(2),
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					EphemeralCapacityGb: ptr[int64](500),
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: both localSSDCount and localNvmeSsdBlockConfig specified",
+			input: Storage{
+				LocalSSDCount: ptr(2),
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: both ephemeralStorageLocalSsdConfig and localNvmeSsdBlockConfig specified",
+			input: Storage{
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount: ptr(2),
+				},
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: all three local SSD configurations specified",
+			input: Storage{
+				LocalSSDCount: ptr(2),
+				EphemeralStorageLocalSsdConfig: &EphemeralStorageLocalSsdConfig{
+					LocalSSDCount: ptr(2),
+				},
+				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
+					LocalSSDCount: ptr(2),
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestEphemeralStorageLocalSsdConfigEnabledValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "EphemeralStorageLocalSsdConfig", "!has(self.enabled)")
+	if len(rules) == 0 {
+		t.Fatal("Expected validation rule for enabled in EphemeralStorageLocalSsdConfig struct")
+	}
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     EphemeralStorageLocalSsdConfig
+		wantValid bool
+	}{
+		{
+			name:      "valid: enabled omitted",
+			input:     EphemeralStorageLocalSsdConfig{LocalSSDCount: ptr(2)},
+			wantValid: true,
+		},
+		{
+			name:      "valid: enabled omitted with only ephemeralCapacityGb",
+			input:     EphemeralStorageLocalSsdConfig{EphemeralCapacityGb: ptr[int64](500)},
+			wantValid: true,
+		},
+		{
+			name:      "valid: enabled true",
+			input:     EphemeralStorageLocalSsdConfig{Enabled: ptr(true)},
+			wantValid: true,
+		},
+		{
+			name: "valid: enabled true with only ephemeralCapacityGb",
+			input: EphemeralStorageLocalSsdConfig{
+				Enabled:             ptr(true),
+				EphemeralCapacityGb: ptr[int64](500),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: enabled true with localSSDCount and ephemeralCapacityGb",
+			input: EphemeralStorageLocalSsdConfig{
+				Enabled:             ptr(true),
+				LocalSSDCount:       ptr(4),
+				EphemeralCapacityGb: ptr[int64](500),
+			},
+			wantValid: true,
+		},
+		{
+			name:      "invalid: enabled false",
+			input:     EphemeralStorageLocalSsdConfig{Enabled: ptr(false)},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled false even with localSSDCount",
+			input: EphemeralStorageLocalSsdConfig{
+				Enabled:       ptr(false),
+				LocalSSDCount: ptr(2),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled false with ephemeralCapacityGb",
+			input: EphemeralStorageLocalSsdConfig{
+				Enabled:             ptr(false),
+				EphemeralCapacityGb: ptr[int64](500),
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestLocalNvmeSsdBlockConfigEnabledValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "LocalNvmeSsdBlockConfig", "!has(self.enabled)")
+	if len(rules) == 0 {
+		t.Fatal("Expected validation rule for enabled in LocalNvmeSsdBlockConfig struct")
+	}
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     LocalNvmeSsdBlockConfig
+		wantValid bool
+	}{
+		{
+			name:      "valid: enabled omitted",
+			input:     LocalNvmeSsdBlockConfig{LocalSSDCount: ptr(2)},
+			wantValid: true,
+		},
+		{
+			name:      "valid: enabled true",
+			input:     LocalNvmeSsdBlockConfig{Enabled: ptr(true)},
+			wantValid: true,
+		},
+		{
+			name: "valid: enabled true with localSSDCount",
+			input: LocalNvmeSsdBlockConfig{
+				Enabled:       ptr(true),
+				LocalSSDCount: ptr(4),
+			},
+			wantValid: true,
+		},
+		{
+			name:      "invalid: enabled false",
+			input:     LocalNvmeSsdBlockConfig{Enabled: ptr(false)},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled false even with localSSDCount",
+			input: LocalNvmeSsdBlockConfig{
+				Enabled:       ptr(false),
+				LocalSSDCount: ptr(2),
 			},
 			wantValid: false,
 		},
