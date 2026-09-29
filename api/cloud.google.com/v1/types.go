@@ -1553,8 +1553,23 @@ type PriorityStatus struct {
 type ResourceName string
 
 // ResourceUnit specifies the unit used to measure a resource.
-// +kubebuilder:validation:Enum=Cores;GiB;Cards;Chips
+// +kubebuilder:validation:Enum=Cores;GiB;Cards;Chips;Devices
 type ResourceUnit string
+
+const (
+	// ResourceUnitCores is the unit used to measure CPU.
+	ResourceUnitCores ResourceUnit = "Cores"
+	// ResourceUnitGiB is the unit used to measure memory.
+	ResourceUnitGiB ResourceUnit = "GiB"
+	// ResourceUnitCards is a unit that can be used to measure GPU.
+	//
+	// Deprecated: GPUs are reported using ResourceUnitDevices. Kept for backward compatibility.
+	ResourceUnitCards ResourceUnit = "Cards"
+	// ResourceUnitChips is the unit used to measure TPU.
+	ResourceUnitChips ResourceUnit = "Chips"
+	// ResourceUnitDevices is the unit used to measure GPU and other device resources.
+	ResourceUnitDevices ResourceUnit = "Devices"
+)
 
 // ResourceInfo describes current usage of resources.
 type ResourceInfo struct {

@@ -4631,6 +4631,7 @@ spec:
                             - GiB
                             - Cards
                             - Chips
+                            - Devices
                             type: string
                         type: object
                       type: array
@@ -4709,6 +4710,7 @@ spec:
                       - GiB
                       - Cards
                       - Chips
+                      - Devices
                       type: string
                   type: object
                 type: array
