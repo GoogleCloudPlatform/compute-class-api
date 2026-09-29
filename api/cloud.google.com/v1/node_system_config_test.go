@@ -541,3 +541,99 @@ func TestKubeletReservedSystemCpusValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestSwapConfigValidationRules(t *testing.T) {
+	rules := getNodeSystemConfigValidationRules(t, "SwapConfig", "enabled")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name  string
+		input SwapConfig
+		// explicitDisabled sets `enabled: false` in the evaluated object, which omitempty would otherwise drop.
+		explicitDisabled bool
+		wantValid        bool
+	}{
+		{
+			name:      "enabled=true + dedicated profile (valid)",
+			input:     SwapConfig{Enabled: true, DedicatedLocalSsdProfile: &SwapConfigDedicatedLocalSsdProfile{}},
+			wantValid: true,
+		},
+		{
+			name:      "enabled=true + encryptionConfig (valid)",
+			input:     SwapConfig{Enabled: true, EncryptionConfig: &SwapConfigEncryptionConfig{}},
+			wantValid: true,
+		},
+		{
+			name:      "enabled unset + dedicated profile (invalid)",
+			input:     SwapConfig{DedicatedLocalSsdProfile: &SwapConfigDedicatedLocalSsdProfile{}},
+			wantValid: false,
+		},
+		{
+			name:             "enabled=false + dedicated profile (invalid)",
+			input:            SwapConfig{DedicatedLocalSsdProfile: &SwapConfigDedicatedLocalSsdProfile{}},
+			explicitDisabled: true,
+			wantValid:        false,
+		},
+		{
+			name:             "enabled=false + bootDiskProfile (invalid)",
+			input:            SwapConfig{BootDiskProfile: &SwapConfigBootDiskProfile{}},
+			explicitDisabled: true,
+			wantValid:        false,
+		},
+		{
+			name:      "enabled unset + ephemeralLocalSsdProfile (invalid)",
+			input:     SwapConfig{EphemeralLocalSsdProfile: &SwapConfigEphemeralLocalSsdProfile{}},
+			wantValid: false,
+		},
+		{
+			name:             "enabled=false + ephemeralLocalSsdProfile (invalid)",
+			input:            SwapConfig{EphemeralLocalSsdProfile: &SwapConfigEphemeralLocalSsdProfile{}},
+			explicitDisabled: true,
+			wantValid:        false,
+		},
+		{
+			name:             "enabled=false + encryptionConfig (invalid)",
+			input:            SwapConfig{EncryptionConfig: &SwapConfigEncryptionConfig{}},
+			explicitDisabled: true,
+			wantValid:        false,
+		},
+		{
+			name:             "enabled=false with nothing else (valid)",
+			input:            SwapConfig{},
+			explicitDisabled: true,
+			wantValid:        true,
+		},
+		{
+			name:      "enabled unset with no swap fields (valid)",
+			input:     SwapConfig{},
+			wantValid: true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			self := mustConvertToMap(t, tc.input)
+			if tc.explicitDisabled {
+				self["enabled"] = false
+			}
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": self,
+				})
+
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() != true {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

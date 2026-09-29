@@ -24,7 +24,8 @@ package v1
 // EphemeralStorageLocalSsdConfig configures Local SSDs for ephemeral storage and mixed mode partitioning.
 type EphemeralStorageLocalSsdConfigApplyConfiguration struct {
 	// LocalSSDCount specifies the number of physical local SSDs attached to the node.
-	// Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4).
+	// Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4),
+	// where it defaults to the fixed number of SSDs for that machine type.
 	// Required for machine series with configurable local SSD counts (e.g., N2, C4).
 	LocalSSDCount *int `json:"localSSDCount,omitempty"`
 	// EphemeralCapacityGb specifies the capacity in GB carved out for the

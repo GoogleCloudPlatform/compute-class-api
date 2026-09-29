@@ -893,6 +893,7 @@ type HugepagesConfig struct {
 
 // SwapConfig specifies the swap memory configuration for a node pool.
 // +kubebuilder:validation:XValidation:rule="(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile) ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ? 1 : 0) <= 1",message="only one of bootDiskProfile, ephemeralLocalSsdProfile, or dedicatedLocalSsdProfile may be set"
+// +kubebuilder:validation:XValidation:rule="(has(self.enabled) && self.enabled) || !(has(self.bootDiskProfile) || has(self.ephemeralLocalSsdProfile) || has(self.dedicatedLocalSsdProfile) || has(self.encryptionConfig))",message="bootDiskProfile, ephemeralLocalSsdProfile, dedicatedLocalSsdProfile, and encryptionConfig can only be set when enabled is true"
 type SwapConfig struct {
 	// Enables or disables swap for the node pool. Default to false.
 	Enabled bool `json:"enabled,omitempty" protobuf:"bytes,1,opt,name=enabled"`

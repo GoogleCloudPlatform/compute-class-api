@@ -1832,6 +1832,12 @@ spec:
                                 rule: '(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile)
                                   ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ?
                                   1 : 0) <= 1'
+                              - message: bootDiskProfile, ephemeralLocalSsdProfile,
+                                  dedicatedLocalSsdProfile, and encryptionConfig can
+                                  only be set when enabled is true
+                                rule: (has(self.enabled) && self.enabled) || !(has(self.bootDiskProfile)
+                                  || has(self.ephemeralLocalSsdProfile) || has(self.dedicatedLocalSsdProfile)
+                                  || has(self.encryptionConfig))
                             sysctls:
                               description: SysctlsConfig defines sysctls config for
                                 a node.
@@ -2557,7 +2563,8 @@ spec:
                             localSSDCount:
                               description: |-
                                 LocalSSDCount specifies the number of physical local SSDs attached to the node.
-                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4).
+                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4),
+                                where it defaults to the fixed number of SSDs for that machine type.
                                 Required for machine series with configurable local SSD counts (e.g., N2, C4).
                               minimum: 1
                               type: integer
@@ -2581,7 +2588,8 @@ spec:
                             localSSDCount:
                               description: |-
                                 LocalSSDCount specifies the number of physical local SSDs attached to the node as raw block devices.
-                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4).
+                                Optional for machine series with a fixed number of local SSDs (e.g., A3, A4X, Z4),
+                                where it defaults to the fixed number of SSDs for that machine type.
                                 Required for machine series with configurable local SSD counts (e.g., N2, C4).
                               minimum: 1
                               type: integer
@@ -3482,6 +3490,12 @@ spec:
                               rule: '(has(self.bootDiskProfile) ? 1 : 0) + (has(self.ephemeralLocalSsdProfile)
                                 ? 1 : 0) + (has(self.dedicatedLocalSsdProfile) ? 1
                                 : 0) <= 1'
+                            - message: bootDiskProfile, ephemeralLocalSsdProfile,
+                                dedicatedLocalSsdProfile, and encryptionConfig can
+                                only be set when enabled is true
+                              rule: (has(self.enabled) && self.enabled) || !(has(self.bootDiskProfile)
+                                || has(self.ephemeralLocalSsdProfile) || has(self.dedicatedLocalSsdProfile)
+                                || has(self.encryptionConfig))
                           sysctls:
                             description: SysctlsConfig defines sysctls config for
                               a node.
