@@ -16,6 +16,7 @@
 package v1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -223,6 +224,26 @@ type ComputeClassSpec struct {
 	//
 	// +optional
 	NetworkConfig *NetworkConfig `json:"networkConfig,omitempty" protobuf:"bytes,13,opt,name=networkConfig"`
+
+	// Buffers defines the list of desired capacity buffers for this ComputeClass.
+	// +optional
+	// +listType=atomic
+	// +kubebuilder:validation:MaxItems=32
+	Buffers []ComputeClassBuffer `json:"buffers,omitempty" protobuf:"bytes,14,rep,name=buffers"`
+}
+
+// ComputeClassBuffer defines the desired capacity buffer configuration for a specific provisioning strategy.
+type ComputeClassBuffer struct {
+	// ProvisioningStrategy identifies the target buffer strategy (e.g., "buffer.x-k8s.io/active-capacity" or "buffer.gke.io/standby-capacity").
+	// When omitted or empty, the default provisioning strategy ("buffer.x-k8s.io/active-capacity") is used.
+	// +kubebuilder:default="buffer.x-k8s.io/active-capacity"
+	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:Required
+	ProvisioningStrategy string `json:"provisioningStrategy" protobuf:"bytes,1,name=provisioningStrategy"`
+
+	// Limits defines the total resource request limits for the buffer (e.g., CPU, memory).
+	// +kubebuilder:validation:Required
+	Limits corev1.ResourceList `json:"limits" protobuf:"bytes,2,name=limits"`
 }
 
 type NetworkingDra struct {
@@ -1357,6 +1378,8 @@ type Tags struct {
 type ComputeClassStatus struct {
 	// Conditions represent the observations of a ComputeClass's current state.
 	// +optional
+	// +listType=map
+	// +listMapKey=type
 	Conditions []metav1.Condition `json:"conditions,omitempty" protobuf:"bytes,1,rep,name=conditions"`
 
 	// PriorityStatuses represent the statuses of Priorities within a given ComputeClass.
@@ -1371,6 +1394,32 @@ type ComputeClassStatus struct {
 	// configuration desired by this ComputeClass, as requested in `spec.activeMigration`.
 	// +optional
 	Migration *MigrationStatus `json:"migration,omitempty" protobuf:"bytes,4,opt,name=migration"`
+
+	// ObservedBuffers tracks the child CapacityBuffer instances managed for this ComputeClass.
+	// +optional
+	// +listType=map
+	// +listMapKey=name
+	// +listMapKey=namespace
+	ObservedBuffers []ObservedBufferStatus `json:"observedBuffers,omitempty" protobuf:"bytes,5,rep,name=observedBuffers"`
+}
+
+// ObservedBufferStatus surfaces the observed state and identifiers for a managed capacity buffer.
+type ObservedBufferStatus struct {
+	// Name tracks the assigned name of the child CapacityBuffer resource.
+	// +kubebuilder:validation:Required
+	Name string `json:"name" protobuf:"bytes,1,opt,name=name"`
+
+	// Namespace tracks the namespace where the child CapacityBuffer is created.
+	// +kubebuilder:validation:Required
+	Namespace string `json:"namespace" protobuf:"bytes,2,opt,name=namespace"`
+
+	// Conditions surfaces the current lifecycle and provisioning status of this individual capacity buffer.
+	// For standard strategies (active, standby), this mirrors the child CapacityBuffer's ReadyForProvisioning
+	// condition (or reports Pending while initializing). For custom strategies, reports CustomProvisioningStrategy.
+	// +optional
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" protobuf:"bytes,3,rep,name=conditions"`
 }
 
 // MigrationStatus describes the progress of the active migrations configured in `spec.activeMigration`.

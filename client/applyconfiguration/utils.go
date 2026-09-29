@@ -50,6 +50,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.CertificateAuthorityDomainConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClass"):
 		return &cloudgooglecomv1.ComputeClassApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ComputeClassBuffer"):
+		return &cloudgooglecomv1.ComputeClassBufferApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassSpec"):
 		return &cloudgooglecomv1.ComputeClassSpecApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ComputeClassStatus"):
@@ -150,6 +152,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.NodeSystemConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("NodeVfioConfig"):
 		return &cloudgooglecomv1.NodeVfioConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("ObservedBufferStatus"):
+		return &cloudgooglecomv1.ObservedBufferStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Placement"):
 		return &cloudgooglecomv1.PlacementApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("Priority"):

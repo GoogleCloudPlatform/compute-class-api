@@ -66,6 +66,8 @@ type ComputeClassSpecApplyConfiguration struct {
 	AllocationStrategyDefaults *AllocationStrategyDefaultsApplyConfiguration `json:"allocationStrategyDefaults,omitempty"`
 	// NetworkConfig defines network-related settings for the ComputeClass.
 	NetworkConfig *NetworkConfigApplyConfiguration `json:"networkConfig,omitempty"`
+	// Buffers defines the list of desired capacity buffers for this ComputeClass.
+	Buffers []ComputeClassBufferApplyConfiguration `json:"buffers,omitempty"`
 }
 
 // ComputeClassSpecApplyConfiguration constructs a declarative configuration of the ComputeClassSpec type for use with
@@ -180,5 +182,18 @@ func (b *ComputeClassSpecApplyConfiguration) WithAllocationStrategyDefaults(valu
 // If called multiple times, the NetworkConfig field is set to the value of the last call.
 func (b *ComputeClassSpecApplyConfiguration) WithNetworkConfig(value *NetworkConfigApplyConfiguration) *ComputeClassSpecApplyConfiguration {
 	b.NetworkConfig = value
+	return b
+}
+
+// WithBuffers adds the given value to the Buffers field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the Buffers field.
+func (b *ComputeClassSpecApplyConfiguration) WithBuffers(values ...*ComputeClassBufferApplyConfiguration) *ComputeClassSpecApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithBuffers")
+		}
+		b.Buffers = append(b.Buffers, *values[i])
+	}
 	return b
 }

@@ -36,6 +36,8 @@ type ComputeClassStatusApplyConfiguration struct {
 	// Migration represents the current progress of migrating existing nodes to the
 	// configuration desired by this ComputeClass, as requested in `spec.activeMigration`.
 	Migration *MigrationStatusApplyConfiguration `json:"migration,omitempty"`
+	// ObservedBuffers tracks the child CapacityBuffer instances managed for this ComputeClass.
+	ObservedBuffers []ObservedBufferStatusApplyConfiguration `json:"observedBuffers,omitempty"`
 }
 
 // ComputeClassStatusApplyConfiguration constructs a declarative configuration of the ComputeClassStatus type for use with
@@ -88,5 +90,18 @@ func (b *ComputeClassStatusApplyConfiguration) WithResourceInfo(values ...*Resou
 // If called multiple times, the Migration field is set to the value of the last call.
 func (b *ComputeClassStatusApplyConfiguration) WithMigration(value *MigrationStatusApplyConfiguration) *ComputeClassStatusApplyConfiguration {
 	b.Migration = value
+	return b
+}
+
+// WithObservedBuffers adds the given value to the ObservedBuffers field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the ObservedBuffers field.
+func (b *ComputeClassStatusApplyConfiguration) WithObservedBuffers(values ...*ObservedBufferStatusApplyConfiguration) *ComputeClassStatusApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithObservedBuffers")
+		}
+		b.ObservedBuffers = append(b.ObservedBuffers, *values[i])
+	}
 	return b
 }
