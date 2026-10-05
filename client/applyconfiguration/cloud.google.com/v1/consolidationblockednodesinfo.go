@@ -49,8 +49,16 @@ type ConsolidationBlockedNodesInfoApplyConfiguration struct {
 	// * ConsolidationBlocked - the node cannot be removed for a reason that is not reported more
 	// specifically.
 	Reason *string `json:"reason,omitempty"`
-	// Count represents the number of nodes blocked by this reason. It is always at least 1.
-	Count *int `json:"count,omitempty"`
+	// NodeCount represents the number of nodes blocked by this reason. It is always at least 1.
+	NodeCount *int `json:"nodeCount,omitempty"`
+	// TopologyUnitCount represents how many topology units contain at least one node blocked by
+	// this reason. A topology unit is a set of nodes that the hardware topology forces to be
+	// provisioned and removed together, such as a TPU cube or a multi-host accelerator slice. A
+	// single blocked node keeps its whole unit, so 4 nodes blocked in one unit hold back 1 unit,
+	// while 4 nodes blocked in 4 different units hold back all 4. A unit may contain nodes
+	// blocked by different reasons, so the counts summed across reasons can exceed the number of
+	// units in the priority. Only reported for priorities whose nodes form such units.
+	TopologyUnitCount *int `json:"topologyUnitCount,omitempty"`
 }
 
 // ConsolidationBlockedNodesInfoApplyConfiguration constructs a declarative configuration of the ConsolidationBlockedNodesInfo type for use with
@@ -67,10 +75,18 @@ func (b *ConsolidationBlockedNodesInfoApplyConfiguration) WithReason(value strin
 	return b
 }
 
-// WithCount sets the Count field in the declarative configuration to the given value
+// WithNodeCount sets the NodeCount field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the Count field is set to the value of the last call.
-func (b *ConsolidationBlockedNodesInfoApplyConfiguration) WithCount(value int) *ConsolidationBlockedNodesInfoApplyConfiguration {
-	b.Count = &value
+// If called multiple times, the NodeCount field is set to the value of the last call.
+func (b *ConsolidationBlockedNodesInfoApplyConfiguration) WithNodeCount(value int) *ConsolidationBlockedNodesInfoApplyConfiguration {
+	b.NodeCount = &value
+	return b
+}
+
+// WithTopologyUnitCount sets the TopologyUnitCount field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the TopologyUnitCount field is set to the value of the last call.
+func (b *ConsolidationBlockedNodesInfoApplyConfiguration) WithTopologyUnitCount(value int) *ConsolidationBlockedNodesInfoApplyConfiguration {
+	b.TopologyUnitCount = &value
 	return b
 }

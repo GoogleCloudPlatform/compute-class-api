@@ -1682,10 +1682,21 @@ type ConsolidationBlockedNodesInfo struct {
 	// +kubebuilder:validation:Enum=NodeNotReady;NodeConsolidationDisabled;AboveUtilizationThreshold;NotUnneededLongEnough;MinCapacityReached;BlockingPods;PodDisruptionBudget;NoPlaceToMovePods;UsedByFormedSlice;AtomicGroupBlocked;RecentConsolidationFailure;ConsolidationBlocked
 	Reason string `json:"reason" protobuf:"bytes,1,opt,name=reason"`
 
-	// Count represents the number of nodes blocked by this reason. It is always at least 1.
+	// NodeCount represents the number of nodes blocked by this reason. It is always at least 1.
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:Minimum=1
-	Count int `json:"count" protobuf:"bytes,2,opt,name=count"`
+	NodeCount int `json:"nodeCount" protobuf:"bytes,2,opt,name=nodeCount"`
+
+	// TopologyUnitCount represents how many topology units contain at least one node blocked by
+	// this reason. A topology unit is a set of nodes that the hardware topology forces to be
+	// provisioned and removed together, such as a TPU cube or a multi-host accelerator slice. A
+	// single blocked node keeps its whole unit, so 4 nodes blocked in one unit hold back 1 unit,
+	// while 4 nodes blocked in 4 different units hold back all 4. A unit may contain nodes
+	// blocked by different reasons, so the counts summed across reasons can exceed the number of
+	// units in the priority. Only reported for priorities whose nodes form such units.
+	// +optional
+	// +kubebuilder:validation:Minimum=1
+	TopologyUnitCount *int `json:"topologyUnitCount,omitempty" protobuf:"bytes,3,opt,name=topologyUnitCount"`
 }
 
 // GpuSharing represents the GPU sharing configuration for

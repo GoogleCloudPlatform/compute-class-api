@@ -4524,8 +4524,8 @@ spec:
                               ConsolidationBlockedNodesInfo describes how many nodes are blocked from being consolidated by a
                               single reason.
                             properties:
-                              count:
-                                description: Count represents the number of nodes
+                              nodeCount:
+                                description: NodeCount represents the number of nodes
                                   blocked by this reason. It is always at least 1.
                                 minimum: 1
                                 type: integer
@@ -4569,8 +4569,19 @@ spec:
                                 - RecentConsolidationFailure
                                 - ConsolidationBlocked
                                 type: string
+                              topologyUnitCount:
+                                description: |-
+                                  TopologyUnitCount represents how many topology units contain at least one node blocked by
+                                  this reason. A topology unit is a set of nodes that the hardware topology forces to be
+                                  provisioned and removed together, such as a TPU cube or a multi-host accelerator slice. A
+                                  single blocked node keeps its whole unit, so 4 nodes blocked in one unit hold back 1 unit,
+                                  while 4 nodes blocked in 4 different units hold back all 4. A unit may contain nodes
+                                  blocked by different reasons, so the counts summed across reasons can exceed the number of
+                                  units in the priority. Only reported for priorities whose nodes form such units.
+                                minimum: 1
+                                type: integer
                             required:
-                            - count
+                            - nodeCount
                             - reason
                             type: object
                           maxItems: 32
