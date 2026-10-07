@@ -27,7 +27,15 @@ import (
 //
 // HostConfig defines mirror configurations for the primary registry server.
 type HostConfigApplyConfiguration struct {
-	// Host is the FQDN of the mirror host.
+	// Host configures the registry host/mirror.
+	// It supports fully qualified domain names (FQDNs) and IP addresses.
+	// Specifying scheme, port or path is supported. Scheme can only be http
+	// or https.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `https://my.customdomain.com/path`
+	// - `10.0.1.2:5000`
 	Host *string `json:"host,omitempty"`
 	// Capabilities are permissions for the mirror (e.g., HOST_CAPABILITY_PULL, HOST_CAPABILITY_RESOLVE, HOST_CAPABILITY_PUSH).
 	Capabilities []string `json:"capabilities,omitempty"`
@@ -40,6 +48,8 @@ type HostConfigApplyConfiguration struct {
 	// Client is the list of client-side TLS configurations (certificate and key).
 	Client []*cloudgooglecomv1.RegistryHostClientCertificateConfig `json:"client,omitempty"`
 	// DialTimeout is the maximum amount of time a dial will wait for a connect to complete.
+	// If not set, containerd sets default 30s.
+	// The value must be a number of seconds with an `s` suffix (e.g., `60s`).
 	DialTimeout *string `json:"dialTimeout,omitempty"`
 }
 

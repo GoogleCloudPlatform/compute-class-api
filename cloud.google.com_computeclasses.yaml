@@ -248,6 +248,55 @@ spec:
                 description: NetworkConfig defines network-related settings for the
                   ComputeClass.
                 properties:
+                  additionalNetworks:
+                    description: AdditionalNetworks is an ordered list of secondary
+                      network interfaces for Multi-Networking.
+                    items:
+                      description: AdditionalNetwork defines an additional network
+                        interface for a node pool.
+                      properties:
+                        name:
+                          description: Name is the name of the additional VPC network.
+                          maxLength: 63
+                          minLength: 1
+                          pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
+                          type: string
+                        subnetPriorities:
+                          description: SubnetPriorities is an ordered list of subnets
+                            within this VPC network.
+                          items:
+                            description: SubnetPriority defines a priority for a subnet
+                              to be used for a network interface.
+                            properties:
+                              name:
+                                description: Name defines the name of the subnetwork.
+                                maxLength: 63
+                                minLength: 1
+                                pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
+                                type: string
+                              podRange:
+                                description: PodRange defines the name of the secondary
+                                  subnet range reserved for pod IPs.
+                                maxLength: 63
+                                minLength: 1
+                                pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
+                                type: string
+                            required:
+                            - name
+                            type: object
+                          maxItems: 1
+                          minItems: 1
+                          type: array
+                      required:
+                      - name
+                      - subnetPriorities
+                      type: object
+                    maxItems: 8
+                    minItems: 1
+                    type: array
+                    x-kubernetes-list-map-keys:
+                    - name
+                    x-kubernetes-list-type: map
                   disablePodCidrOverprovisionConfig:
                     description: DisablePodCidrOverprovisionConfig allows disabling
                       the default overprovisioning allocation of Pod CIDR ranges.
@@ -257,7 +306,7 @@ spec:
                       fall back through.
                     items:
                       description: SubnetPriority defines a priority for a subnet
-                        to be used for the primary network interface.
+                        to be used for a network interface.
                       properties:
                         name:
                           description: Name defines the name of the subnetwork.
@@ -274,12 +323,15 @@ spec:
                           type: string
                       required:
                       - name
-                      - podRange
                       type: object
                     maxItems: 1
                     minItems: 1
                     type: array
                 type: object
+                x-kubernetes-validations:
+                - message: podRange is required for each entry in networkConfig.subnetPriorities
+                  rule: '!has(self.subnetPriorities) || self.subnetPriorities.all(sp,
+                    has(sp.podRange) && size(sp.podRange) > 0)'
               nodePoolAutoCreation:
                 default:
                   enabled: false
@@ -4268,6 +4320,12 @@ spec:
                 || (has(p.enableNestedVirtualization) ? p.enableNestedVirtualization
                 : (has(self.priorityDefaults) && has(self.priorityDefaults.enableNestedVirtualization)
                 && self.priorityDefaults.enableNestedVirtualization))) : true) : true'
+            - message: networkConfig.additionalNetworks cannot be used together with
+                acceleratorNetworkProfile in priorities
+              rule: '!(has(self.networkConfig) && has(self.networkConfig.additionalNetworks)
+                && size(self.networkConfig.additionalNetworks) > 0 && self.priorities.exists(p,
+                has(p.acceleratorNetworkProfile) && p.acceleratorNetworkProfile !=
+                ''''))'
           status:
             description: Status of the ComputeClass.
             properties:

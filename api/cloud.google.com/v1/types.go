@@ -67,7 +67,7 @@ type ComputeClassList struct {
 	Items []ComputeClass `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
-// SubnetPriority defines a priority for a subnet to be used for the primary network interface.
+// SubnetPriority defines a priority for a subnet to be used for a network interface.
 type SubnetPriority struct {
 	// Name defines the name of the subnetwork.
 	//
@@ -79,14 +79,34 @@ type SubnetPriority struct {
 
 	// PodRange defines the name of the secondary subnet range reserved for pod IPs.
 	//
+	// +optional
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=63
+	// +kubebuilder:validation:Pattern=`^[a-z]([-a-z0-9]*[a-z0-9])?$`
+	PodRange string `json:"podRange,omitempty" protobuf:"bytes,2,opt,name=podRange"`
+}
+
+// AdditionalNetwork defines an additional network interface for a node pool.
+type AdditionalNetwork struct {
+	// Name is the name of the additional VPC network.
+	//
 	// +required
 	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=63
 	// +kubebuilder:validation:Pattern=`^[a-z]([-a-z0-9]*[a-z0-9])?$`
-	PodRange string `json:"podRange" protobuf:"bytes,2,name=podRange"`
+	Name string `json:"name" protobuf:"bytes,1,name=name"`
+
+	// SubnetPriorities is an ordered list of subnets within this VPC network.
+	//
+	// +required
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=1
+	SubnetPriorities []SubnetPriority `json:"subnetPriorities" protobuf:"bytes,2,rep,name=subnetPriorities"`
 }
 
 // NetworkConfig defines network-related settings for the ComputeClass.
+//
+// +kubebuilder:validation:XValidation:rule="!has(self.subnetPriorities) || self.subnetPriorities.all(sp, has(sp.podRange) && size(sp.podRange) > 0)",message="podRange is required for each entry in networkConfig.subnetPriorities"
 type NetworkConfig struct {
 	// SubnetPriorities is an ordered list of subnets to fall back through.
 	// TODO(b/552484145): Increase the max items to 5 once the API is updated to support multiple subnets.
@@ -101,6 +121,15 @@ type NetworkConfig struct {
 	//
 	// +optional
 	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty" protobuf:"varint,2,opt,name=disablePodCidrOverprovisionConfig"`
+
+	// AdditionalNetworks is an ordered list of secondary network interfaces for Multi-Networking.
+	//
+	// +optional
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=8
+	// +listType=map
+	// +listMapKey=name
+	AdditionalNetworks []AdditionalNetwork `json:"additionalNetworks,omitempty" protobuf:"bytes,3,rep,name=additionalNetworks"`
 }
 
 // MinimumCapacity defines the minimum capacity required for a given
@@ -144,6 +173,7 @@ type MinimumCapacity struct {
 // +kubebuilder:validation:XValidation:rule="(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig) || !has(self.nodePoolConfig.oauthScopes) || size(self.nodePoolConfig.oauthScopes) == 0) : true", message="oauthScopes cannot be used when Autopilot is enabled"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) && size(self.priorities) > 0) : true", message="ComputeClass with sandbox type 'microvm' requires at least one priority to be specified"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) ? self.priorities.all(p, has(p.nodepools) || (has(p.enableNestedVirtualization) ? p.enableNestedVirtualization : (has(self.priorityDefaults) && has(self.priorityDefaults.enableNestedVirtualization) && self.priorityDefaults.enableNestedVirtualization))) : true) : true", message="ComputeClass with sandbox type 'microvm' requires enableNestedVirtualization to be true for all priorities that are not preexisting nodepools"
+// +kubebuilder:validation:XValidation:rule="!(has(self.networkConfig) && has(self.networkConfig.additionalNetworks) && size(self.networkConfig.additionalNetworks) > 0 && self.priorities.exists(p, has(p.acceleratorNetworkProfile) && p.acceleratorNetworkProfile != ''))",message="networkConfig.additionalNetworks cannot be used together with acceleratorNetworkProfile in priorities"
 type ComputeClassSpec struct {
 	// Priorities is a description of user preferences to be
 	// used by a given ComputeClass.

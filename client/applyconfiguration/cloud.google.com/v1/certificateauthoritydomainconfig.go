@@ -23,7 +23,12 @@ package v1
 //
 // CertificateAuthorityDomainConfig configures domain-specific certificate authorities for secure communication with private registries.
 type CertificateAuthorityDomainConfigApplyConfiguration struct {
-	// FQDNs is a list of fully qualified domain names associated with the certificate authority.
+	// FQDNs is a list of fully qualified domain names (FQDN) associated with the certificate authority.
+	// Specifying port is supported.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
 	FQDNs []string `json:"fqdns,omitempty"`
 	// GCPSecretManagerCertificateConfig specifies the location of CA certificates stored in Google Cloud Secret Manager.
 	GCPSecretManagerCertificateConfig *GCPSecretManagerCertificateConfigApplyConfiguration `json:"gcpSecretManagerCertificateConfig,omitempty"`

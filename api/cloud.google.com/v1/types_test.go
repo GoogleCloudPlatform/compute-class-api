@@ -2455,7 +2455,7 @@ func TestStorageLocalSsdEncryptionModeValidationRule(t *testing.T) {
 				LocalNvmeSsdBlockConfig: &LocalNvmeSsdBlockConfig{
 					Enabled: ptr(true),
 				},
-				LocalSSDEncryptionMode:  ptr("EPHEMERAL_KEY_ENCRYPTION"),
+				LocalSSDEncryptionMode: ptr("EPHEMERAL_KEY_ENCRYPTION"),
 			},
 			wantValid: true,
 		},
@@ -3659,6 +3659,224 @@ func TestRegistryHostConfigValidationRules(t *testing.T) {
 				},
 			},
 			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestNetworkConfigValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "NetworkConfig", "")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     NetworkConfig
+		wantValid bool
+	}{
+		{
+			name: "valid: subnetPriorities with podRange",
+			input: NetworkConfig{
+				SubnetPriorities: []SubnetPriority{
+					{
+						Name:     "subnet-a",
+						PodRange: "pod-range-a",
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: additionalNetworks with podRange",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name: "multinet-vpc-1",
+						SubnetPriorities: []SubnetPriority{
+							{
+								Name:     "multinet-subnet-1",
+								PodRange: "multinet-pods-1",
+							},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: additionalNetworks without podRange",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name: "rdma-vpc-2",
+						SubnetPriorities: []SubnetPriority{
+							{
+								Name: "rdma-subnet-2",
+							},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: both subnetPriorities and additionalNetworks",
+			input: NetworkConfig{
+				SubnetPriorities: []SubnetPriority{
+					{
+						Name:     "subnet-a",
+						PodRange: "pod-range-a",
+					},
+				},
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name: "rdma-vpc-2",
+						SubnetPriorities: []SubnetPriority{
+							{
+								Name: "rdma-subnet-2",
+							},
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: primary subnetPriorities missing podRange",
+			input: NetworkConfig{
+				SubnetPriorities: []SubnetPriority{
+					{
+						Name: "subnet-a",
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name:      "valid: empty networkConfig",
+			input:     NetworkConfig{},
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestAdditionalNetworksAcceleratorNetworkProfileValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "networkConfig.additionalNetworks")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "valid: additionalNetworks without acceleratorNetworkProfile",
+			input: ComputeClassSpec{
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "multinet-vpc-1",
+							SubnetPriorities: []SubnetPriority{
+								{Name: "multinet-subnet-1"},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: ptr("c3")},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: primary subnetPriorities with acceleratorNetworkProfile",
+			input: ComputeClassSpec{
+				NetworkConfig: &NetworkConfig{
+					SubnetPriorities: []SubnetPriority{
+						{
+							Name:     "subnet-a",
+							PodRange: "pod-range-a",
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						AcceleratorNetworkProfile: ptr("auto-profile"),
+						MachineFamily:             ptr("c3"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: additionalNetworks with acceleratorNetworkProfile",
+			input: ComputeClassSpec{
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "multinet-vpc-1",
+							SubnetPriorities: []SubnetPriority{
+								{Name: "multinet-subnet-1"},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						AcceleratorNetworkProfile: ptr("auto-profile"),
+						MachineFamily:             ptr("c3"),
+					},
+				},
+			},
+			wantValid: false,
 		},
 	}
 

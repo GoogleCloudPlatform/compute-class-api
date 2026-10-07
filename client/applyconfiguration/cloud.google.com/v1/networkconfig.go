@@ -28,6 +28,8 @@ type NetworkConfigApplyConfiguration struct {
 	SubnetPriorities []SubnetPriorityApplyConfiguration `json:"subnetPriorities,omitempty"`
 	// DisablePodCidrOverprovisionConfig allows disabling the default overprovisioning allocation of Pod CIDR ranges.
 	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty"`
+	// AdditionalNetworks is an ordered list of secondary network interfaces for Multi-Networking.
+	AdditionalNetworks []AdditionalNetworkApplyConfiguration `json:"additionalNetworks,omitempty"`
 }
 
 // NetworkConfigApplyConfiguration constructs a declarative configuration of the NetworkConfig type for use with
@@ -54,5 +56,18 @@ func (b *NetworkConfigApplyConfiguration) WithSubnetPriorities(values ...*Subnet
 // If called multiple times, the DisablePodCidrOverprovisionConfig field is set to the value of the last call.
 func (b *NetworkConfigApplyConfiguration) WithDisablePodCidrOverprovisionConfig(value bool) *NetworkConfigApplyConfiguration {
 	b.DisablePodCidrOverprovisionConfig = &value
+	return b
+}
+
+// WithAdditionalNetworks adds the given value to the AdditionalNetworks field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the AdditionalNetworks field.
+func (b *NetworkConfigApplyConfiguration) WithAdditionalNetworks(values ...*AdditionalNetworkApplyConfiguration) *NetworkConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithAdditionalNetworks")
+		}
+		b.AdditionalNetworks = append(b.AdditionalNetworks, *values[i])
+	}
 	return b
 }

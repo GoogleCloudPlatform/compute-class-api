@@ -215,6 +215,113 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 			},
 			wantValid: false,
 		},
+		// 7. Multi-NIC (additionalNetworks) & SubnetPriority Validations
+		{
+			name: "valid-additional-networks-with-pod-range",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "multinet-vpc-1",
+							SubnetPriorities: []SubnetPriority{
+								{
+									Name:     "multinet-subnet-1",
+									PodRange: "multinet-pods-1",
+								},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid-additional-networks-without-pod-range",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "rdma-vpc-2",
+							SubnetPriorities: []SubnetPriority{
+								{
+									Name: "rdma-subnet-2",
+								},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid-primary-subnet-priorities-missing-pod-range",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					SubnetPriorities: []SubnetPriority{
+						{
+							Name: "subnet-a",
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid-additional-networks-too-many-subnet-priorities",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "multinet-vpc-1",
+							SubnetPriorities: []SubnetPriority{
+								{Name: "subnet-a"},
+								{Name: "subnet-b"},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid-additional-networks-with-anp",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				NetworkConfig: &NetworkConfig{
+					AdditionalNetworks: []AdditionalNetwork{
+						{
+							Name: "multinet-vpc-1",
+							SubnetPriorities: []SubnetPriority{
+								{Name: "multinet-subnet-1"},
+							},
+						},
+					},
+				},
+				Priorities: []Priority{
+					{
+						AcceleratorNetworkProfile: k8sptr.To("auto-profile"),
+						MachineFamily:             k8sptr.To("c3"),
+					},
+				},
+			},
+			wantValid: false,
+		},
 	}
 
 	for _, tc := range tests {

@@ -27,7 +27,14 @@ import (
 //
 // RegistryHostConfig defines containerd registry host configuration.
 type RegistryHostConfigApplyConfiguration struct {
-	// Server is the FQDN of the primary registry server.
+	// Server defines the host name of the registry server, which will be used to
+	// create configuration file as /etc/containerd/hosts.d/<server>/hosts.toml.
+	// It supports fully qualified domain names (FQDN) and IP addresses:
+	// Specifying port is supported, while scheme and path are NOT supported.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
 	Server *string `json:"server,omitempty"`
 	// Hosts is the list of host configs for the registry server.
 	Hosts []*cloudgooglecomv1.HostConfig `json:"hosts,omitempty"`

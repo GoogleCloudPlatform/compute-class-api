@@ -21,7 +21,7 @@ package v1
 // SubnetPriorityApplyConfiguration represents a declarative configuration of the SubnetPriority type for use
 // with apply.
 //
-// SubnetPriority defines a priority for a subnet to be used for the primary network interface.
+// SubnetPriority defines a priority for a subnet to be used for a network interface.
 type SubnetPriorityApplyConfiguration struct {
 	// Name defines the name of the subnetwork.
 	Name *string `json:"name,omitempty"`
