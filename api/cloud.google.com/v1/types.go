@@ -1730,6 +1730,7 @@ type GpuSharing struct {
 }
 
 // ContainerdConfig defines customization for containerd.
+// +kubebuilder:validation:XValidation:rule="!has(self.registryHosts) || self.registryHosts.all(h1, !has(h1.server) || self.registryHosts.exists_one(h2, has(h2.server) && h2.server == h1.server))", message="registry servers have to be unique"
 type ContainerdConfig struct {
 	// PrivateRegistryAccessConfig defines access configuration for private container registries.
 	// +optional
@@ -1746,24 +1747,39 @@ type ContainerdConfig struct {
 }
 
 // PrivateRegistryAccessConfig defines access configuration for private container registries.
+// +kubebuilder:validation:XValidation:rule="!has(self.enabled) || !self.enabled ? (!has(self.certificateAuthorityDomainConfig) || size(self.certificateAuthorityDomainConfig) == 0) : true", message="certificateAuthorityDomainConfig cannot be specified when private registry access is disabled"
+// +kubebuilder:validation:XValidation:rule="has(self.enabled) && self.enabled ? (has(self.certificateAuthorityDomainConfig) && size(self.certificateAuthorityDomainConfig) >= 1 && size(self.certificateAuthorityDomainConfig) <= 5) : true", message="certificateAuthorityDomainConfig requires between 1 and 5 configs when private registry access is enabled"
+// +kubebuilder:validation:XValidation:rule="!has(self.certificateAuthorityDomainConfig) || self.certificateAuthorityDomainConfig.all(c1, !has(c1.fqdns) || c1.fqdns.all(f, self.certificateAuthorityDomainConfig.exists_one(c2, has(c2.fqdns) && f in c2.fqdns)))", message="fqdns have to be unique"
 type PrivateRegistryAccessConfig struct {
 	// Enabled is a boolean flag to enable or disable private registry access.
 	// +optional
 	Enabled *bool `json:"enabled,omitempty" protobuf:"varint,1,opt,name=enabled"`
 
 	// CertificateAuthorityDomainConfig configures domain-specific certificate authorities for secure communication with private registries.
+	// +kubebuilder:validation:MaxItems=5
 	// +optional
 	CertificateAuthorityDomainConfig []*CertificateAuthorityDomainConfig `json:"certificateAuthorityDomainConfig,omitempty" protobuf:"bytes,2,rep,name=certificateAuthorityDomainConfig"`
 }
 
 // CertificateAuthorityDomainConfig configures domain-specific certificate authorities for secure communication with private registries.
+// +kubebuilder:validation:XValidation:rule="!has(self.fqdns) || self.fqdns.all(f, self.fqdns.exists_one(x, x == f))", message="fqdns have to be unique"
+// +kubebuilder:validation:XValidation:rule="!has(self.fqdns) || self.fqdns.all(f, !f.endsWith('docker.io') && !f.endsWith('gcr.io') && !f.endsWith('pkg.dev'))", message="fqdn cannot be assigned a custom certificate authority"
 type CertificateAuthorityDomainConfig struct {
-	// FQDNs is a list of fully qualified domain names associated with the certificate authority.
-	// +optional
+	// FQDNs is a list of fully qualified domain names (FQDN) associated with the certificate authority.
+	// Specifying port is supported.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinItems=1
+	// +kubebuilder:validation:MaxItems=25
+	// +kubebuilder:validation:items:MinLength=1
+	// +kubebuilder:validation:items:MaxLength=256
 	FQDNs []string `json:"fqdns,omitempty" protobuf:"bytes,1,rep,name=fqdns"`
 
 	// GCPSecretManagerCertificateConfig specifies the location of CA certificates stored in Google Cloud Secret Manager.
-	// +optional
+	// +kubebuilder:validation:Required
 	GCPSecretManagerCertificateConfig *GCPSecretManagerCertificateConfig `json:"gcpSecretManagerCertificateConfig,omitempty" protobuf:"bytes,2,opt,name=gcpSecretManagerCertificateConfig"`
 }
 
@@ -1771,8 +1787,10 @@ type CertificateAuthorityDomainConfig struct {
 type GCPSecretManagerCertificateConfig struct {
 	// SecretURI specifies the location of the secret in Google Cloud Secret Manager.
 	//
-	// +optional
-	// +kubebuilder:validation:Pattern=`^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=256
+	// +kubebuilder:validation:Pattern=`^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$`
 	SecretURI *string `json:"secretURI,omitempty" protobuf:"bytes,1,opt,name=secretURI"`
 }
 
@@ -1784,22 +1802,40 @@ type WritableCgroups struct {
 }
 
 // RegistryHostConfig defines containerd registry host configuration.
+// +kubebuilder:validation:XValidation:rule="!has(self.hosts) || self.hosts.all(h1, !has(h1.host) || self.hosts.exists_one(h2, has(h2.host) && h1.host == h2.host))", message="registry hosts have to be unique"
+// +kubebuilder:validation:XValidation:rule="!has(self.hosts) || !self.hosts.exists(h, has(h.ca) && size(h.ca) > 0) || (!self.server.endsWith('docker.io') && !self.server.endsWith('gcr.io') && !self.server.endsWith('pkg.dev'))", message="the registry server cannot be assigned a custom certificate authority"
 type RegistryHostConfig struct {
-	// Server is the FQDN of the primary registry server.
+	// Server defines the host name of the registry server, which will be used to
+	// create configuration file as /etc/containerd/hosts.d/<server>/hosts.toml.
+	// It supports fully qualified domain names (FQDN) and IP addresses:
+	// Specifying port is supported, while scheme and path are NOT supported.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=256
 	Server string `json:"server,omitempty" protobuf:"bytes,1,opt,name=server"`
 
 	// Hosts is the list of host configs for the registry server.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:MaxItems=10
-	// +optional
 	Hosts []*HostConfig `json:"hosts,omitempty" protobuf:"bytes,2,rep,name=hosts"`
 }
 
 // HostConfig defines mirror configurations for the primary registry server.
 type HostConfig struct {
-	// Host is the FQDN of the mirror host.
+	// Host configures the registry host/mirror.
+	// It supports fully qualified domain names (FQDNs) and IP addresses.
+	// Specifying scheme, port or path is supported. Scheme can only be http
+	// or https.
+	// Wildcards are NOT supported.
+	// Examples:
+	// - `my.customdomain.com`
+	// - `https://my.customdomain.com/path`
+	// - `10.0.1.2:5000`
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=256
@@ -1831,8 +1867,10 @@ type HostConfig struct {
 	Client []*RegistryHostClientCertificateConfig `json:"client,omitempty" protobuf:"bytes,6,rep,name=client"`
 
 	// DialTimeout is the maximum amount of time a dial will wait for a connect to complete.
+	// If not set, containerd sets default 30s.
+	// The value must be a number of seconds with an `s` suffix (e.g., `60s`).
 	// +optional
-	// +kubebuilder:validation:Pattern=`^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$`
+	// +kubebuilder:validation:Pattern=`^[0-9]+s$`
 	DialTimeout *string `json:"dialTimeout,omitempty" protobuf:"bytes,7,opt,name=dialTimeout"`
 }
 
@@ -1842,12 +1880,16 @@ type HostHeader struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=256
+	// +kubebuilder:validation:Pattern="^[A-Za-z0-9!#$%&'*+.^_`|~-]+$"
 	Key string `json:"key,omitempty" protobuf:"bytes,1,opt,name=key"`
 
 	// Value is the list of header values.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinItems=1
 	// +kubebuilder:validation:MaxItems=5
+	// +kubebuilder:validation:items:MinLength=1
 	// +kubebuilder:validation:items:MaxLength=256
-	// +optional
+	// +kubebuilder:validation:items:Pattern="^[\\t -~]+$"
 	Value []string `json:"value,omitempty" protobuf:"bytes,2,rep,name=value"`
 }
 
@@ -1855,16 +1897,17 @@ type HostHeader struct {
 type RegistryHostCertificateConfig struct {
 	// GcpSecretManagerSecretUri specifies the secret in Google Cloud Secret Manager.
 	//
-	// +optional
-	// +kubebuilder:validation:Pattern=`^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$`
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
 	// +kubebuilder:validation:MaxLength=256
+	// +kubebuilder:validation:Pattern=`^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$`
 	GcpSecretManagerSecretUri *string `json:"gcpSecretManagerSecretUri,omitempty" protobuf:"bytes,1,opt,name=gcpSecretManagerSecretUri"`
 }
 
 // RegistryHostClientCertificateConfig configures pairs of certificates and keys for the registry client.
 type RegistryHostClientCertificateConfig struct {
 	// Cert specifies the client certificate.
-	// +optional
+	// +kubebuilder:validation:Required
 	Cert *RegistryHostCertificateConfig `json:"cert,omitempty" protobuf:"bytes,1,opt,name=cert"`
 
 	// Key specifies the client key.

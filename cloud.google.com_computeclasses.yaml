@@ -373,10 +373,19 @@ spec:
                                 communication with private registries.
                               properties:
                                 fqdns:
-                                  description: FQDNs is a list of fully qualified
-                                    domain names associated with the certificate authority.
+                                  description: |-
+                                    FQDNs is a list of fully qualified domain names (FQDN) associated with the certificate authority.
+                                    Specifying port is supported.
+                                    Wildcards are NOT supported.
+                                    Examples:
+                                    - `my.customdomain.com`
+                                    - `10.0.1.2:5000`
                                   items:
+                                    maxLength: 256
+                                    minLength: 1
                                     type: string
+                                  maxItems: 25
+                                  minItems: 1
                                   type: array
                                 gcpSecretManagerCertificateConfig:
                                   description: GCPSecretManagerCertificateConfig specifies
@@ -386,16 +395,47 @@ spec:
                                     secretURI:
                                       description: SecretURI specifies the location
                                         of the secret in Google Cloud Secret Manager.
-                                      pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                      maxLength: 256
+                                      minLength: 1
+                                      pattern: ^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$
                                       type: string
+                                  required:
+                                  - secretURI
                                   type: object
+                              required:
+                              - fqdns
+                              - gcpSecretManagerCertificateConfig
                               type: object
+                              x-kubernetes-validations:
+                              - message: fqdns have to be unique
+                                rule: '!has(self.fqdns) || self.fqdns.all(f, self.fqdns.exists_one(x,
+                                  x == f))'
+                              - message: fqdn cannot be assigned a custom certificate
+                                  authority
+                                rule: '!has(self.fqdns) || self.fqdns.all(f, !f.endsWith(''docker.io'')
+                                  && !f.endsWith(''gcr.io'') && !f.endsWith(''pkg.dev''))'
+                            maxItems: 5
                             type: array
                           enabled:
                             description: Enabled is a boolean flag to enable or disable
                               private registry access.
                             type: boolean
                         type: object
+                        x-kubernetes-validations:
+                        - message: certificateAuthorityDomainConfig cannot be specified
+                            when private registry access is disabled
+                          rule: '!has(self.enabled) || !self.enabled ? (!has(self.certificateAuthorityDomainConfig)
+                            || size(self.certificateAuthorityDomainConfig) == 0) :
+                            true'
+                        - message: certificateAuthorityDomainConfig requires between
+                            1 and 5 configs when private registry access is enabled
+                          rule: 'has(self.enabled) && self.enabled ? (has(self.certificateAuthorityDomainConfig)
+                            && size(self.certificateAuthorityDomainConfig) >= 1 &&
+                            size(self.certificateAuthorityDomainConfig) <= 5) : true'
+                        - message: fqdns have to be unique
+                          rule: '!has(self.certificateAuthorityDomainConfig) || self.certificateAuthorityDomainConfig.all(c1,
+                            !has(c1.fqdns) || c1.fqdns.all(f, self.certificateAuthorityDomainConfig.exists_one(c2,
+                            has(c2.fqdns) && f in c2.fqdns)))'
                       registryHosts:
                         description: RegistryHosts defines containerd registry host
                           configuration.
@@ -421,8 +461,11 @@ spec:
                                           description: GcpSecretManagerSecretUri specifies
                                             the secret in Google Cloud Secret Manager.
                                           maxLength: 256
-                                          pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                          minLength: 1
+                                          pattern: ^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$
                                           type: string
+                                      required:
+                                      - gcpSecretManagerSecretUri
                                       type: object
                                     maxItems: 5
                                     type: array
@@ -454,8 +497,11 @@ spec:
                                                 specifies the secret in Google Cloud
                                                 Secret Manager.
                                               maxLength: 256
-                                              pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                              minLength: 1
+                                              pattern: ^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$
                                               type: string
+                                          required:
+                                          - gcpSecretManagerSecretUri
                                           type: object
                                         key:
                                           description: Key specifies the client key.
@@ -465,16 +511,23 @@ spec:
                                                 specifies the secret in Google Cloud
                                                 Secret Manager.
                                               maxLength: 256
-                                              pattern: ^projects/[^/]+(/locations/[^/]+)?/secrets/[^/]+/versions/[^/]+$
+                                              minLength: 1
+                                              pattern: ^projects/[a-zA-Z0-9_:.-]+(/locations/[a-zA-Z0-9-]+)?/secrets/[a-zA-Z0-9_-]{1,63}/versions/[a-zA-Z0-9]+$
                                               type: string
+                                          required:
+                                          - gcpSecretManagerSecretUri
                                           type: object
+                                      required:
+                                      - cert
                                       type: object
                                     maxItems: 5
                                     type: array
                                   dialTimeout:
-                                    description: DialTimeout is the maximum amount
-                                      of time a dial will wait for a connect to complete.
-                                    pattern: ^([0-9]+([.][0-9]+)?(ns|us|µs|ms|s|m|h))+$
+                                    description: |-
+                                      DialTimeout is the maximum amount of time a dial will wait for a connect to complete.
+                                      If not set, containerd sets default 30s.
+                                      The value must be a number of seconds with an `s` suffix (e.g., `60s`).
+                                    pattern: ^[0-9]+s$
                                     type: string
                                   header:
                                     description: Header is a list of custom HTTP headers
@@ -487,22 +540,36 @@ spec:
                                           description: Key is the header key.
                                           maxLength: 256
                                           minLength: 1
+                                          pattern: ^[A-Za-z0-9!#$%&'*+.^_`|~-]+$
                                           type: string
                                         value:
                                           description: Value is the list of header
                                             values.
                                           items:
                                             maxLength: 256
+                                            minLength: 1
+                                            pattern: ^[\t -~]+$
                                             type: string
                                           maxItems: 5
+                                          minItems: 1
                                           type: array
                                       required:
                                       - key
+                                      - value
                                       type: object
                                     maxItems: 5
                                     type: array
                                   host:
-                                    description: Host is the FQDN of the mirror host.
+                                    description: |-
+                                      Host configures the registry host/mirror.
+                                      It supports fully qualified domain names (FQDNs) and IP addresses.
+                                      Specifying scheme, port or path is supported. Scheme can only be http
+                                      or https.
+                                      Wildcards are NOT supported.
+                                      Examples:
+                                      - `my.customdomain.com`
+                                      - `https://my.customdomain.com/path`
+                                      - `10.0.1.2:5000`
                                     maxLength: 256
                                     minLength: 1
                                     type: string
@@ -514,16 +581,35 @@ spec:
                                 - host
                                 type: object
                               maxItems: 10
+                              minItems: 1
                               type: array
                             server:
-                              description: Server is the FQDN of the primary registry
-                                server.
+                              description: |-
+                                Server defines the host name of the registry server, which will be used to
+                                create configuration file as /etc/containerd/hosts.d/<server>/hosts.toml.
+                                It supports fully qualified domain names (FQDN) and IP addresses:
+                                Specifying port is supported, while scheme and path are NOT supported.
+                                Wildcards are NOT supported.
+                                Examples:
+                                - `my.customdomain.com`
+                                - `10.0.1.2:5000`
                               maxLength: 256
                               minLength: 1
                               type: string
                           required:
+                          - hosts
                           - server
                           type: object
+                          x-kubernetes-validations:
+                          - message: registry hosts have to be unique
+                            rule: '!has(self.hosts) || self.hosts.all(h1, !has(h1.host)
+                              || self.hosts.exists_one(h2, has(h2.host) && h1.host
+                              == h2.host))'
+                          - message: the registry server cannot be assigned a custom
+                              certificate authority
+                            rule: '!has(self.hosts) || !self.hosts.exists(h, has(h.ca)
+                              && size(h.ca) > 0) || (!self.server.endsWith(''docker.io'')
+                              && !self.server.endsWith(''gcr.io'') && !self.server.endsWith(''pkg.dev''))'
                         maxItems: 25
                         type: array
                       writableCgroups:
@@ -536,6 +622,11 @@ spec:
                             type: boolean
                         type: object
                     type: object
+                    x-kubernetes-validations:
+                    - message: registry servers have to be unique
+                      rule: '!has(self.registryHosts) || self.registryHosts.all(h1,
+                        !has(h1.server) || self.registryHosts.exists_one(h2, has(h2.server)
+                        && h2.server == h1.server))'
                   customImageConfig:
                     description: Custom node image configuration used by nodes in
                       the node pool.

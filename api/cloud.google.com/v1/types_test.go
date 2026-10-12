@@ -3251,3 +3251,436 @@ func TestResourceLabelsValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestContainerdConfigValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "ContainerdConfig", "registryHosts")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ContainerdConfig
+		wantValid bool
+	}{
+		{
+			name: "valid: unique registry servers",
+			input: ContainerdConfig{
+				RegistryHosts: []*RegistryHostConfig{
+					{
+						Server: "server1.example.com",
+						Hosts:  []*HostConfig{{Host: "mirror1.example.com"}},
+					},
+					{
+						Server: "server2.example.com",
+						Hosts:  []*HostConfig{{Host: "mirror2.example.com"}},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: duplicate registry servers",
+			input: ContainerdConfig{
+				RegistryHosts: []*RegistryHostConfig{
+					{
+						Server: "server.example.com",
+						Hosts:  []*HostConfig{{Host: "mirror1.example.com"}},
+					},
+					{
+						Server: "server.example.com",
+						Hosts:  []*HostConfig{{Host: "mirror2.example.com"}},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name:      "valid: empty containerd config",
+			input:     ContainerdConfig{},
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestPrivateRegistryAccessConfigValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "PrivateRegistryAccessConfig", "")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	validGsmCert := &GCPSecretManagerCertificateConfig{
+		SecretURI: ptr("projects/12345/secrets/my-ca-cert/versions/latest"),
+	}
+
+	tests := []struct {
+		name      string
+		input     PrivateRegistryAccessConfig
+		wantValid bool
+	}{
+		{
+			name: "valid: enabled with 1 CA config",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(true),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{
+					{
+						FQDNs:                             []string{"my.custom.domain"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: enabled with multiple CA configs with distinct FQDNs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(true),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{
+					{
+						FQDNs:                             []string{"domain1.example.com"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+					{
+						FQDNs:                             []string{"domain2.example.com"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: disabled without CA configs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(false),
+			},
+			wantValid: true,
+		},
+		{
+			name:      "valid: empty config (disabled by default)",
+			input:     PrivateRegistryAccessConfig{},
+			wantValid: true,
+		},
+		{
+			name: "invalid: disabled with CA configs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(false),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{
+					{
+						FQDNs:                             []string{"my.custom.domain"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled without CA configs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(true),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled with empty CA configs list",
+			input: PrivateRegistryAccessConfig{
+				Enabled:                          ptr(true),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: enabled with more than 5 CA configs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(true),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{
+					{FQDNs: []string{"d1.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+					{FQDNs: []string{"d2.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+					{FQDNs: []string{"d3.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+					{FQDNs: []string{"d4.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+					{FQDNs: []string{"d5.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+					{FQDNs: []string{"d6.com"}, GCPSecretManagerCertificateConfig: validGsmCert},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: repeated FQDN across CA configs",
+			input: PrivateRegistryAccessConfig{
+				Enabled: ptr(true),
+				CertificateAuthorityDomainConfig: []*CertificateAuthorityDomainConfig{
+					{
+						FQDNs:                             []string{"shared.domain.com"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+					{
+						FQDNs:                             []string{"shared.domain.com"},
+						GCPSecretManagerCertificateConfig: validGsmCert,
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestCertificateAuthorityDomainConfigValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "CertificateAuthorityDomainConfig", "")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	validGsmCert := &GCPSecretManagerCertificateConfig{
+		SecretURI: ptr("projects/12345/secrets/my-ca-cert/versions/latest"),
+	}
+
+	tests := []struct {
+		name      string
+		input     CertificateAuthorityDomainConfig
+		wantValid bool
+	}{
+		{
+			name: "valid: unique non-denylisted FQDNs",
+			input: CertificateAuthorityDomainConfig{
+				FQDNs: []string{
+					"my.Custom-Domain.COM",
+					"my.domain-ending-with-dot.com.",
+					"my.domain-with-port.com:666",
+					"10.5.7.8",
+					"10.5.8.9:5000",
+					"my.custom.domain",
+				},
+				GCPSecretManagerCertificateConfig: validGsmCert,
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: duplicate FQDN within one CA config",
+			input: CertificateAuthorityDomainConfig{
+				FQDNs: []string{
+					"my.custom.domain.com",
+					"my.custom.domain.com",
+				},
+				GCPSecretManagerCertificateConfig: validGsmCert,
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted suffix docker.io",
+			input: CertificateAuthorityDomainConfig{
+				FQDNs:                             []string{"registry.docker.io"},
+				GCPSecretManagerCertificateConfig: validGsmCert,
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted suffix gcr.io",
+			input: CertificateAuthorityDomainConfig{
+				FQDNs:                             []string{"asia.gcr.io"},
+				GCPSecretManagerCertificateConfig: validGsmCert,
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted suffix pkg.dev",
+			input: CertificateAuthorityDomainConfig{
+				FQDNs:                             []string{"us-central1-docker.pkg.dev"},
+				GCPSecretManagerCertificateConfig: validGsmCert,
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestRegistryHostConfigValidationRules(t *testing.T) {
+	rules := getTypeValidationRules(t, "RegistryHostConfig", "")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	validGsmCert := &RegistryHostCertificateConfig{
+		GcpSecretManagerSecretUri: ptr("projects/12345/secrets/my-ca-cert/versions/latest"),
+	}
+
+	tests := []struct {
+		name      string
+		input     RegistryHostConfig
+		wantValid bool
+	}{
+		{
+			name: "valid: server and unique hosts",
+			input: RegistryHostConfig{
+				Server: "registry.example.com",
+				Hosts: []*HostConfig{
+					{Host: "mirror1.example.com"},
+					{Host: "mirror2.example.com"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: non-denylisted server with custom CA",
+			input: RegistryHostConfig{
+				Server: "10.0.0.1:5000",
+				Hosts: []*HostConfig{
+					{
+						Host: "mirror1.example.com",
+						CA:   []*RegistryHostCertificateConfig{validGsmCert},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: duplicate mirror hosts",
+			input: RegistryHostConfig{
+				Server: "registry.example.com",
+				Hosts: []*HostConfig{
+					{Host: "mirror.example.com"},
+					{Host: "mirror.example.com"},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted server docker.io with custom CA",
+			input: RegistryHostConfig{
+				Server: "docker.io",
+				Hosts: []*HostConfig{
+					{
+						Host: "mirror.example.com",
+						CA:   []*RegistryHostCertificateConfig{validGsmCert},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted server gcr.io with custom CA",
+			input: RegistryHostConfig{
+				Server: "asia.gcr.io",
+				Hosts: []*HostConfig{
+					{
+						Host: "mirror.example.com",
+						CA:   []*RegistryHostCertificateConfig{validGsmCert},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: denylisted server pkg.dev with custom CA",
+			input: RegistryHostConfig{
+				Server: "us-central1-docker.pkg.dev",
+				Hosts: []*HostConfig{
+					{
+						Host: "mirror.example.com",
+						CA:   []*RegistryHostCertificateConfig{validGsmCert},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "valid: denylisted server without custom CA",
+			input: RegistryHostConfig{
+				Server: "docker.io",
+				Hosts: []*HostConfig{
+					{Host: "mirror.example.com"},
+				},
+			},
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
