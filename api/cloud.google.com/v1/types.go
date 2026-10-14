@@ -1230,6 +1230,7 @@ type Priority struct {
 
 	// MinEstimatedUptimeMinutes specifies the minimum estimated uptime in minutes for Spot instances (1, 10, or 60).
 	// Only supported when spot is set to true.
+	// Note: This is an estimation and not a guaranteed minimum uptime.
 	//
 	// +kubebuilder:validation:Enum=1;10;60
 	// +optional
