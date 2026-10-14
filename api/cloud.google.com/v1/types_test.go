@@ -3902,3 +3902,120 @@ func TestAdditionalNetworksAcceleratorNetworkProfileValidationRule(t *testing.T)
 		})
 	}
 }
+
+func TestContainerdConfigAutopilotValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "containerdConfig cannot be used when Autopilot is enabled")
+	if len(rules) == 0 {
+		t.Fatalf("Could not find containerdConfig Autopilot validation rule in ComputeClassSpec")
+	}
+
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "valid: containerdConfig with autopilot disabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: false,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					ContainerdConfig: &ContainerdConfig{
+						WritableCgroups: &WritableCgroups{
+							Enabled: ptr(true),
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: containerdConfig without autopilot specified",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ContainerdConfig: &ContainerdConfig{
+						WritableCgroups: &WritableCgroups{
+							Enabled: ptr(true),
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled without containerdConfig",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: autopilot enabled with nil nodePoolConfig",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: containerdConfig with autopilot enabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					ContainerdConfig: &ContainerdConfig{
+						WritableCgroups: &WritableCgroups{
+							Enabled: ptr(true),
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: empty containerdConfig with autopilot enabled",
+			input: ComputeClassSpec{
+				Autopilot: &Autopilot{
+					Enabled: true,
+				},
+				NodePoolConfig: &NodePoolConfig{
+					ContainerdConfig: &ContainerdConfig{},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

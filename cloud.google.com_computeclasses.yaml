@@ -4306,6 +4306,9 @@ spec:
               rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
                 || !has(self.nodePoolConfig.oauthScopes) || size(self.nodePoolConfig.oauthScopes)
                 == 0) : true'
+            - message: containerdConfig cannot be used when Autopilot is enabled
+              rule: '(has(self.autopilot) && self.autopilot.enabled) ? (!has(self.nodePoolConfig)
+                || !has(self.nodePoolConfig.containerdConfig)) : true'
             - message: ComputeClass with sandbox type 'microvm' requires at least
                 one priority to be specified
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox)
