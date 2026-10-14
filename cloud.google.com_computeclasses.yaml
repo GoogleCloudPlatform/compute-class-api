@@ -1260,6 +1260,15 @@ spec:
                       - Google Axion
                       - Nvidia Grace
                       type: string
+                    minEstimatedUptimeMinutes:
+                      description: |-
+                        MinEstimatedUptimeMinutes specifies the minimum estimated uptime in minutes for Spot instances (1, 10, or 60).
+                        Only supported when spot is set to true.
+                      enum:
+                      - 1
+                      - 10
+                      - 60
+                      type: integer
                     minMemoryGb:
                       description: MinMemoryGb describes a minimum GBs of memory of
                         a node.
@@ -2891,6 +2900,9 @@ spec:
                   - message: shutdownGracePeriodSeconds is only supported for Spot
                     rule: (has(self.spot) && self.spot) || !has(self.nodeSystemConfig)
                       || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)
+                  - message: minEstimatedUptimeMinutes is only supported for Spot
+                    rule: '!has(self.minEstimatedUptimeMinutes) || (has(self.spot)
+                      && self.spot)'
                   - message: acceleratorNetworkProfile must be specified when gpuDirect
                       is 'rdma'
                     rule: '!(has(self.gpuDirect) && self.gpuDirect == ''rdma'') ||

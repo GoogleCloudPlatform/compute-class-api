@@ -104,6 +104,9 @@ type PriorityApplyConfiguration struct {
 	// * ENHANCED
 	// * STANDARD
 	PerformanceMonitoringUnit *string `json:"performanceMonitoringUnit,omitempty"`
+	// MinEstimatedUptimeMinutes specifies the minimum estimated uptime in minutes for Spot instances (1, 10, or 60).
+	// Only supported when spot is set to true.
+	MinEstimatedUptimeMinutes *int `json:"minEstimatedUptimeMinutes,omitempty"`
 }
 
 // PriorityApplyConfiguration constructs a declarative configuration of the Priority type for use with
@@ -360,5 +363,13 @@ func (b *PriorityApplyConfiguration) WithEnableNestedVirtualization(value bool) 
 // If called multiple times, the PerformanceMonitoringUnit field is set to the value of the last call.
 func (b *PriorityApplyConfiguration) WithPerformanceMonitoringUnit(value string) *PriorityApplyConfiguration {
 	b.PerformanceMonitoringUnit = &value
+	return b
+}
+
+// WithMinEstimatedUptimeMinutes sets the MinEstimatedUptimeMinutes field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MinEstimatedUptimeMinutes field is set to the value of the last call.
+func (b *PriorityApplyConfiguration) WithMinEstimatedUptimeMinutes(value int) *PriorityApplyConfiguration {
+	b.MinEstimatedUptimeMinutes = &value
 	return b
 }

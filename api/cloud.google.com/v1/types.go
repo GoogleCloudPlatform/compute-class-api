@@ -1048,6 +1048,7 @@ type Reservations struct {
 // +kubebuilder:validation:XValidation:rule="!(has(self.flexStart) && has(self.spot) && self.spot == true && self.flexStart.enabled == true)", message="Flex Start provisioning model is incompatible with Spot"
 // +kubebuilder:validation:XValidation:rule="!has(self.capacityCheckWaitTimeSeconds) || has(self.tpu) || (has(self.flexStart) && self.flexStart.enabled)", message="capacityCheckWaitTimeSeconds is only supported for Flex Start and for multi-host TPUs"
 // +kubebuilder:validation:XValidation:rule="(has(self.spot) && self.spot) || !has(self.nodeSystemConfig) || !has(self.nodeSystemConfig.kubeletConfig) || !has(self.nodeSystemConfig.kubeletConfig.shutdownGracePeriodSeconds)", message="shutdownGracePeriodSeconds is only supported for Spot"
+// +kubebuilder:validation:XValidation:rule="!has(self.minEstimatedUptimeMinutes) || (has(self.spot) && self.spot)", message="minEstimatedUptimeMinutes is only supported for Spot"
 // +kubebuilder:validation:XValidation:rule="!(has(self.gpuDirect) && self.gpuDirect == 'rdma') || has(self.acceleratorNetworkProfile)", message="acceleratorNetworkProfile must be specified when gpuDirect is 'rdma'"
 // +kubebuilder:validation:XValidation:rule="has(self.minimumCapacity) && has(self.minimumCapacity.targetNodeCount) ? (has(self.machineType) || has(self.gpu) || has(self.tpu) || (has(self.reservations) && self.reservations.affinity == 'Specific')) : true",message="Priority-level MinimumCapacity requires a machineType, gpu, tpu, or specific reservation"
 type Priority struct {
@@ -1226,6 +1227,13 @@ type Priority struct {
 	// +kubebuilder:validation:Enum=ARCHITECTURAL;ENHANCED;STANDARD
 	// +optional
 	PerformanceMonitoringUnit *string `json:"performanceMonitoringUnit,omitempty" protobuf:"bytes,30,opt,name=performanceMonitoringUnit"`
+
+	// MinEstimatedUptimeMinutes specifies the minimum estimated uptime in minutes for Spot instances (1, 10, or 60).
+	// Only supported when spot is set to true.
+	//
+	// +kubebuilder:validation:Enum=1;10;60
+	// +optional
+	MinEstimatedUptimeMinutes *int `json:"minEstimatedUptimeMinutes,omitempty" protobuf:"bytes,31,opt,name=minEstimatedUptimeMinutes"`
 }
 
 // Placement describes preference of Resource Policy for BYOPP

@@ -4019,3 +4019,74 @@ func TestContainerdConfigAutopilotValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestMinEstimatedUptimeMinutesValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "Priority", "minEstimatedUptimeMinutes")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     Priority
+		wantValid bool
+	}{
+		{
+			name: "valid: minEstimatedUptimeMinutes set with spot true",
+			input: Priority{
+				MachineFamily:             ptr("n2"),
+				Spot:                      ptr(true),
+				MinEstimatedUptimeMinutes: ptr(60),
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: minEstimatedUptimeMinutes omitted with spot false",
+			input: Priority{
+				MachineFamily: ptr("n2"),
+				Spot:          ptr(false),
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: minEstimatedUptimeMinutes set with spot false",
+			input: Priority{
+				MachineFamily:             ptr("n2"),
+				Spot:                      ptr(false),
+				MinEstimatedUptimeMinutes: ptr(10),
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: minEstimatedUptimeMinutes set with spot omitted",
+			input: Priority{
+				MachineFamily:             ptr("n2"),
+				MinEstimatedUptimeMinutes: ptr(1),
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

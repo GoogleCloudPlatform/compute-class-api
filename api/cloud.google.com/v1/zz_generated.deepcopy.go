@@ -2163,6 +2163,11 @@ func (in *Priority) DeepCopyInto(out *Priority) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.MinEstimatedUptimeMinutes != nil {
+		in, out := &in.MinEstimatedUptimeMinutes, &out.MinEstimatedUptimeMinutes
+		*out = new(int)
+		**out = **in
+	}
 	return
 }
 
