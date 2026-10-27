@@ -322,6 +322,20 @@ func TestComputeClassValidationSmoke(t *testing.T) {
 			},
 			wantValid: false,
 		},
+		// 8. Representative of Root-Level Rules on metadata.name
+		// Proves that a rule on the whole object can read metadata.name and is
+		// run by the API server on create. The case name is also the object
+		// name, so it has 64 characters, one more than the limit.
+		{
+			name: "invalid-name-longer-than-63-characters-xxxxxxxxxxxxxxxxxxxxxxxxx",
+			spec: ComputeClassSpec{
+				WhenUnsatisfiable: "DoNotScaleUp",
+				Priorities: []Priority{
+					{MachineFamily: k8sptr.To("c3")},
+				},
+			},
+			wantValid: false,
+		},
 	}
 
 	for _, tc := range tests {

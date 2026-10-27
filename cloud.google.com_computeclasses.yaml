@@ -4915,6 +4915,11 @@ spec:
         required:
         - spec
         type: object
+        x-kubernetes-validations:
+        - message: ComputeClass name must be no more than 63 characters because it
+            is used as the value of the cloud.google.com/compute-class label
+          optionalOldSelf: true
+          rule: oldSelf.hasValue() || size(self.metadata.name) <= 63
     served: true
     storage: true
     subresources:

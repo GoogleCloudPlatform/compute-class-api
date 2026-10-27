@@ -40,6 +40,7 @@ import (
 	"testing"
 
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/ext"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -119,13 +120,44 @@ func collectCommentGroups(gd *ast.GenDecl, typeSpec *ast.TypeSpec, structType *a
 	return comments
 }
 
+// markerCommentGroup returns the comment group closest above the doc comment of
+// gd, or nil if there is none. Type-level markers can be kept in such a
+// separate block (for example the +genclient and +kubebuilder block above
+// ComputeClass). controller-gen attaches this group to the type and treats
+// groups further up as package-level, but Go does not attach it to the type
+// because a blank line separates it from the doc comment.
+func markerCommentGroup(file *ast.File, gd *ast.GenDecl) *ast.CommentGroup {
+	start := gd.Pos()
+	if gd.Doc != nil {
+		start = gd.Doc.Pos()
+	}
+	var prevEnd token.Pos
+	for _, decl := range file.Decls {
+		if end := decl.End(); end < start && end > prevEnd {
+			prevEnd = end
+		}
+	}
+	// file.Comments is in source order, so the last match is the closest group.
+	var closest *ast.CommentGroup
+	for _, cg := range file.Comments {
+		if cg.Pos() > prevEnd && cg.End() < start {
+			closest = cg
+		}
+	}
+	return closest
+}
+
 func getTypeValidationRules(t *testing.T, structName, ruleSubString string) []string {
 	t.Helper()
 	node := parseFile(t, "types.go", typesGoSource)
 	gd, typeSpec, structType := findStructTypeSpec(t, node, structName)
 
 	var rules []string
-	for _, cg := range collectCommentGroups(gd, typeSpec, structType) {
+	commentGroups := collectCommentGroups(gd, typeSpec, structType)
+	if group := markerCommentGroup(node, gd); group != nil {
+		commentGroups = append(commentGroups, group)
+	}
+	for _, cg := range commentGroups {
 		for _, comment := range cg.List {
 			if rule := extractRuleFromComment(t, comment.Text, ruleSubString); rule != nil {
 				rules = append(rules, *rule)
@@ -219,10 +251,17 @@ func parseEnumCommentToCEL(jsonFieldName, commentText string) string {
 	return fmt.Sprintf("!has(self.%s) || self.%s in [%s]", jsonFieldName, jsonFieldName, strings.Join(quotedValues, ", "))
 }
 
+// createCELProgram compiles a validation rule. oldSelf is declared as an
+// optional value, as Kubernetes does for rules with optionalOldSelf=true: pass
+// types.OptionalNone when the object is created and types.OptionalOf(<stored
+// object>) when it is updated. Kubernetes gives rules that use oldSelf without
+// optionalOldSelf a plain oldSelf value, so this helper does not model them.
 func createCELProgram(t *testing.T, rule string) cel.Program {
 	t.Helper()
 	env, err := cel.NewEnv(
 		cel.Variable("self", cel.DynType),
+		cel.Variable("oldSelf", cel.OptionalType(cel.DynType)),
+		cel.OptionalTypes(),
 		ext.Strings(),
 	)
 	if err != nil {
@@ -1698,6 +1737,81 @@ func TestComputeClassStatusJSON(t *testing.T) {
 			got := string(gotBytes)
 			if got != tc.wantJSON {
 				t.Errorf("json.Marshal() = %s, want %s", got, tc.wantJSON)
+			}
+		})
+	}
+}
+
+// TestComputeClassNameLengthValidationRule checks the rule on metadata.name.
+// The name is used as the value of the cloud.google.com/compute-class label, so
+// a new ComputeClass can have at most 63 characters. ComputeClasses created
+// before the rule existed may have longer names, and the rule must still accept
+// their updates (spec, labels, status, finalizer removal) so they can be
+// cleaned up.
+func TestComputeClassNameLengthValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClass", "ComputeClass name must be no more than 63 characters")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name   string
+		ccName string
+		// update means the ComputeClass is already stored with a finalizer and
+		// the update removes it, so oldSelf is set and differs from self.
+		update    bool
+		wantValid bool
+	}{
+		{
+			name:      "valid:_create_63_chars",
+			ccName:    "cc-" + strings.Repeat("a", 60),
+			wantValid: true,
+		},
+		{
+			name:      "invalid:_create_64_chars",
+			ccName:    "cc-" + strings.Repeat("b", 61),
+			wantValid: false,
+		},
+		{
+			name:      "invalid:_create_253_chars",
+			ccName:    "cc-" + strings.Repeat("c", 250),
+			wantValid: false,
+		},
+		{
+			name:      "valid:_remove_finalizer_from_existing_64_chars",
+			ccName:    "cc-" + strings.Repeat("d", 61),
+			update:    true,
+			wantValid: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cc := &ComputeClass{ObjectMeta: metav1.ObjectMeta{Name: tc.ccName}}
+			self := mustConvertToMap(t, cc)
+			oldSelf := types.OptionalNone
+			if tc.update {
+				stored := cc.DeepCopy()
+				stored.Finalizers = []string{"example.com/hold"}
+				oldSelf = types.OptionalOf(types.DefaultTypeAdapter.NativeToValue(mustConvertToMap(t, stored)))
+			}
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]any{
+					"self":    self,
+					"oldSelf": oldSelf,
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result for %d-char name = %v, want %v", len(tc.ccName), isValid, tc.wantValid)
 			}
 		})
 	}

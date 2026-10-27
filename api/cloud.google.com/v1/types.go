@@ -28,6 +28,7 @@ import (
 // +kubebuilder:metadata:annotations="components.gke.io/layer=addon"
 // +kubebuilder:resource:scope=Cluster,shortName=cc;ccs
 // +kubebuilder:subresource:status
+// +kubebuilder:validation:XValidation:rule="oldSelf.hasValue() || size(self.metadata.name) <= 63",message="ComputeClass name must be no more than 63 characters because it is used as the value of the cloud.google.com/compute-class label",optionalOldSelf=true
 
 // ComputeClass is a way to impact Cluster Autoscaler scaling
 // decisions based on user preferences. It gives control over preference of
