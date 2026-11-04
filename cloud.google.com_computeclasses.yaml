@@ -4225,21 +4225,23 @@ spec:
                 ((has(priority.machineFamily) && priority.machineFamily in [''n2d''])
                 || (has(priority.machineType) && priority.machineType.split(''-'')[0]
                 in [''n2d'']))) : true'
-            - message: ConfidentialNodeType TDX only supports C3 standard, C4 standard,
-                A3 and A4
+            - message: ConfidentialNodeType TDX only supports C3 standard, C3 highcpu,
+                C3 highmem, C4 standard, A3 and A4
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
                 (has(priority.machineFamily) && priority.machineFamily in [''c3'',
                 ''c4'', ''a3'', ''a4'']) || (has(priority.machineType) && (priority.machineType.startsWith(''c3-standard-'')
+                || priority.machineType.startsWith(''c3-highcpu-'') || priority.machineType.startsWith(''c3-highmem-'')
                 || priority.machineType.startsWith(''c4-standard-'') || priority.machineType
                 == ''a3-highgpu-1g'' || priority.machineType == ''a4-highgpu-8g'')))
                 : true'
-            - message: ConfidentialNodeType TDX on C3 only supports c3-standard- machine
-                type and nvidia-h100-80gb GPU type
+            - message: ConfidentialNodeType TDX on C3 only supports c3-standard-,
+                c3-highcpu-, c3-highmem- machine types and nvidia-h100-80gb GPU type
               rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.confidentialNodeType)
                 && self.nodePoolConfig.confidentialNodeType == "TDX") ? self.priorities.all(priority,
                 (has(priority.machineFamily) && priority.machineFamily == ''c3'' ||
-                has(priority.machineType) && priority.machineType.startsWith(''c3-standard-''))
+                has(priority.machineType) && (priority.machineType.startsWith(''c3-standard-'')
+                || priority.machineType.startsWith(''c3-highcpu-'') || priority.machineType.startsWith(''c3-highmem-'')))
                 ? (!has(priority.gpu) || has(priority.gpu) && (!has(priority.gpu.type)
                 || priority.gpu.type == ''nvidia-h100-80gb'')) : true) : true'
             - message: ConfidentialNodeType TDX on C4 only supports c4-standard- machine

@@ -844,6 +844,34 @@ func TestTDXValidationRule(t *testing.T) {
 			wantValid: true,
 		},
 		{
+			name: "valid:_tdx_with_c3_highcpu_machine_type",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
+				},
+				Priorities: []Priority{
+					{
+						MachineType: ptr("c3-highcpu-4"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid:_tdx_with_c3_highmem_machine_type",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
+				},
+				Priorities: []Priority{
+					{
+						MachineType: ptr("c3-highmem-4"),
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
 			name: "valid:_tdx_with_c4_standard_machine_type",
 			input: ComputeClassSpec{
 				NodePoolConfig: &NodePoolConfig{
@@ -1027,6 +1055,40 @@ func TestTDXValidationRule(t *testing.T) {
 				Priorities: []Priority{
 					{
 						MachineFamily: ptr("c3"),
+						Gpu: &GPU{
+							Type: "nvidia-b200",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_c3_highcpu_and_b200_gpu",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
+				},
+				Priorities: []Priority{
+					{
+						MachineType: ptr("c3-highcpu-4"),
+						Gpu: &GPU{
+							Type: "nvidia-b200",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid:_tdx_with_c3_highmem_and_b200_gpu",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ConfidentialNodeType: "TDX",
+				},
+				Priorities: []Priority{
+					{
+						MachineType: ptr("c3-highmem-4"),
 						Gpu: &GPU{
 							Type: "nvidia-b200",
 						},
