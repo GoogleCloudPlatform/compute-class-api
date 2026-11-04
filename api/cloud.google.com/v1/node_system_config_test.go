@@ -637,3 +637,313 @@ func TestSwapConfigValidationRules(t *testing.T) {
 		})
 	}
 }
+
+func TestKubeletCpuManagerPolicyOptionsValidationRules(t *testing.T) {
+	rules := getNodeSystemConfigValidationRules(t, "KubeletConfig", "cpuManagerPolicyOptions")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name      string
+		input     KubeletConfig
+		wantValid bool
+	}{
+		{
+			name:      "empty KubeletConfig",
+			input:     KubeletConfig{},
+			wantValid: true,
+		},
+		{
+			name: "static policy with valid options",
+			input: KubeletConfig{
+				CpuManagerPolicy: ptr("static"),
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "full-pcpus-only", Value: true},
+					{Key: "strict-cpu-reservation", Value: true},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "static policy with prefer-align-cpus-by-uncorecache true and distribute-cpus-across-numa false",
+			input: KubeletConfig{
+				CpuManagerPolicy: ptr("static"),
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "prefer-align-cpus-by-uncorecache", Value: true},
+					{Key: "distribute-cpus-across-numa", Value: false},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "static policy with prefer-align-cpus-by-uncorecache false and distribute-cpus-across-numa true",
+			input: KubeletConfig{
+				CpuManagerPolicy: ptr("static"),
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "prefer-align-cpus-by-uncorecache", Value: false},
+					{Key: "distribute-cpus-across-numa", Value: true},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "cpuManagerPolicy unset with cpuManagerPolicyOptions set (invalid)",
+			input: KubeletConfig{
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "full-pcpus-only", Value: true},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "cpuManagerPolicy none with cpuManagerPolicyOptions set (invalid)",
+			input: KubeletConfig{
+				CpuManagerPolicy: ptr("none"),
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "full-pcpus-only", Value: true},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "prefer-align-cpus-by-uncorecache and distribute-cpus-across-numa both true (invalid)",
+			input: KubeletConfig{
+				CpuManagerPolicy: ptr("static"),
+				CpuManagerPolicyOptions: []CpuManagerPolicyOption{
+					{Key: "prefer-align-cpus-by-uncorecache", Value: true},
+					{Key: "distribute-cpus-across-numa", Value: true},
+				},
+			},
+			wantValid: false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() != true {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestKubeletTopologyManagerPolicyOptionsValidationRules(t *testing.T) {
+	rules := getNodeSystemConfigValidationRules(t, "KubeletConfig", "topologyManagerPolicyOptions")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name      string
+		input     KubeletConfig
+		wantValid bool
+	}{
+		{
+			name:      "empty KubeletConfig",
+			input:     KubeletConfig{},
+			wantValid: true,
+		},
+		{
+			name: "best-effort policy with valid options",
+			input: KubeletConfig{
+				TopologyManager: &TopologyManager{
+					Policy: ptr("best-effort"),
+				},
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "prefer-closest-numa-nodes", Value: "true"},
+					{Key: "max-allowable-numa-nodes", Value: "8"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "restricted policy with valid options",
+			input: KubeletConfig{
+				TopologyManager: &TopologyManager{
+					Policy: ptr("restricted"),
+				},
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "max-allowable-numa-nodes", Value: "64"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "single-numa-node policy with valid options",
+			input: KubeletConfig{
+				TopologyManager: &TopologyManager{
+					Policy: ptr("single-numa-node"),
+				},
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "prefer-closest-numa-nodes", Value: "false"},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "topologyManager unset with topologyManagerPolicyOptions set (invalid)",
+			input: KubeletConfig{
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "prefer-closest-numa-nodes", Value: "true"},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "topologyManager.policy unset with topologyManagerPolicyOptions set (invalid)",
+			input: KubeletConfig{
+				TopologyManager: &TopologyManager{
+					Scope: ptr("pod"),
+				},
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "prefer-closest-numa-nodes", Value: "true"},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "topologyManager.policy none with topologyManagerPolicyOptions set (invalid)",
+			input: KubeletConfig{
+				TopologyManager: &TopologyManager{
+					Policy: ptr("none"),
+				},
+				TopologyManagerPolicyOptions: []TopologyManagerPolicyOption{
+					{Key: "prefer-closest-numa-nodes", Value: "true"},
+				},
+			},
+			wantValid: false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() != true {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+
+func TestTopologyManagerPolicyOptionValidationRule(t *testing.T) {
+	rules := getNodeSystemConfigValidationRules(t, "TopologyManagerPolicyOption", "")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+	tests := []struct {
+		name      string
+		input     TopologyManagerPolicyOption
+		wantValid bool
+	}{
+		{
+			name:      "prefer-closest-numa-nodes true (valid)",
+			input:     TopologyManagerPolicyOption{Key: "prefer-closest-numa-nodes", Value: "true"},
+			wantValid: true,
+		},
+		{
+			name:      "prefer-closest-numa-nodes false (valid)",
+			input:     TopologyManagerPolicyOption{Key: "prefer-closest-numa-nodes", Value: "false"},
+			wantValid: true,
+		},
+		{
+			name:      "prefer-closest-numa-nodes invalid boolean string (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "prefer-closest-numa-nodes", Value: "yes"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes lower bound 8 (valid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "8"},
+			wantValid: true,
+		},
+		{
+			name:      "max-allowable-numa-nodes middle 32 (valid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "32"},
+			wantValid: true,
+		},
+		{
+			name:      "max-allowable-numa-nodes upper bound 64 (valid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "64"},
+			wantValid: true,
+		},
+		{
+			name:      "max-allowable-numa-nodes below lower bound 7 (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "7"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes above upper bound 65 (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "65"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes leading zero 08 (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "08"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes non-numeric (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "abc"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes 3 digits 100 (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "100"},
+			wantValid: false,
+		},
+		{
+			name:      "prefer-closest-numa-nodes with integer value (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "prefer-closest-numa-nodes", Value: "8"},
+			wantValid: false,
+		},
+		{
+			name:      "max-allowable-numa-nodes with boolean value (invalid)",
+			input:     TopologyManagerPolicyOption{Key: "max-allowable-numa-nodes", Value: "true"},
+			wantValid: false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() != true {
+					isValid = false
+					break
+				}
+			}
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}

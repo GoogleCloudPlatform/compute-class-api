@@ -113,6 +113,20 @@ type KubeletConfigApplyConfiguration struct {
 	// Format: a list of CPU IDs (e.g. "0-3", "0,1") that can be parsed as a cpuset.
 	// Empty string "" is not allowed (omit the field to leave it unset).
 	ReservedSystemCpus *string `json:"reservedSystemCpus,omitempty"`
+	// CpuManagerPolicyOptions controls specific options for the CPU Manager static policy.
+	// Requires cpuManagerPolicy to be "static". Each value is a boolean. Supported keys:
+	// - strict-cpu-reservation
+	// - full-pcpus-only
+	// - distribute-cpus-across-numa
+	// - prefer-align-cpus-by-uncorecache (cannot be enabled together with distribute-cpus-across-numa)
+	// See https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy-options
+	CpuManagerPolicyOptions []CpuManagerPolicyOptionApplyConfiguration `json:"cpuManagerPolicyOptions,omitempty"`
+	// TopologyManagerPolicyOptions controls specific options for the Topology Manager policy.
+	// Requires topologyManager.policy to be set and not "none". Supported keys:
+	// - prefer-closest-numa-nodes: "true" or "false"
+	// - max-allowable-numa-nodes: an integer from "8" to "64", inclusive
+	// See https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/#topology-manager-policy-options
+	TopologyManagerPolicyOptions []TopologyManagerPolicyOptionApplyConfiguration `json:"topologyManagerPolicyOptions,omitempty"`
 }
 
 // KubeletConfigApplyConfiguration constructs a declarative configuration of the KubeletConfig type for use with
@@ -336,5 +350,31 @@ func (b *KubeletConfigApplyConfiguration) WithInsecureKubeletReadonlyPortEnabled
 // If called multiple times, the ReservedSystemCpus field is set to the value of the last call.
 func (b *KubeletConfigApplyConfiguration) WithReservedSystemCpus(value string) *KubeletConfigApplyConfiguration {
 	b.ReservedSystemCpus = &value
+	return b
+}
+
+// WithCpuManagerPolicyOptions adds the given value to the CpuManagerPolicyOptions field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the CpuManagerPolicyOptions field.
+func (b *KubeletConfigApplyConfiguration) WithCpuManagerPolicyOptions(values ...*CpuManagerPolicyOptionApplyConfiguration) *KubeletConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithCpuManagerPolicyOptions")
+		}
+		b.CpuManagerPolicyOptions = append(b.CpuManagerPolicyOptions, *values[i])
+	}
+	return b
+}
+
+// WithTopologyManagerPolicyOptions adds the given value to the TopologyManagerPolicyOptions field in the declarative configuration
+// and returns the receiver, so that objects can be build by chaining "With" function invocations.
+// If called multiple times, values provided by each call will be appended to the TopologyManagerPolicyOptions field.
+func (b *KubeletConfigApplyConfiguration) WithTopologyManagerPolicyOptions(values ...*TopologyManagerPolicyOptionApplyConfiguration) *KubeletConfigApplyConfiguration {
+	for i := range values {
+		if values[i] == nil {
+			panic("nil value passed to WithTopologyManagerPolicyOptions")
+		}
+		b.TopologyManagerPolicyOptions = append(b.TopologyManagerPolicyOptions, *values[i])
+	}
 	return b
 }

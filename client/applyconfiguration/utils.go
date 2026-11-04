@@ -66,6 +66,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.ConsolidationStatusApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("ContainerdConfig"):
 		return &cloudgooglecomv1.ContainerdConfigApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("CpuManagerPolicyOption"):
+		return &cloudgooglecomv1.CpuManagerPolicyOptionApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CrashLoopBackOff"):
 		return &cloudgooglecomv1.CrashLoopBackOffApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("CustomImageConfig"):
@@ -218,6 +220,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &cloudgooglecomv1.TaintConfigApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("TopologyManager"):
 		return &cloudgooglecomv1.TopologyManagerApplyConfiguration{}
+	case v1.SchemeGroupVersion.WithKind("TopologyManagerPolicyOption"):
+		return &cloudgooglecomv1.TopologyManagerPolicyOptionApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("TPU"):
 		return &cloudgooglecomv1.TPUApplyConfiguration{}
 	case v1.SchemeGroupVersion.WithKind("WritableCgroups"):

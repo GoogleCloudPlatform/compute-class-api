@@ -294,6 +294,9 @@ type EvictionMinimumReclaim struct {
 // +kubebuilder:validation:XValidation:rule="has(self.imageGcHighThresholdPercent)&&!has(self.imageGcLowThresholdPercent) ? self.imageGcHighThresholdPercent>80 : true", message="ImageGcHighThresholdPercent must be higher than 80 which is default value of imageGcLowThresholdPercent"
 // +kubebuilder:validation:XValidation:rule="!has(self.shutdownGracePeriodCriticalPodsSeconds) || (has(self.shutdownGracePeriodSeconds) && self.shutdownGracePeriodCriticalPodsSeconds <= self.shutdownGracePeriodSeconds)", message="ShutdownGracePeriodCriticalPodsSeconds must be less than or equal to ShutdownGracePeriodSeconds and requires ShutdownGracePeriodSeconds to be set"
 // +kubebuilder:validation:XValidation:rule="!has(self.reservedSystemCpus) || !has(self.reservedResourcesConfig) || !has(self.reservedResourcesConfig.cpuReservedMillicore) || self.reservedResourcesConfig.cpuReservedMillicore == 0", message="reservedSystemCpus and reservedResourcesConfig.cpuReservedMillicore cannot be set at the same time"
+// +kubebuilder:validation:XValidation:rule="!has(self.cpuManagerPolicyOptions) || size(self.cpuManagerPolicyOptions) == 0 || (has(self.cpuManagerPolicy) && self.cpuManagerPolicy == 'static')", message="cpuManagerPolicyOptions can only be set when cpuManagerPolicy is set to 'static'"
+// +kubebuilder:validation:XValidation:rule="!has(self.cpuManagerPolicyOptions) || !(self.cpuManagerPolicyOptions.exists(o, o.key == 'prefer-align-cpus-by-uncorecache' && o.value) && self.cpuManagerPolicyOptions.exists(o, o.key == 'distribute-cpus-across-numa' && o.value))", message="cpuManagerPolicyOptions 'prefer-align-cpus-by-uncorecache' and 'distribute-cpus-across-numa' cannot be enabled at the same time"
+// +kubebuilder:validation:XValidation:rule="!has(self.topologyManagerPolicyOptions) || size(self.topologyManagerPolicyOptions) == 0 || (has(self.topologyManager) && has(self.topologyManager.policy) && self.topologyManager.policy != 'none')", message="topologyManagerPolicyOptions can only be set when topologyManager.policy is set and not 'none'"
 type KubeletConfig struct {
 	// This setting enforces the Pod's CPU limit. Setting this value to false means that the CPU limits for Pods are ignored.
 	// Ignoring CPU limits might be desirable in certain scenarios where Pods are sensitive to CPU limits.
@@ -471,6 +474,30 @@ type KubeletConfig struct {
 	// +kubebuilder:validation:Pattern="^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$"
 	// +kubebuilder:validation:Optional
 	ReservedSystemCpus *string `json:"reservedSystemCpus,omitempty" protobuf:"bytes,27,opt,name=reservedSystemCpus"`
+	// CpuManagerPolicyOptions controls specific options for the CPU Manager static policy.
+	// Requires cpuManagerPolicy to be "static". Each value is a boolean. Supported keys:
+	//   - strict-cpu-reservation
+	//   - full-pcpus-only
+	//   - distribute-cpus-across-numa
+	//   - prefer-align-cpus-by-uncorecache (cannot be enabled together with distribute-cpus-across-numa)
+	// See https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy-options
+	//
+	// +optional
+	// +kubebuilder:validation:MaxItems=10
+	// +listType=map
+	// +listMapKey=key
+	CpuManagerPolicyOptions []CpuManagerPolicyOption `json:"cpuManagerPolicyOptions,omitempty" protobuf:"bytes,28,rep,name=cpuManagerPolicyOptions"`
+	// TopologyManagerPolicyOptions controls specific options for the Topology Manager policy.
+	// Requires topologyManager.policy to be set and not "none". Supported keys:
+	//   - prefer-closest-numa-nodes: "true" or "false"
+	//   - max-allowable-numa-nodes: an integer from "8" to "64", inclusive
+	// See https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/#topology-manager-policy-options
+	//
+	// +optional
+	// +kubebuilder:validation:MaxItems=10
+	// +listType=map
+	// +listMapKey=key
+	TopologyManagerPolicyOptions []TopologyManagerPolicyOption `json:"topologyManagerPolicyOptions,omitempty" protobuf:"bytes,29,rep,name=topologyManagerPolicyOptions"`
 }
 
 // CrashLoopBackOff contains the configuration to modify node level parameters
@@ -497,6 +524,38 @@ type ReservedResourcesConfig struct {
 	// This is a user-specified value. If unspecified, GKE decides the default.
 	// +optional
 	MemoryReservedMib *int64 `json:"memoryReservedMib,omitempty" protobuf:"varint,2,opt,name=memoryReservedMib"`
+}
+
+// CpuManagerPolicyOption contains a key-value pair for CPU Manager policy options.
+type CpuManagerPolicyOption struct {
+	// Key is the name of the CPU Manager policy option.
+	//
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=full-pcpus-only;distribute-cpus-across-numa;strict-cpu-reservation;prefer-align-cpus-by-uncorecache
+	Key string `json:"key" protobuf:"bytes,1,name=key"`
+
+	// Value of the CPU Manager policy option.
+	//
+	// +kubebuilder:validation:Required
+	Value bool `json:"value" protobuf:"varint,2,name=value"`
+}
+
+// TopologyManagerPolicyOption contains a key-value pair for Topology Manager policy options.
+//
+// +kubebuilder:validation:XValidation:rule="(self.key == 'prefer-closest-numa-nodes' && (self.value == 'true' || self.value == 'false')) || (self.key == 'max-allowable-numa-nodes' && self.value.matches('^[1-9][0-9]?$') && int(self.value) >= 8 && int(self.value) <= 64)", message="value must be 'true' or 'false' for 'prefer-closest-numa-nodes', or an integer string between '8' and '64' inclusive for 'max-allowable-numa-nodes'"
+type TopologyManagerPolicyOption struct {
+	// Key is the name of the Topology Manager policy option.
+	//
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=prefer-closest-numa-nodes;max-allowable-numa-nodes
+	Key string `json:"key" protobuf:"bytes,1,name=key"`
+
+	// Value of the Topology Manager policy option.
+	//
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=64
+	Value string `json:"value" protobuf:"bytes,2,name=value"`
 }
 
 // SysctlsConfig defines sysctls config for a node.

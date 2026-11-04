@@ -1378,6 +1378,40 @@ spec:
                               - none
                               - static
                               type: string
+                            cpuManagerPolicyOptions:
+                              description: |-
+                                CpuManagerPolicyOptions controls specific options for the CPU Manager static policy.
+                                Requires cpuManagerPolicy to be "static". Each value is a boolean. Supported keys:
+                                  - strict-cpu-reservation
+                                  - full-pcpus-only
+                                  - distribute-cpus-across-numa
+                                  - prefer-align-cpus-by-uncorecache (cannot be enabled together with distribute-cpus-across-numa)
+                                See https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy-options
+                              items:
+                                description: CpuManagerPolicyOption contains a key-value
+                                  pair for CPU Manager policy options.
+                                properties:
+                                  key:
+                                    description: Key is the name of the CPU Manager
+                                      policy option.
+                                    enum:
+                                    - full-pcpus-only
+                                    - distribute-cpus-across-numa
+                                    - strict-cpu-reservation
+                                    - prefer-align-cpus-by-uncorecache
+                                    type: string
+                                  value:
+                                    description: Value of the CPU Manager policy option.
+                                    type: boolean
+                                required:
+                                - key
+                                - value
+                                type: object
+                              maxItems: 10
+                              type: array
+                              x-kubernetes-list-map-keys:
+                              - key
+                              x-kubernetes-list-type: map
                             crashLoopBackOff:
                               description: |-
                                 CrashLoopBackOff contains the configuration to modify node level parameters
@@ -1690,6 +1724,48 @@ spec:
                                   - pod
                                   type: string
                               type: object
+                            topologyManagerPolicyOptions:
+                              description: |-
+                                TopologyManagerPolicyOptions controls specific options for the Topology Manager policy.
+                                Requires topologyManager.policy to be set and not "none". Supported keys:
+                                  - prefer-closest-numa-nodes: "true" or "false"
+                                  - max-allowable-numa-nodes: an integer from "8" to "64", inclusive
+                                See https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/#topology-manager-policy-options
+                              items:
+                                description: TopologyManagerPolicyOption contains
+                                  a key-value pair for Topology Manager policy options.
+                                properties:
+                                  key:
+                                    description: Key is the name of the Topology Manager
+                                      policy option.
+                                    enum:
+                                    - prefer-closest-numa-nodes
+                                    - max-allowable-numa-nodes
+                                    type: string
+                                  value:
+                                    description: Value of the Topology Manager policy
+                                      option.
+                                    maxLength: 64
+                                    minLength: 1
+                                    type: string
+                                required:
+                                - key
+                                - value
+                                type: object
+                                x-kubernetes-validations:
+                                - message: value must be 'true' or 'false' for 'prefer-closest-numa-nodes',
+                                    or an integer string between '8' and '64' inclusive
+                                    for 'max-allowable-numa-nodes'
+                                  rule: (self.key == 'prefer-closest-numa-nodes' &&
+                                    (self.value == 'true' || self.value == 'false'))
+                                    || (self.key == 'max-allowable-numa-nodes' &&
+                                    self.value.matches('^[1-9][0-9]?$') && int(self.value)
+                                    >= 8 && int(self.value) <= 64)
+                              maxItems: 10
+                              type: array
+                              x-kubernetes-list-map-keys:
+                              - key
+                              x-kubernetes-list-type: map
                           type: object
                           x-kubernetes-validations:
                           - message: ImageGcLowThresholdPercent must be lower than
@@ -1713,6 +1789,23 @@ spec:
                               || !has(self.reservedResourcesConfig.cpuReservedMillicore)
                               || self.reservedResourcesConfig.cpuReservedMillicore
                               == 0'
+                          - message: cpuManagerPolicyOptions can only be set when
+                              cpuManagerPolicy is set to 'static'
+                            rule: '!has(self.cpuManagerPolicyOptions) || size(self.cpuManagerPolicyOptions)
+                              == 0 || (has(self.cpuManagerPolicy) && self.cpuManagerPolicy
+                              == ''static'')'
+                          - message: cpuManagerPolicyOptions 'prefer-align-cpus-by-uncorecache'
+                              and 'distribute-cpus-across-numa' cannot be enabled
+                              at the same time
+                            rule: '!has(self.cpuManagerPolicyOptions) || !(self.cpuManagerPolicyOptions.exists(o,
+                              o.key == ''prefer-align-cpus-by-uncorecache'' && o.value)
+                              && self.cpuManagerPolicyOptions.exists(o, o.key == ''distribute-cpus-across-numa''
+                              && o.value))'
+                          - message: topologyManagerPolicyOptions can only be set
+                              when topologyManager.policy is set and not 'none'
+                            rule: '!has(self.topologyManagerPolicyOptions) || size(self.topologyManagerPolicyOptions)
+                              == 0 || (has(self.topologyManager) && has(self.topologyManager.policy)
+                              && self.topologyManager.policy != ''none'')'
                         linuxNodeConfig:
                           description: LinuxNodeConfig defines linux node config for
                             a node.
@@ -3055,6 +3148,40 @@ spec:
                             - none
                             - static
                             type: string
+                          cpuManagerPolicyOptions:
+                            description: |-
+                              CpuManagerPolicyOptions controls specific options for the CPU Manager static policy.
+                              Requires cpuManagerPolicy to be "static". Each value is a boolean. Supported keys:
+                                - strict-cpu-reservation
+                                - full-pcpus-only
+                                - distribute-cpus-across-numa
+                                - prefer-align-cpus-by-uncorecache (cannot be enabled together with distribute-cpus-across-numa)
+                              See https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-policies/#static-policy-options
+                            items:
+                              description: CpuManagerPolicyOption contains a key-value
+                                pair for CPU Manager policy options.
+                              properties:
+                                key:
+                                  description: Key is the name of the CPU Manager
+                                    policy option.
+                                  enum:
+                                  - full-pcpus-only
+                                  - distribute-cpus-across-numa
+                                  - strict-cpu-reservation
+                                  - prefer-align-cpus-by-uncorecache
+                                  type: string
+                                value:
+                                  description: Value of the CPU Manager policy option.
+                                  type: boolean
+                              required:
+                              - key
+                              - value
+                              type: object
+                            maxItems: 10
+                            type: array
+                            x-kubernetes-list-map-keys:
+                            - key
+                            x-kubernetes-list-type: map
                           crashLoopBackOff:
                             description: |-
                               CrashLoopBackOff contains the configuration to modify node level parameters
@@ -3366,6 +3493,47 @@ spec:
                                 - pod
                                 type: string
                             type: object
+                          topologyManagerPolicyOptions:
+                            description: |-
+                              TopologyManagerPolicyOptions controls specific options for the Topology Manager policy.
+                              Requires topologyManager.policy to be set and not "none". Supported keys:
+                                - prefer-closest-numa-nodes: "true" or "false"
+                                - max-allowable-numa-nodes: an integer from "8" to "64", inclusive
+                              See https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/#topology-manager-policy-options
+                            items:
+                              description: TopologyManagerPolicyOption contains a
+                                key-value pair for Topology Manager policy options.
+                              properties:
+                                key:
+                                  description: Key is the name of the Topology Manager
+                                    policy option.
+                                  enum:
+                                  - prefer-closest-numa-nodes
+                                  - max-allowable-numa-nodes
+                                  type: string
+                                value:
+                                  description: Value of the Topology Manager policy
+                                    option.
+                                  maxLength: 64
+                                  minLength: 1
+                                  type: string
+                              required:
+                              - key
+                              - value
+                              type: object
+                              x-kubernetes-validations:
+                              - message: value must be 'true' or 'false' for 'prefer-closest-numa-nodes',
+                                  or an integer string between '8' and '64' inclusive
+                                  for 'max-allowable-numa-nodes'
+                                rule: (self.key == 'prefer-closest-numa-nodes' &&
+                                  (self.value == 'true' || self.value == 'false'))
+                                  || (self.key == 'max-allowable-numa-nodes' && self.value.matches('^[1-9][0-9]?$')
+                                  && int(self.value) >= 8 && int(self.value) <= 64)
+                            maxItems: 10
+                            type: array
+                            x-kubernetes-list-map-keys:
+                            - key
+                            x-kubernetes-list-type: map
                         type: object
                         x-kubernetes-validations:
                         - message: ImageGcLowThresholdPercent must be lower than imageGcHighThresholdPercent
@@ -3388,6 +3556,23 @@ spec:
                             || !has(self.reservedResourcesConfig.cpuReservedMillicore)
                             || self.reservedResourcesConfig.cpuReservedMillicore ==
                             0'
+                        - message: cpuManagerPolicyOptions can only be set when cpuManagerPolicy
+                            is set to 'static'
+                          rule: '!has(self.cpuManagerPolicyOptions) || size(self.cpuManagerPolicyOptions)
+                            == 0 || (has(self.cpuManagerPolicy) && self.cpuManagerPolicy
+                            == ''static'')'
+                        - message: cpuManagerPolicyOptions 'prefer-align-cpus-by-uncorecache'
+                            and 'distribute-cpus-across-numa' cannot be enabled at
+                            the same time
+                          rule: '!has(self.cpuManagerPolicyOptions) || !(self.cpuManagerPolicyOptions.exists(o,
+                            o.key == ''prefer-align-cpus-by-uncorecache'' && o.value)
+                            && self.cpuManagerPolicyOptions.exists(o, o.key == ''distribute-cpus-across-numa''
+                            && o.value))'
+                        - message: topologyManagerPolicyOptions can only be set when
+                            topologyManager.policy is set and not 'none'
+                          rule: '!has(self.topologyManagerPolicyOptions) || size(self.topologyManagerPolicyOptions)
+                            == 0 || (has(self.topologyManager) && has(self.topologyManager.policy)
+                            && self.topologyManager.policy != ''none'')'
                       linuxNodeConfig:
                         description: LinuxNodeConfig defines linux node config for
                           a node.
