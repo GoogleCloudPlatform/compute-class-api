@@ -24,7 +24,11 @@
 //   - Validates Protobuf tag ordering and serialization integrity across all structs.
 //   - Standard OpenAPI schema annotations (e.g., +kubebuilder:validation:Enum, Minimum, Pattern, MaxItems)
 //     are validated by controller-gen / CRD generation and should not be tested with synthetic Go struct tests here.
-//   - When adding new custom CEL rules, add focused boundary test cases (valid, invalid, omitted/nil) here.
+//   - When adding new custom CEL rules, add focused boundary test cases (valid, invalid, omitted/nil) here,
+//     NOT in integration_test.go (which is strictly for minimal envtest smoke checks and CRD CEL budget validation).
+//   - If a new CEL rule uses constructs not yet wired in the Layer 1 harness (e.g., oldSelf transition rules,
+//     cel.OptionalTypes(), or markers on new AST nodes), extend createCELProgram / getTypeValidationRules here
+//     rather than moving unit test cases into integration_test.go.
 package v1
 
 import (

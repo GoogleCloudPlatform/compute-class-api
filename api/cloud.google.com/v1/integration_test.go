@@ -16,16 +16,32 @@
 
 // Package v1 contains integration tests for ComputeClass API validation.
 //
+// IMPORTANT — READ BEFORE MODIFYING THIS FILE:
 // integration_test.go implements Layer 2 (Integration/envtest) validation for ComputeClass API.
-// This layer loads the generated CRD YAML into an in-memory Kubernetes control plane to verify
-// structural validity and resource budget compliance.
+// It is strictly a minimal smoke test for post-compilation Kubernetes API server checks:
+//   - Verifying that the generated CRD YAML installs cleanly into a real K8s API server.
+//   - Validating K8s CEL cost/budget estimation limits across the entire CRD schema (verified
+//     automatically when TestComputeClassValidationSmoke starts envtest and applies the CRD).
+//   - Smoke-testing one representative case per structural class of validation mechanism
+//     (e.g., regex, cross-field, list aggregation, root-level metadata vs spec).
 //
-// Why limited test cases are added here vs exhaustive unit tests in Layer 1:
-//   - This layer functions as a smoke test suite to verify integration with real Kubernetes API server machinery.
-//   - It verifies that custom CEL rules are correctly compiled and executed by the real runtime.
-//   - It validates budget cost estimation limits (catching concerns where CRDs fail to apply due to complexity).
-//   - Exhaustive permutation testing belongs in Layer 1 (Unit Tests, types_test.go) for execution speed and lower overhead.
-//     Do not add redundant test cases here unless introducing a new class of validation mechanism.
+// Strict Rules for Contributors (Human & AI):
+//   - DO NOT add unit test permutations, boundary values, or feature-specific edge cases here.
+//     All permutation and edge-case testing belongs in Layer 1 (types_test.go).
+//   - DO NOT add new test cases for a new field/rule if its validation structure (e.g., regex,
+//     cross-field check, list comprehension) is already represented in TestComputeClassValidationSmoke.
+//     Existing smoke startup already validates that your new rule compiles and fits within K8s CEL budget limits.
+//   - DO NOT spin up additional envtest.Environment instances, add separate Test* functions,
+//     patch CRDs at runtime, or add test-only dependencies to go.mod.
+//   - If Layer 1 (types_test.go) lacks support for a CEL feature needed by your rule (e.g., oldSelf
+//     transition rules, cel.OptionalTypes(), or markers at a new AST location), extend the Layer 1
+//     test harness (createCELProgram / getTypeValidationRules in types_test.go) instead of falling
+//     back to envtest.
+//   - Only add a single minimal case to TestComputeClassValidationSmoke if introducing a genuinely
+//     new structural validation mechanism not yet covered below.
+//   - SUBMIT REQUIREMENT: Any commit modifying this file must include
+//     `E2E_ACK=<justification confirming unique structure and no permutations/edge cases>`
+//     in the commit message, or Gerrit will block submission.
 package v1
 
 import (
