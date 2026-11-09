@@ -2964,6 +2964,17 @@ spec:
                         minItems: 1
                         type: array
                     type: object
+                  minEstimatedSpotUptimeMinutes:
+                    description: |-
+                      MinEstimatedSpotUptimeMinutes specifies the minimum estimated uptime in
+                      minutes for Spot instances (1, 10, or 60). Cluster Autoscaler uses this
+                      value only for Spot priorities.
+                      Note: This value is an estimation and not a guaranteed minimum uptime.
+                    enum:
+                    - 1
+                    - 10
+                    - 60
+                    type: integer
                   nodeSystemConfig:
                     description: NodeSystemConfig defines node system config for a
                       node.

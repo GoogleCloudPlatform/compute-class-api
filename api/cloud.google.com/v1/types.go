@@ -1352,6 +1352,15 @@ type PriorityDefaults struct {
 	//
 	// +optional
 	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty" protobuf:"bytes,3,opt,name=enableNestedVirtualization"`
+
+	// MinEstimatedSpotUptimeMinutes specifies the minimum estimated uptime in
+	// minutes for Spot instances (1, 10, or 60). Cluster Autoscaler uses this
+	// value only for Spot priorities.
+	// Note: This value is an estimation and not a guaranteed minimum uptime.
+	//
+	// +kubebuilder:validation:Enum=1;10;60
+	// +optional
+	MinEstimatedSpotUptimeMinutes *int `json:"minEstimatedSpotUptimeMinutes,omitempty" protobuf:"bytes,4,opt,name=minEstimatedSpotUptimeMinutes"`
 }
 
 // AllocationStrategy is an enumeration of supported allocation strategies.

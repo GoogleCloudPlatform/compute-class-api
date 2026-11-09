@@ -29,6 +29,11 @@ type PriorityDefaultsApplyConfiguration struct {
 	Location *LocationApplyConfiguration `json:"location,omitempty"`
 	// EnableNestedVirtualization specifies whether to enable nested virtualization on the nodes.
 	EnableNestedVirtualization *bool `json:"enableNestedVirtualization,omitempty"`
+	// MinEstimatedSpotUptimeMinutes specifies the minimum estimated uptime in
+	// minutes for Spot instances (1, 10, or 60). Cluster Autoscaler uses this
+	// value only for Spot priorities.
+	// Note: This value is an estimation and not a guaranteed minimum uptime.
+	MinEstimatedSpotUptimeMinutes *int `json:"minEstimatedSpotUptimeMinutes,omitempty"`
 }
 
 // PriorityDefaultsApplyConfiguration constructs a declarative configuration of the PriorityDefaults type for use with
@@ -58,5 +63,13 @@ func (b *PriorityDefaultsApplyConfiguration) WithLocation(value *LocationApplyCo
 // If called multiple times, the EnableNestedVirtualization field is set to the value of the last call.
 func (b *PriorityDefaultsApplyConfiguration) WithEnableNestedVirtualization(value bool) *PriorityDefaultsApplyConfiguration {
 	b.EnableNestedVirtualization = &value
+	return b
+}
+
+// WithMinEstimatedSpotUptimeMinutes sets the MinEstimatedSpotUptimeMinutes field in the declarative configuration to the given value
+// and returns the receiver, so that objects can be built by chaining "With" function invocations.
+// If called multiple times, the MinEstimatedSpotUptimeMinutes field is set to the value of the last call.
+func (b *PriorityDefaultsApplyConfiguration) WithMinEstimatedSpotUptimeMinutes(value int) *PriorityDefaultsApplyConfiguration {
+	b.MinEstimatedSpotUptimeMinutes = &value
 	return b
 }
