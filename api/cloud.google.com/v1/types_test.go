@@ -4270,3 +4270,158 @@ func TestMinEstimatedUptimeMinutesValidationRule(t *testing.T) {
 		})
 	}
 }
+
+func TestPinnedGPUDriverVersionImageTypeValidationRule(t *testing.T) {
+	rules := getTypeValidationRules(t, "ComputeClassSpec", "Pinned GPU driver versions are only supported with cos_containerd image type")
+	var programs []cel.Program
+	for _, rule := range rules {
+		programs = append(programs, createCELProgram(t, rule))
+	}
+
+	tests := []struct {
+		name      string
+		input     ComputeClassSpec
+		wantValid bool
+	}{
+		{
+			name: "valid: pinned R-version with cos_containerd imageType",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ImageType: "cos_containerd",
+				},
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "R535",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: pinned exact version with omitted nodePoolConfig",
+			input: ComputeClassSpec{
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "535.104.05",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: pinned exact version with omitted imageType",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{},
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "535.104.05",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: legacy driver versions with ubuntu_containerd imageType",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ImageType: "ubuntu_containerd",
+				},
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "default",
+						},
+					},
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "latest",
+						},
+					},
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "autoinstall-disabled",
+						},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: pinned R-version with ubuntu_containerd imageType",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ImageType: "ubuntu_containerd",
+				},
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "R535",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: pinned exact version with custom_containerd imageType",
+			input: ComputeClassSpec{
+				NodePoolConfig: &NodePoolConfig{
+					ImageType: "custom_containerd",
+				},
+				Priorities: []Priority{
+					{
+						Gpu: &GPU{
+							Type:          "nvidia-l4",
+							Count:         1,
+							DriverVersion: "535.104.05",
+						},
+					},
+				},
+			},
+			wantValid: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			isValid := true
+			for _, program := range programs {
+				out, _, err := program.Eval(map[string]interface{}{
+					"self": mustConvertToMap(t, tc.input),
+				})
+				if err != nil {
+					t.Fatalf("CEL evaluation failed: %v", err)
+				}
+				if out.Value() == false {
+					isValid = false
+					break
+				}
+			}
+
+			if isValid != tc.wantValid {
+				t.Errorf("Validation result = %v, want %v", isValid, tc.wantValid)
+			}
+		})
+	}
+}
+

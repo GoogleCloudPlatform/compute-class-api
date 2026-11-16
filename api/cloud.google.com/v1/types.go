@@ -176,6 +176,7 @@ type MinimumCapacity struct {
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) && size(self.priorities) > 0) : true", message="ComputeClass with sandbox type 'microvm' requires at least one priority to be specified"
 // +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.sandbox) && has(self.nodePoolConfig.sandbox.type) && self.nodePoolConfig.sandbox.type == 'microvm') ? (has(self.priorities) ? self.priorities.all(p, has(p.nodepools) || (has(p.enableNestedVirtualization) ? p.enableNestedVirtualization : (has(self.priorityDefaults) && has(self.priorityDefaults.enableNestedVirtualization) && self.priorityDefaults.enableNestedVirtualization))) : true) : true", message="ComputeClass with sandbox type 'microvm' requires enableNestedVirtualization to be true for all priorities that are not preexisting nodepools"
 // +kubebuilder:validation:XValidation:rule="!(has(self.networkConfig) && has(self.networkConfig.additionalNetworks) && size(self.networkConfig.additionalNetworks) > 0 && self.priorities.exists(p, has(p.acceleratorNetworkProfile) && p.acceleratorNetworkProfile != ''))",message="networkConfig.additionalNetworks cannot be used together with acceleratorNetworkProfile in priorities"
+// +kubebuilder:validation:XValidation:rule="(has(self.nodePoolConfig) && has(self.nodePoolConfig.imageType) && self.nodePoolConfig.imageType != \"cos_containerd\") ? (!has(self.priorities) || self.priorities.all(p, !has(p.gpu) || !has(p.gpu.driverVersion) || p.gpu.driverVersion in ['default', 'latest', 'autoinstall-disabled'])) : true", message="Pinned GPU driver versions are only supported with cos_containerd image type"
 type ComputeClassSpec struct {
 	// Priorities is a description of user preferences to be
 	// used by a given ComputeClass.
@@ -1255,7 +1256,8 @@ type GPU struct {
 	// +kubebuilder:validation:Minimum=0
 	Count int64 `json:"count,omitempty" protobuf:"bytes,2,name=count"`
 	// DriverVersion describes version of GPU driver for a node.
-	// +kubebuilder:validation:Enum=default;latest;autoinstall-disabled
+	// +kubebuilder:validation:MaxLength=64
+	// +kubebuilder:validation:Pattern=`^(default|latest|autoinstall-disabled|R\d{3}|\d{3}\.\d{2,3}\.\d{2})$`
 	// +kubebuilder:default=default
 	// +optional
 	DriverVersion string `json:"driverVersion,omitempty" protobuf:"bytes,3,name=driverVersion"`

@@ -1099,10 +1099,8 @@ spec:
                           default: default
                           description: DriverVersion describes version of GPU driver
                             for a node.
-                          enum:
-                          - default
-                          - latest
-                          - autoinstall-disabled
+                          maxLength: 64
+                          pattern: ^(default|latest|autoinstall-disabled|R\d{3}|\d{3}\.\d{2,3}\.\d{2})$
                           type: string
                         gpuSharing:
                           description: GpuSharing defines the way the nodes would
@@ -4540,6 +4538,13 @@ spec:
                 && size(self.networkConfig.additionalNetworks) > 0 && self.priorities.exists(p,
                 has(p.acceleratorNetworkProfile) && p.acceleratorNetworkProfile !=
                 ''''))'
+            - message: Pinned GPU driver versions are only supported with cos_containerd
+                image type
+              rule: '(has(self.nodePoolConfig) && has(self.nodePoolConfig.imageType)
+                && self.nodePoolConfig.imageType != "cos_containerd") ? (!has(self.priorities)
+                || self.priorities.all(p, !has(p.gpu) || !has(p.gpu.driverVersion)
+                || p.gpu.driverVersion in [''default'', ''latest'', ''autoinstall-disabled'']))
+                : true'
           status:
             description: Status of the ComputeClass.
             properties:
