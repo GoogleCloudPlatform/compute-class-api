@@ -108,6 +108,7 @@ type AdditionalNetwork struct {
 // NetworkConfig defines network-related settings for the ComputeClass.
 //
 // +kubebuilder:validation:XValidation:rule="!has(self.subnetPriorities) || self.subnetPriorities.all(sp, has(sp.podRange) && size(sp.podRange) > 0)",message="podRange is required for each entry in networkConfig.subnetPriorities"
+// +kubebuilder:validation:XValidation:rule="!has(self.additionalNetworks) || self.additionalNetworks.all(a, self.additionalNetworks.all(b, a.subnetPriorities.all(sa, b.subnetPriorities.all(sb, sa.name != sb.name || (has(sa.podRange) == has(sb.podRange) && (!has(sa.podRange) || sa.podRange == sb.podRange))))))",message="entries in networkConfig.additionalNetworks that use the same subnet must specify the same podRange"
 type NetworkConfig struct {
 	// SubnetPriorities is an ordered list of subnets to fall back through.
 	// TODO(b/552484145): Increase the max items to 5 once the API is updated to support multiple subnets.
@@ -124,12 +125,14 @@ type NetworkConfig struct {
 	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty" protobuf:"varint,2,opt,name=disablePodCidrOverprovisionConfig"`
 
 	// AdditionalNetworks is an ordered list of secondary network interfaces for Multi-Networking.
+	// Each entry adds one network interface. A VPC network can be listed more than once
+	// to attach several interfaces to it, on the same subnet or on different subnets.
+	// Entries that use the same subnet must specify the same podRange.
 	//
 	// +optional
 	// +kubebuilder:validation:MinItems=1
-	// +kubebuilder:validation:MaxItems=8
-	// +listType=map
-	// +listMapKey=name
+	// +kubebuilder:validation:MaxItems=50
+	// +listType=atomic
 	AdditionalNetworks []AdditionalNetwork `json:"additionalNetworks,omitempty" protobuf:"bytes,3,rep,name=additionalNetworks"`
 }
 

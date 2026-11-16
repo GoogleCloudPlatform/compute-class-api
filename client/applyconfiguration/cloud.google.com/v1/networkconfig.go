@@ -29,6 +29,9 @@ type NetworkConfigApplyConfiguration struct {
 	// DisablePodCidrOverprovisionConfig allows disabling the default overprovisioning allocation of Pod CIDR ranges.
 	DisablePodCidrOverprovisionConfig *bool `json:"disablePodCidrOverprovisionConfig,omitempty"`
 	// AdditionalNetworks is an ordered list of secondary network interfaces for Multi-Networking.
+	// Each entry adds one network interface. A VPC network can be listed more than once
+	// to attach several interfaces to it, on the same subnet or on different subnets.
+	// Entries that use the same subnet must specify the same podRange.
 	AdditionalNetworks []AdditionalNetworkApplyConfiguration `json:"additionalNetworks,omitempty"`
 }
 

@@ -3945,6 +3945,90 @@ func TestNetworkConfigValidationRules(t *testing.T) {
 			wantValid: true,
 		},
 		{
+			name: "valid: additionalNetworks repeated on the same subnet without podRange",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name:             "rdma-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "rdma-subnet"}},
+					},
+					{
+						Name:             "rdma-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "rdma-subnet"}},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: additionalNetworks repeated on the same subnet with the same podRange",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet", PodRange: "multinet-pods"}},
+					},
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet", PodRange: "multinet-pods"}},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "valid: additionalNetworks repeated on different subnets with different podRanges",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet-1", PodRange: "multinet-pods-1"}},
+					},
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet-2", PodRange: "multinet-pods-2"}},
+					},
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet-3"}},
+					},
+				},
+			},
+			wantValid: true,
+		},
+		{
+			name: "invalid: additionalNetworks on the same subnet with different podRanges",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet", PodRange: "multinet-pods-1"}},
+					},
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet", PodRange: "multinet-pods-2"}},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
+			name: "invalid: additionalNetworks on the same subnet with podRange set on only one entry",
+			input: NetworkConfig{
+				AdditionalNetworks: []AdditionalNetwork{
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet", PodRange: "multinet-pods"}},
+					},
+					{
+						Name:             "multinet-vpc",
+						SubnetPriorities: []SubnetPriority{{Name: "multinet-subnet"}},
+					},
+				},
+			},
+			wantValid: false,
+		},
+		{
 			name: "invalid: primary subnetPriorities missing podRange",
 			input: NetworkConfig{
 				SubnetPriorities: []SubnetPriority{

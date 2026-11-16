@@ -249,8 +249,11 @@ spec:
                   ComputeClass.
                 properties:
                   additionalNetworks:
-                    description: AdditionalNetworks is an ordered list of secondary
-                      network interfaces for Multi-Networking.
+                    description: |-
+                      AdditionalNetworks is an ordered list of secondary network interfaces for Multi-Networking.
+                      Each entry adds one network interface. A VPC network can be listed more than once
+                      to attach several interfaces to it, on the same subnet or on different subnets.
+                      Entries that use the same subnet must specify the same podRange.
                     items:
                       description: AdditionalNetwork defines an additional network
                         interface for a node pool.
@@ -291,12 +294,10 @@ spec:
                       - name
                       - subnetPriorities
                       type: object
-                    maxItems: 8
+                    maxItems: 50
                     minItems: 1
                     type: array
-                    x-kubernetes-list-map-keys:
-                    - name
-                    x-kubernetes-list-type: map
+                    x-kubernetes-list-type: atomic
                   disablePodCidrOverprovisionConfig:
                     description: DisablePodCidrOverprovisionConfig allows disabling
                       the default overprovisioning allocation of Pod CIDR ranges.
@@ -332,6 +333,12 @@ spec:
                 - message: podRange is required for each entry in networkConfig.subnetPriorities
                   rule: '!has(self.subnetPriorities) || self.subnetPriorities.all(sp,
                     has(sp.podRange) && size(sp.podRange) > 0)'
+                - message: entries in networkConfig.additionalNetworks that use the
+                    same subnet must specify the same podRange
+                  rule: '!has(self.additionalNetworks) || self.additionalNetworks.all(a,
+                    self.additionalNetworks.all(b, a.subnetPriorities.all(sa, b.subnetPriorities.all(sb,
+                    sa.name != sb.name || (has(sa.podRange) == has(sb.podRange) &&
+                    (!has(sa.podRange) || sa.podRange == sb.podRange))))))'
               nodePoolAutoCreation:
                 default:
                   enabled: false
