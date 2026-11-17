@@ -837,7 +837,7 @@ type Storage struct {
 	// When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
 	//
 	// +optional
-	// +kubebuilder:validation:Minimum=2000
+	// +kubebuilder:validation:Minimum=3000
 	// +kubebuilder:validation:Maximum=160000
 	BootDiskProvisionedIops *int64 `json:"bootDiskProvisionedIops,omitempty" protobuf:"varint,7,opt,name=bootDiskProvisionedIops"`
 

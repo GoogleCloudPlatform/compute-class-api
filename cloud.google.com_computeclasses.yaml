@@ -2735,7 +2735,7 @@ spec:
                             When custom performance is configured for Hyperdisk Balanced, both bootDiskProvisionedIops and bootDiskProvisionedThroughput must be specified together.
                           format: int64
                           maximum: 160000
-                          minimum: 2000
+                          minimum: 3000
                           type: integer
                         bootDiskProvisionedThroughput:
                           description: |-
